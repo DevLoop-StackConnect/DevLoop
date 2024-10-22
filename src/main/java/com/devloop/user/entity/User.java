@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 @Entity
 @NoArgsConstructor
 @Getter
+@Table
 public class User extends Timestamped {
 
     @Id

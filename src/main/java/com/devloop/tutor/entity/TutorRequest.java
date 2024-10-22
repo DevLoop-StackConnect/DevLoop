@@ -28,29 +28,29 @@ public class TutorRequest extends Timestamped {
     private String subUrl;
 
     @Column(nullable = false, length = 20)
-    private String accoutNum;
+    private String accountNum;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
     private TutorRequestStatus status;
 
     @OneToOne
-    @JoinColumn(nullable = false, referencedColumnName = "id")  // 단방향 참조
-    private User userId;
+    @JoinColumn(name="user_id", nullable = false)  // 단방향 참조
+    private User user;
 
-    private TutorRequest(String name, String subUrl, String accoutNum, TutorRequestStatus status, User userId) {
+    private TutorRequest(String name, String subUrl, String accountNum, TutorRequestStatus status, User userId) {
         this.name = name;
         this.subUrl = subUrl;
-        this.accoutNum = accoutNum;
+        this.accountNum = accountNum;
         this.status = status;
-        this.userId = userId;
+        this.user = userId;
     }
 
-    public static TutorRequest from(String name, String subUrl, String accoutNum, TutorRequestStatus status, User userId){
+    public static TutorRequest from(String name, String subUrl, String accountNum, TutorRequestStatus status, User userId){
         return new TutorRequest(
                 name,
                 subUrl,
-                accoutNum,
+                accountNum,
                 status,
                 userId
         );
