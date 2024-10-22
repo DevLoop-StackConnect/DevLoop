@@ -9,5 +9,5 @@ public enum PartyStatus {
     IN_PROGRESS("모집중"),
     COMPLETED("모집완료");
 
-    private final String partyStatus;
+    private final String status;
 }
