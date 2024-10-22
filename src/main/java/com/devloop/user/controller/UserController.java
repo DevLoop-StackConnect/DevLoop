@@ -25,14 +25,14 @@ public class UserController {
         return "성공";
     }
 
-    @GetMapping("/v1/users/proflies")
+    @GetMapping("/v1/users/profiles")
     public ApiResponse<UserResponse> getUser(@AuthenticationPrincipal AuthUser authUser){
-        return userService.getUser(authUser);
+        return ApiResponse.ok(userService.getUser(authUser));
     }
 
-    @PatchMapping("/v1/users/proflies/image")
-    public ApiResponse<String>updateProflieImg(@RequestParam("file") MultipartFile file, @AuthenticationPrincipal AuthUser authUser){
-        userService.updateProflieImg(file, authUser);
+    @PatchMapping("/v1/users/profiles/image")
+    public ApiResponse<String>updateProfileImg(@RequestParam("file") MultipartFile file, @AuthenticationPrincipal AuthUser authUser){
+        userService.updateProfileImg(file, authUser);
         return ApiResponse.ok("프로필 이미지가 변경 되었습니다.");
     }
 }
