@@ -34,17 +34,16 @@ public class AuthService {
     public SignupResponse createUser(SignupRequest signupRequest) {
 
         String encodedPassword = passwordEncoders.encode(signupRequest.getPassword());
-
         Optional<User> existingUser = userRepository.findByEmail(signupRequest.getEmail());
+
         if (existingUser.isPresent()) {
             throw new ApiException(ErrorStatus._INVALID_REQUEST);
         }
 
-        User user = User.fromUser(signupRequest.getUsername(),
+        User user = User.from(signupRequest.getUsername(),
                 signupRequest.getEmail(),
                 encodedPassword,
                 UserRole.of(signupRequest.getRole()));
-
         User savedUser = userRepository.save(user);
 
         return new SignupResponse(
@@ -53,7 +52,6 @@ public class AuthService {
                 savedUser.getUsername(),
                 savedUser.getCreatedAt()
         );
-
     }
 
     public String login(LoginRequest loginRequest) {

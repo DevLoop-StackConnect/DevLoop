@@ -49,7 +49,7 @@ public class User extends Timestamped {
         this.kakaoid = 1L;
     }
 
-    public static User fromUser(String username, String email, String password, UserRole userRole) {
+    public static User from(String username, String email, String password, UserRole userRole) {
         return new User(username, email, password, userRole);
     }
 
