@@ -38,7 +38,6 @@ public class WebSecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/v1/auth/**").permitAll()
                         .requestMatchers("/api/v1/search/**").permitAll()
-                        .requestMatchers("/api/s3test").permitAll()
                         .anyRequest().authenticated()
                 )
                 .build();
