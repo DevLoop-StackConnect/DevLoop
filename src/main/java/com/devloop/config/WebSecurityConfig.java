@@ -39,6 +39,7 @@ public class WebSecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/v1/auth/**").permitAll()
                         .requestMatchers("/api/v1/admin/**").hasAuthority(UserRole.authority.ADMIN) //ADMIN 권한을 가진 사용자만 접근 가능한 경로 지정
+                        .requestMatchers("/api/v1/search/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .build();
