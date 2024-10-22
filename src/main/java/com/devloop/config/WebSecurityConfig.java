@@ -37,7 +37,6 @@ public class WebSecurityConfig {
                 .logout(logout -> logout.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/v1/auth/**").permitAll()
-                        .requestMatchers("/api/v1/search/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .build();
