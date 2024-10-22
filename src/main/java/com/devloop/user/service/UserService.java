@@ -25,15 +25,13 @@ public class UserService {
     @Value("${cloud.aws.s3.bucketName}")
     private String bucketName;
 
-    public ApiResponse<UserResponse> getUser(AuthUser authUser) {
-        // User.fromUser 로 바꿀지 고민중...
+    public UserResponse getUser(AuthUser authUser) {
         User user = userRepository.findById(authUser.getId()).orElseThrow(()->new NoSuchElementException("User not found"));
-        UserResponse userResponse = new UserResponse(user.getUsername(),user.getEmail(),user.getUserRole());
-        return ApiResponse.ok(userResponse);
+        return UserResponse.from(user.getUsername(),user.getEmail(),user.getUserRole());
     }
 
     @Transactional
-    public void updateProflieImg(MultipartFile file, AuthUser authUser) {
+    public void updateProfileImg(MultipartFile file, AuthUser authUser) {
         s3Util.uploadFile(file,bucketName);
         User user = userRepository.findById(authUser.getId()).orElseThrow(()->new NoSuchElementException("User not found"));
         user.updateProfileImg(3L);
