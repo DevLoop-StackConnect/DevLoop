@@ -12,6 +12,7 @@ import com.devloop.party.response.UpdatePartyResponse;
 import com.devloop.party.service.PartyService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -22,7 +23,6 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 public class PartyController {
     private final PartyService partyService;
-
 
     //스터디 파티 모집 게시글 등록
     @PostMapping("/v1/parties")
@@ -45,13 +45,12 @@ public class PartyController {
 
     //스터디 파티 모집 전체 조회
     @GetMapping("/v1/auth/parties")
-    public ApiResponse<GetPartyListResponse> getPartyList(
+    public ApiResponse<Page<GetPartyListResponse>> getPartyList(
         @RequestParam(required = false) String title,
-        @RequestParam(required = false) String contents,
         @RequestParam(defaultValue = "1") int page,
         @RequestParam(defaultValue = "10") int size
     ){
-        return ApiResponse.ok(partyService.getPartyList(title,contents,page,size));
+        return ApiResponse.ok(partyService.getPartyList(title,page,size));
     }
 
     //스터디 파티 모집 게시글 단건 조회
@@ -72,9 +71,5 @@ public class PartyController {
         partyService.deleteParty(authUser,partyId);
         return ResponseEntity.noContent().build();
     }
-
-
-
-
 
 }
