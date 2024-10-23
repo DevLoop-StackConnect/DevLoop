@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @NoArgsConstructor
 @Getter
+@Table
 public class User extends Timestamped {
 
     @Id
@@ -67,4 +68,8 @@ public class User extends Timestamped {
 
     public void updateProfileImg(Long attachmentId){
         this.attachmentId = attachmentId;}
+
+    public void changeUserRoleToTutor(UserRole userRole) {
+        this.userRole = userRole;
+    }
 }
