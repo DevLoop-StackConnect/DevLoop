@@ -21,7 +21,7 @@ public class UserController {
     @PostMapping("/s3test")
     public String s3test(@RequestParam("file") MultipartFile file ) {
         System.out.println("들어옴");
-        s3Util.uploadFile(file, "devloop-stackconnect1");
+        s3Util.uploadFile(file);
         return "성공";
     }
 
