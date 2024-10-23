@@ -25,7 +25,6 @@ import java.util.Optional;
 @Transactional(readOnly = true)
 public class AuthService {
 
-
     private final BCryptPasswordEncoder passwordEncoders;
     private final JwtUtil jwtUtil;
     private final UserRepository userRepository;
@@ -47,10 +46,9 @@ public class AuthService {
                 UserRole.of(signupRequest.getRole()));
         User savedUser = userRepository.save(user);
 
-        return new SignupResponse(
-                savedUser.getId(),
-                savedUser.getEmail(),
-                savedUser.getUsername(),
+        return SignupResponse.from(
+                signupRequest.getEmail(),
+                signupRequest.getUsername(),
                 savedUser.getCreatedAt()
         );
     }
@@ -71,7 +69,6 @@ public class AuthService {
         if (user.getStatus() == UserStatus.WITHDRAWAL) {
             throw new ApiException(ErrorStatus._NOT_FOUND_USER);
         }
-
         return jwtUtil.createToken(
                 user.getId(),
                 user.getEmail(),

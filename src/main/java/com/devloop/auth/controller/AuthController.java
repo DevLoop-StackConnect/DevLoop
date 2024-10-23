@@ -9,10 +9,7 @@ import com.devloop.auth.service.AuthService;
 import com.devloop.auth.service.KakaoService;
 import com.devloop.common.AuthUser;
 import com.devloop.common.apipayload.ApiResponse;
-import com.devloop.common.utils.JwtUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -33,6 +30,7 @@ public class AuthController {
         return ApiResponse.ok(authService.createUser(signupRequest));
     }
 
+    //토큰 발급 방식에서는 ResponseEntity가 HTTP 표준이랑 보안적 측면으로 더 유용함
     @PostMapping("/v1/auth/login")
     public ResponseEntity<Object> login(@Valid @RequestBody LoginRequest loginRequest) {
         return ResponseEntity.status(HttpStatus.OK).header("Authorization", authService.login(loginRequest)).build();
