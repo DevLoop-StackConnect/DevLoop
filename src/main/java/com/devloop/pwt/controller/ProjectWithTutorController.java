@@ -43,4 +43,13 @@ public class ProjectWithTutorController {
     ){
         return ApiResponse.ok(projectWithTutorService.updateProjectWithTutor(authUser, projectId, file, projectWithTutorUpdateRequest));
     }
+
+    // 튜터랑 함께하는 협업 프로젝트 게시글 삭제
+    @DeleteMapping("/v1/pwts/{pwtId}")
+    public ApiResponse<String> deleteProjectWithTutor(
+            @AuthenticationPrincipal AuthUser authUser,
+            @PathVariable("pwtId") Long projectId
+    ){
+        return ApiResponse.ok(projectWithTutorService.deleteProjectWithTutor(authUser, projectId));
+    }
 }

@@ -95,4 +95,27 @@ public class ProjectWithTutorService {
 
         return String.format("%s 게시글이 수정되었습니다.", projectWithTutor.getTitle());
     }
+
+    // 튜터랑 함께하는 협업 프로젝트 게시글 삭제
+    @Transactional
+    public String deleteProjectWithTutor(AuthUser authUser, Long projectId) {
+
+        // 사용자 객체 가져오기
+        User user = userRepository.findById(authUser.getId())
+                .orElseThrow(()-> new ApiException(ErrorStatus._NOT_FOUND_USER));
+
+        // PWT 게시글 객체 가져오기
+        ProjectWithTutor projectWithTutor = projectWithTutorRepository.findById(projectId)
+                .orElseThrow(()-> new ApiException(ErrorStatus._NOT_FOUND_PROJECT_WITH_TUTOR));
+
+        // 게시글 작성자와 현재 로그인된 사용자 일치 여부 예외 처리
+        if(!user.getId().equals(projectWithTutor.getUser().getId())){
+            throw new ApiException(ErrorStatus._HAS_NOT_ACCESS_PERMISSION);
+        }
+
+        // PWT 게시글 삭제
+        projectWithTutorRepository.delete(projectWithTutor);
+
+        return String.format("%s 게시글을 삭제하였습니다.", projectWithTutor.getTitle());
+    }
 }
