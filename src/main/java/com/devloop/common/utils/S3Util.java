@@ -25,17 +25,14 @@ public class S3Util {
 
     }
 
-    public String uploadFile(MultipartFile file,String bucketName) {
-
+    public void uploadFile(MultipartFile file){
         String fileName = makeFileName(file);
-
         ObjectMetadata metadata = new ObjectMetadata();
         metadata.setContentType(file.getContentType());
         metadata.setContentLength(file.getSize());
 
         try {
             amazonS3Client.putObject(bucketName, fileName, file.getInputStream(), metadata);
-            return fileName;
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
