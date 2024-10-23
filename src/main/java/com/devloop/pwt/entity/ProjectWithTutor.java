@@ -116,4 +116,8 @@ public class ProjectWithTutor extends Timestamped {
         this.level = level;
         this.user = user;
     }
+
+    public void changeApproval(Approval approval) {
+        this.approval = approval;
+    }
 }
