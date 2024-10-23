@@ -1,4 +1,4 @@
-package com.devloop.community.entity;
+package com.devloop.common.enums;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
