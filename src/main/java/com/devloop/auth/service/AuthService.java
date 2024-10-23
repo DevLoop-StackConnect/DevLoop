@@ -9,6 +9,7 @@ import com.devloop.common.apipayload.status.ErrorStatus;
 import com.devloop.common.exception.ApiException;
 import com.devloop.common.utils.JwtUtil;
 import com.devloop.user.entity.User;
+import com.devloop.user.enums.LoginType;
 import com.devloop.user.enums.UserRole;
 import com.devloop.user.enums.UserStatus;
 import com.devloop.user.repository.UserRepository;
@@ -34,19 +35,16 @@ public class AuthService {
     public SignupResponse createUser(SignupRequest signupRequest) {
 
         String encodedPassword = passwordEncoders.encode(signupRequest.getPassword());
-
         Optional<User> existingUser = userRepository.findByEmail(signupRequest.getEmail());
+
         if (existingUser.isPresent()) {
             throw new ApiException(ErrorStatus._INVALID_REQUEST);
         }
 
-        User user = new User(
-                signupRequest.getUsername(),
+        User user = User.from(signupRequest.getUsername(),
                 signupRequest.getEmail(),
                 encodedPassword,
-                UserRole.of(signupRequest.getRole())
-        );
-
+                UserRole.of(signupRequest.getRole()));
         User savedUser = userRepository.save(user);
 
         return new SignupResponse(
@@ -55,13 +53,16 @@ public class AuthService {
                 savedUser.getUsername(),
                 savedUser.getCreatedAt()
         );
-
     }
 
     public String login(LoginRequest loginRequest) {
 
         User user = userRepository.findByEmail(loginRequest.getEmail())
                 .orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_USER));
+
+        if(user.getLoginType() == LoginType.SOCIAL) {
+            throw new ApiException(ErrorStatus._INVALID_LOGIN_TYPE);
+        }
 
         if (!passwordEncoders.matches(loginRequest.getPassword(), user.getPassword())) {
             throw new ApiException(ErrorStatus._PERMISSION_DENIED);
