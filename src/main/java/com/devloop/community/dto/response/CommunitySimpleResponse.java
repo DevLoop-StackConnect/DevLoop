@@ -7,7 +7,7 @@ import com.devloop.community.entity.ResolveStatus;
 import lombok.Getter;
 
 @Getter
-public class CommunitySimpleResponse extends Timestamped {
+public class CommunitySimpleResponse {
     private final Long communityId;
     private final String title;
     private final ResolveStatus status;
