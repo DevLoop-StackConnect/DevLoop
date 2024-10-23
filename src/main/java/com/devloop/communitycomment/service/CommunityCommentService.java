@@ -1,6 +1,8 @@
 package com.devloop.communitycomment.service;
 
 import com.devloop.common.AuthUser;
+import com.devloop.common.apipayload.status.ErrorStatus;
+import com.devloop.common.exception.ApiException;
 import com.devloop.community.entity.Community;
 import com.devloop.community.repository.CommunityRepository;
 import com.devloop.communitycomment.dto.CommentResponse;
@@ -33,10 +35,10 @@ public class CommunityCommentService {
     public CommentSaveResponse creatComment(AuthUser authUser, CommentSaveRequest commentSaveRequest, Long communityId) {
         //커뮤니티 게시글 조회
         Community community = communityRepository.findById(communityId)
-                .orElseThrow(()->new IllegalArgumentException("해당 게시글을 찾을수 없고 이거 exceprion 따로 둬야함"));
+                .orElseThrow(()->new ApiException(ErrorStatus._NOT_FOUND_COMMUNITY));
         //사용자 조회
         User user = userRepository.findById(authUser.getId())
-                .orElseThrow(()->new IllegalArgumentException("해당 사용자 찾을 수 없고 따로 빼야함"));
+                .orElseThrow(()->new ApiException(ErrorStatus._NOT_FOUND_USER));
         //댓글 생성..?생성자가 프라이빗이고..?
         CommunityComment communityComment = CommunityComment.from(commentSaveRequest,community,user);
         //댓글 저장
@@ -50,14 +52,14 @@ public class CommunityCommentService {
     public CommentUpdateResponse updateComment(AuthUser authUser, CommentUpdateRequest commentUpdateRequest, Long communityId, Long commentId) {
         //댓글 유무확인
         CommunityComment communityComment = communityCommentRepository.findById(commentId)
-                .orElseThrow(()->new IllegalArgumentException("해당 댓글을 찾을 수 없고 엑셉션빼라잉"));
+                .orElseThrow(()->new ApiException(ErrorStatus._NOT_FOUND_COMMENT));
         //댓글이 해당 게시글에 속해있는지 확인
         if (!communityComment.getCommunity().getId().equals(communityId)){
-            throw  new IllegalArgumentException("해당 댓글은 이 게시글에 속하지 않고 엑셉션 빼");
+            throw  new ApiException(ErrorStatus._NOT_INCLUDE_COMMENT);
         }
         //권한 확인 : 댓글 작성자와 현재 사용자(authUser)가 같은지 확인
         if (!communityComment.getUser().getId().equals(authUser.getId())){
-            throw new IllegalArgumentException("해당 댓글을 수정할 권한이 없고요 엑셉션 빼");
+            throw new ApiException(ErrorStatus._INVALID_COMMENTUSER);
         }
         //댓글내용 업데이트
         communityComment.updateContent(commentUpdateRequest.getContent());
@@ -77,14 +79,14 @@ public class CommunityCommentService {
     public void deleteComment(AuthUser authUser, Long communityId, Long commentId) {
         //댓글 유무 확인
         CommunityComment communityComment = communityCommentRepository.findById(commentId)
-                .orElseThrow(()->new IllegalArgumentException("해당 댓글을 찾을 수 업습니다."));
+                .orElseThrow(()->new ApiException(ErrorStatus._NOT_FOUND_COMMENT));
         //댓글이 해당 게시글에 속한건지 확인
         if (!communityComment.getCommunity().getId().equals(communityId)){
-            throw new IllegalArgumentException("해당 댓글은 이 게시글에 속해있지 않습니다.");
+            throw new ApiException(ErrorStatus._NOT_INCLUDE_COMMENT);
         }
         //댓글 작성자와 현재 사용자가 같은지 확인
         if (!communityComment.getUser().getId().equals(authUser.getId())){
-            throw new IllegalArgumentException("해당 댓글을 삭제할 권한이 없습니다.");
+            throw new ApiException(ErrorStatus._INVALID_COMMENTUSER);
         }
         //삭제
         communityCommentRepository.delete(communityComment);
