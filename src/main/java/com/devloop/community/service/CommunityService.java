@@ -134,4 +134,14 @@ public class CommunityService {
                 new ArrayList<>()
         );
     }
+
+    //게시글 삭제
+    @Transactional
+    public void deleteCommunity(Long communityId) {
+        //게시글 존재하는지 확인
+        Community community = communityRepository.findById(communityId)
+                .orElseThrow(()->new IllegalArgumentException("해당 게시글을 찾을 수 없습니다."));
+        //삭제
+        communityRepository.delete(community);
+    }
 }

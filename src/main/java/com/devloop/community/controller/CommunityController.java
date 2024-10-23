@@ -50,4 +50,11 @@ public class CommunityController {
         CommunityDetailResponse communityDetailResponse = communityService.updateCommunity(communityId,communityUpdateRequest);
         return ResponseEntity.ok(communityDetailResponse);
     }
+
+    //게시글 삭제
+    @DeleteMapping("/{communityId}")
+    public ResponseEntity<Void> deleteCommunity(@PathVariable Long communityId){
+        communityService.deleteCommunity(communityId);
+        return ResponseEntity.noContent().build();
+    }
 }
