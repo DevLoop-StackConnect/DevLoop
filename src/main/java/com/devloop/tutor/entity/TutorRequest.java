@@ -56,6 +56,10 @@ public class TutorRequest extends Timestamped {
         );
     }
 
+    public void changeStatus(TutorRequestStatus newStatus) {
+        this.status = newStatus;
+    }
+
 
 
 

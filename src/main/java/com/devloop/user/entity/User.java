@@ -59,4 +59,8 @@ public class User extends Timestamped {
 
     public void updateProfileImg(Long attachmentId){
         this.attachmentId = attachmentId;}
+
+    public void changeUserRoleToTutor(UserRole userRole) {
+        this.userRole = userRole;
+    }
 }
