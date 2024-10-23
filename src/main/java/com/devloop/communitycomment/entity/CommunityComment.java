@@ -20,7 +20,7 @@ public class CommunityComment extends Timestamped {
     @Column(name="communityComment_id")
     private Long id;
 
-    @Column(name="communityComment_content")
+    @Column(name="communityComment_content",columnDefinition = "TEXT")
     private String content;
 
     @ManyToOne(fetch = FetchType.LAZY)
