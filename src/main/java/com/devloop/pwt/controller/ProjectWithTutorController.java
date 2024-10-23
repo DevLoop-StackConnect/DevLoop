@@ -23,11 +23,11 @@ public class ProjectWithTutorController {
 
     // 튜터랑 함께하는 협업 프로젝트 게시글 생성
     @PostMapping("/v1/pwts")
-    public ResponseEntity<String> saveProjectWithTutor(
+    public ApiResponse<String> saveProjectWithTutor(
             @AuthenticationPrincipal AuthUser authUser,
             @RequestParam("file") MultipartFile file,
             @Valid @ModelAttribute ProjectWithTutorSaveRequest projectWithTutorSaveRequest
     ) {
-        return ResponseEntity.ok(projectWithTutorService.saveProjectWithTutor(authUser, file, projectWithTutorSaveRequest));
+        return ApiResponse.ok(projectWithTutorService.saveProjectWithTutor(authUser, file, projectWithTutorSaveRequest));
     }
 }
