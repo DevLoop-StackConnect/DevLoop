@@ -2,6 +2,7 @@ package com.devloop.community.service;
 
 import com.devloop.common.AuthUser;
 import com.devloop.community.dto.request.CommunitySaveRequest;
+import com.devloop.community.dto.request.CommunityUpdateRequest;
 import com.devloop.community.dto.response.CommunityDetailResponse;
 import com.devloop.community.dto.response.CommunitySaveResponse;
 import com.devloop.community.dto.response.CommunitySimpleResponse;
@@ -102,6 +103,35 @@ public class CommunityService {
                 community.getResolveStatus(),
                 community.getCategory(),
                 commentResponses
+        );
+    }
+
+    //게시글 수정
+    @Transactional
+    public CommunityDetailResponse updateCommunity(Long communityId, CommunityUpdateRequest communityUpdateRequest) {
+        //게시글 조회
+        Community community = communityRepository.findById(communityId)
+                .orElseThrow(()->new IllegalArgumentException("해당 게시글을 찾을 수 없습니다."));
+
+        //수정 요청에서 값이 있는 필드만 업데이트시키기
+        community.updateCommunity(
+                communityUpdateRequest.getTitle(),
+                communityUpdateRequest.getContent(),
+                communityUpdateRequest.getStatus(),
+                communityUpdateRequest.getCategory()
+        );
+        //수정된 게시글 저장
+        communityRepository.save(community);
+        //응답반환
+        return new CommunityDetailResponse(
+                community.getId(),
+                community.getTitle(),
+                community.getContent(),
+                community.getCreatedAt(),
+                community.getModifiedAt(),
+                community.getResolveStatus(),
+                community.getCategory(),
+                new ArrayList<>()
         );
     }
 }

@@ -1,8 +1,8 @@
 package com.devloop.community.entity;
 
 import com.devloop.common.Timestamped;
+import com.devloop.common.enums.Category;
 import com.devloop.community.dto.request.CommunitySaveRequest;
-import com.devloop.community.dto.response.CommunitySaveResponse;
 import com.devloop.communitycomment.entity.CommunityComment;
 import com.devloop.user.entity.User;
 import jakarta.persistence.*;
@@ -65,11 +65,12 @@ public class Community extends Timestamped {
         );
     }
 
-    //커뮤니티 글 수정 메서드 ->생성자랑 내용이 같은데..또 만들어서 사용해도 되나요?
-    public void updateCommunity(String title, String content,ResolveStatus resolveStatus){
+    //커뮤니티 글 수정 메서드
+    public void updateCommunity(String title, String content,ResolveStatus resolveStatus,Category category){
         this.title=title;
         this.content=content;
         this.resolveStatus=resolveStatus;
+        this.category=category;
     }
 
 

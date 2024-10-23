@@ -2,6 +2,7 @@ package com.devloop.community.controller;
 
 import com.devloop.common.AuthUser;
 import com.devloop.community.dto.request.CommunitySaveRequest;
+import com.devloop.community.dto.request.CommunityUpdateRequest;
 import com.devloop.community.dto.response.CommunityDetailResponse;
 import com.devloop.community.dto.response.CommunitySaveResponse;
 import com.devloop.community.dto.response.CommunitySimpleResponse;
@@ -40,6 +41,13 @@ public class CommunityController {
     @GetMapping("/{communityId}")
     public ResponseEntity<CommunityDetailResponse> getCommunity(@PathVariable Long communityId){
         CommunityDetailResponse communityDetailResponse = communityService.getCommunity(communityId);
+        return ResponseEntity.ok(communityDetailResponse);
+    }
+
+    //게시글 수정
+    @PatchMapping("/{communityId}")
+    public  ResponseEntity<CommunityDetailResponse> updateCommunity(@PathVariable Long communityId, @RequestBody CommunityUpdateRequest communityUpdateRequest){
+        CommunityDetailResponse communityDetailResponse = communityService.updateCommunity(communityId,communityUpdateRequest);
         return ResponseEntity.ok(communityDetailResponse);
     }
 }
