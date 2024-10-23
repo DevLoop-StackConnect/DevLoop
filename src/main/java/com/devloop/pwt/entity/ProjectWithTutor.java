@@ -1,6 +1,8 @@
 package com.devloop.pwt.entity;
 
 import com.devloop.common.Timestamped;
+import com.devloop.common.enums.Approval;
+import com.devloop.pwt.enums.Level;
 import com.devloop.pwt.enums.ProjectWithTutorStatus;
 import com.devloop.user.entity.User;
 import jakarta.persistence.*;
@@ -41,6 +43,12 @@ public class ProjectWithTutor extends Timestamped {
     @NotNull
     private Integer maxParticipants;
 
+    @NotNull
+    private Level level;
+
+    @NotNull
+    private Approval approval;
+
     @ManyToOne
     @JoinColumn(name="user_id")
     private User user;
@@ -52,6 +60,8 @@ public class ProjectWithTutor extends Timestamped {
             ProjectWithTutorStatus status,
             LocalDateTime deadline,
             Integer maxParticipants,
+            Level level,
+            Approval approval,
             User user
     ) {
         this.title = title;
@@ -60,6 +70,8 @@ public class ProjectWithTutor extends Timestamped {
         this.status = status;
         this.deadline = deadline;
         this.maxParticipants = maxParticipants;
+        this.level = level;
+        this.approval = approval;
         this.user = user;
     }
 
@@ -70,6 +82,8 @@ public class ProjectWithTutor extends Timestamped {
             ProjectWithTutorStatus status,
             LocalDateTime deadline,
             Integer maxParticipants,
+            Level level,
+            Approval approval,
             User user
     ){
         return new ProjectWithTutor(
@@ -79,6 +93,8 @@ public class ProjectWithTutor extends Timestamped {
                 status,
                 deadline,
                 maxParticipants,
+                level,
+                approval,
                 user
         );
     }
