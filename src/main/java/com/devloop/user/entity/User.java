@@ -6,7 +6,6 @@ import com.devloop.user.enums.UserStatus;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 
 @Entity
 @NoArgsConstructor
@@ -30,7 +29,8 @@ public class User extends Timestamped {
     @Enumerated(EnumType.STRING)
     private UserStatus status = UserStatus.ACTIVE;
 
-    private Long kakaoid;
+
+    private Long kakaoId;
 
     public User(String username, String email, String password, UserRole userRole) {
         this.username = username;
@@ -41,5 +41,18 @@ public class User extends Timestamped {
 
     public void update() {
         this.status = UserStatus.WITHDRAWAL;
+    }
+
+    public User(String username, String password, String email, UserRole userRole, Long kakaoId) {
+        this.username = username;
+        this.password = password;
+        this.email = email;
+        this.userRole = userRole;
+        this.kakaoId =kakaoId;
+    }
+
+    public User kakaoIdUpdate(Long kakaoId) {
+        this.kakaoId = kakaoId;
+        return this;
     }
 }

@@ -61,13 +61,13 @@ public class AuthService {
     public String login(LoginRequest loginRequest) {
 
         User user = userRepository.findByEmail(loginRequest.getEmail())
-                .orElseThrow(() ->new ApiException(ErrorStatus._NOT_FOUND_USER));
+                .orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_USER));
 
-        if(!passwordEncoders.matches(loginRequest.getPassword(), user.getPassword())) {
+        if (!passwordEncoders.matches(loginRequest.getPassword(), user.getPassword())) {
             throw new ApiException(ErrorStatus._PERMISSION_DENIED);
         }
 
-        if(user.getStatus() == UserStatus.WITHDRAWAL){
+        if (user.getStatus() == UserStatus.WITHDRAWAL) {
             throw new ApiException(ErrorStatus._NOT_FOUND_USER);
         }
 
@@ -82,9 +82,9 @@ public class AuthService {
     public void deleteUser(Long id, SignoutRequest signoutRequest) {
 
         User user = userRepository.findById(id)
-                .orElseThrow(() ->new ApiException(ErrorStatus._NOT_FOUND_USER));
+                .orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_USER));
 
-        if(passwordEncoders.matches(signoutRequest.getPassword(), user.getPassword())){
+        if (passwordEncoders.matches(signoutRequest.getPassword(), user.getPassword())) {
             user.update();
             userRepository.save(user);
         } else throw new ApiException(ErrorStatus._PERMISSION_DENIED);
