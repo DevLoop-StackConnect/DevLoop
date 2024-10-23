@@ -1,6 +1,6 @@
 package com.devloop.community.dto.response;
 
-import com.devloop.community.entity.Category;
+import com.devloop.common.enums.Category;
 import com.devloop.community.entity.ResolveStatus;
 import lombok.Getter;
 
