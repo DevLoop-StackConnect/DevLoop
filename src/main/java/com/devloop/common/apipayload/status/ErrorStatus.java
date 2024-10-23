@@ -56,6 +56,7 @@ public enum ErrorStatus implements BaseCode {
     _TUTOR_REQUEST_NOT_EXIST(HttpStatus.NOT_FOUND, "404", "튜터 요청 내역이 존재하지 않습니다."),
 
     // Project With Tutor
+    _NOT_FOUND_PROJECT_WITH_TUTOR(HttpStatus.NOT_FOUND, "404", "튜터랑 함께하는 협업 프로젝트 게시글이 존재하지 않습니다."),
 
 
     //Auth

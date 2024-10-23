@@ -9,6 +9,7 @@ import com.devloop.pwt.enums.Level;
 import com.devloop.pwt.enums.ProjectWithTutorStatus;
 import com.devloop.pwt.repository.ProjectWithTutorRepository;
 import com.devloop.pwt.request.ProjectWithTutorSaveRequest;
+import com.devloop.pwt.request.ProjectWithTutorUpdateRequest;
 import com.devloop.user.entity.User;
 import com.devloop.user.enums.UserRole;
 import com.devloop.user.repository.UserRepository;
@@ -58,5 +59,40 @@ public class ProjectWithTutorService {
         // todo : 첨부파일 저장
 
         return String.format("%s 님의 튜터랑 함께하는 협업 프로젝트 게시글이 작성 완료되었습니다. 승인까지 3~5일 정도 소요될 수 있습니다.", user.getUsername());
+    }
+
+    // 튜터랑 함께하는 협업 프로젝트 게시글 수정
+    @Transactional
+    public String updateProjectWithTutor(
+            AuthUser authUser,
+            Long projectId,
+            MultipartFile file,
+            ProjectWithTutorUpdateRequest projectWithTutorUpdateRequest
+    ) {
+        // 사용자 객체 가져오기
+        User user = userRepository.findById(authUser.getId())
+                .orElseThrow(()-> new ApiException(ErrorStatus._NOT_FOUND_USER));
+
+        // PWT 게시글 객체 가져오기
+        ProjectWithTutor projectWithTutor = projectWithTutorRepository.findById(projectId)
+                .orElseThrow(()-> new ApiException(ErrorStatus._NOT_FOUND_PROJECT_WITH_TUTOR));
+
+        // 게시글 작성자와 현재 로그인된 사용자 일치 여부 예외 처리
+        if(!user.getId().equals(projectWithTutor.getUser().getId())){
+            throw new ApiException(ErrorStatus._HAS_NOT_ACCESS_PERMISSION);
+        }
+
+        // 변경사항 업데이트
+        projectWithTutor.update(
+                projectWithTutorUpdateRequest.getTitle(),
+                projectWithTutorUpdateRequest.getDescription(),
+                projectWithTutorUpdateRequest.getPrice(),
+                projectWithTutorUpdateRequest.getDeadline(),
+                projectWithTutorUpdateRequest.getMaxParticipants(),
+                Level.of(projectWithTutorUpdateRequest.getLevel()),
+                user
+        );
+
+        return String.format("%s 게시글이 수정되었습니다.", projectWithTutor.getTitle());
     }
 }

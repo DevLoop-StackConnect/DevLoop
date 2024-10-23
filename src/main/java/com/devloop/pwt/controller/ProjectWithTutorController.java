@@ -4,6 +4,7 @@ import com.devloop.common.AuthUser;
 import com.devloop.common.apipayload.ApiResponse;
 import com.devloop.pwt.entity.ProjectWithTutor;
 import com.devloop.pwt.request.ProjectWithTutorSaveRequest;
+import com.devloop.pwt.request.ProjectWithTutorUpdateRequest;
 import com.devloop.pwt.service.ProjectWithTutorService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -29,5 +30,17 @@ public class ProjectWithTutorController {
             @Valid @ModelAttribute ProjectWithTutorSaveRequest projectWithTutorSaveRequest
     ) {
         return ApiResponse.ok(projectWithTutorService.saveProjectWithTutor(authUser, file, projectWithTutorSaveRequest));
+    }
+
+    // 튜터랑 함께하는 협업 프로젝트 게시글 수정
+    @PatchMapping("/v1/pwts/{pwtId}")
+    public ApiResponse<String> updateProjectWithTutor(
+            @AuthenticationPrincipal AuthUser authUser,
+            @PathVariable("pwtId") Long projectId,
+            @RequestParam("file") MultipartFile file,
+            @Valid @ModelAttribute ProjectWithTutorUpdateRequest projectWithTutorUpdateRequest
+
+    ){
+        return ApiResponse.ok(projectWithTutorService.updateProjectWithTutor(authUser, projectId, file, projectWithTutorUpdateRequest));
     }
 }
