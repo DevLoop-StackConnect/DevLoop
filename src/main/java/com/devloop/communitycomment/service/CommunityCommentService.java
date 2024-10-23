@@ -3,6 +3,7 @@ package com.devloop.communitycomment.service;
 import com.devloop.common.AuthUser;
 import com.devloop.community.entity.Community;
 import com.devloop.community.repository.CommunityRepository;
+import com.devloop.communitycomment.dto.CommentResponse;
 import com.devloop.communitycomment.dto.request.CommentSaveRequest;
 import com.devloop.communitycomment.dto.request.CommentUpdateRequest;
 import com.devloop.communitycomment.dto.response.CommentSaveResponse;
@@ -12,8 +13,12 @@ import com.devloop.communitycomment.repository.CommunityCommentRepository;
 import com.devloop.user.entity.User;
 import com.devloop.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.annotations.Comments;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -83,5 +88,26 @@ public class CommunityCommentService {
         }
         //삭제
         communityCommentRepository.delete(communityComment);
+    }
+
+    //댓글 조회
+    public List<CommentResponse> getComments(Long communityId) {
+        //게시글ID로 해당 게시글의 댓글 조회
+        List<CommunityComment> comments = communityCommentRepository.findByCommunityId(communityId);
+
+        List<CommentResponse> commentResponses = new ArrayList<>();
+        //응답 dto로 바꿔주고 반환
+        for (CommunityComment comment : comments){
+            CommentResponse commentResponse = new CommentResponse(
+                    comment.getId(),
+                    comment.getContent(),
+                    comment.getUser().getUsername(),
+                    comment.getCreatedAt(),
+                    comment.getModifiedAt()
+            );
+            commentResponses.add(commentResponse);
+        }
+        return commentResponses;
+
     }
 }
