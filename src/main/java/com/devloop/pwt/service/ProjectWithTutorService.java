@@ -2,8 +2,10 @@ package com.devloop.pwt.service;
 
 import com.devloop.common.AuthUser;
 import com.devloop.common.apipayload.status.ErrorStatus;
+import com.devloop.common.enums.Approval;
 import com.devloop.common.exception.ApiException;
 import com.devloop.pwt.entity.ProjectWithTutor;
+import com.devloop.pwt.enums.Level;
 import com.devloop.pwt.enums.ProjectWithTutorStatus;
 import com.devloop.pwt.repository.ProjectWithTutorRepository;
 import com.devloop.pwt.request.ProjectWithTutorSaveRequest;
@@ -47,12 +49,14 @@ public class ProjectWithTutorService {
                 ProjectWithTutorStatus.IN_PROGRESS,
                 projectWithTutorSaveRequest.getDeadline(),
                 projectWithTutorSaveRequest.getMaxParticipants(),
+                Level.of(projectWithTutorSaveRequest.getLevel()),
+                Approval.WAITE,
                 user
         );
         projectWithTutorRepository.save(projectWithTutor);
 
         // todo : 첨부파일 저장
 
-        return String.format("");
+        return String.format("%s 님의 튜터랑 함께하는 협업 프로젝트 게시글이 작성 완료되었습니다. 승인까지 3~5일 정도 소요될 수 있습니다.", user.getUsername());
     }
 }
