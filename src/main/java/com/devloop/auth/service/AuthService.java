@@ -9,6 +9,7 @@ import com.devloop.common.apipayload.status.ErrorStatus;
 import com.devloop.common.exception.ApiException;
 import com.devloop.common.utils.JwtUtil;
 import com.devloop.user.entity.User;
+import com.devloop.user.enums.LoginType;
 import com.devloop.user.enums.UserRole;
 import com.devloop.user.enums.UserStatus;
 import com.devloop.user.repository.UserRepository;
@@ -23,7 +24,6 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class AuthService {
-
 
     private final BCryptPasswordEncoder passwordEncoders;
     private final JwtUtil jwtUtil;
@@ -46,10 +46,9 @@ public class AuthService {
                 UserRole.of(signupRequest.getRole()));
         User savedUser = userRepository.save(user);
 
-        return new SignupResponse(
-                savedUser.getId(),
-                savedUser.getEmail(),
-                savedUser.getUsername(),
+        return SignupResponse.from(
+                signupRequest.getEmail(),
+                signupRequest.getUsername(),
                 savedUser.getCreatedAt()
         );
     }
@@ -57,16 +56,19 @@ public class AuthService {
     public String login(LoginRequest loginRequest) {
 
         User user = userRepository.findByEmail(loginRequest.getEmail())
-                .orElseThrow(() ->new ApiException(ErrorStatus._NOT_FOUND_USER));
+                .orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_USER));
 
-        if(!passwordEncoders.matches(loginRequest.getPassword(), user.getPassword())) {
+        if(user.getLoginType() == LoginType.SOCIAL) {
+            throw new ApiException(ErrorStatus._INVALID_LOGIN_TYPE);
+        }
+
+        if (!passwordEncoders.matches(loginRequest.getPassword(), user.getPassword())) {
             throw new ApiException(ErrorStatus._PERMISSION_DENIED);
         }
 
-        if(user.getStatus() == UserStatus.WITHDRAWAL){
+        if (user.getStatus() == UserStatus.WITHDRAWAL) {
             throw new ApiException(ErrorStatus._NOT_FOUND_USER);
         }
-
         return jwtUtil.createToken(
                 user.getId(),
                 user.getEmail(),
@@ -78,9 +80,9 @@ public class AuthService {
     public void deleteUser(Long id, SignoutRequest signoutRequest) {
 
         User user = userRepository.findById(id)
-                .orElseThrow(() ->new ApiException(ErrorStatus._NOT_FOUND_USER));
+                .orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_USER));
 
-        if(passwordEncoders.matches(signoutRequest.getPassword(), user.getPassword())){
+        if (passwordEncoders.matches(signoutRequest.getPassword(), user.getPassword())) {
             user.update();
             userRepository.save(user);
         } else throw new ApiException(ErrorStatus._PERMISSION_DENIED);
