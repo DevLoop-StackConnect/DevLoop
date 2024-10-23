@@ -16,26 +16,26 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/communities/{communityId}/comments")
+@RequestMapping("/api")
 public class CommunityCommentController {
     private final CommunityCommentService communityCommentService;
 
     //댓글 작성
-    @PostMapping
+    @PostMapping("/v1/communities/{communityId}/comments")
     public ResponseEntity<CommentSaveResponse> createComment(@AuthenticationPrincipal AuthUser authUser, @RequestBody CommentSaveRequest commentSaveRequest, @PathVariable Long communityId){
        CommentSaveResponse commentSaveResponse = communityCommentService.creatComment(authUser,commentSaveRequest,communityId);
        return ResponseEntity.ok(commentSaveResponse);
     }
 
     //댓글 수정
-    @PatchMapping("/{commentId}")
+    @PatchMapping("/v1/communities/{communityId}/comments/{commentId}")
     public ResponseEntity<CommentUpdateResponse> updateComment(@AuthenticationPrincipal AuthUser authUser, @RequestBody CommentUpdateRequest commentUpdateRequest, @PathVariable Long communityId, @PathVariable Long commentId){
         CommentUpdateResponse commentUpdateResponse = communityCommentService.updateComment(authUser,commentUpdateRequest,communityId,commentId);
         return  ResponseEntity.ok(commentUpdateResponse);
     }
 
     //댓글 삭제
-    @DeleteMapping("/{commentId}")
+    @DeleteMapping("/v1/communities/{communityId}/comments/{commentId}")
     public ResponseEntity<Void> deleteComment(@AuthenticationPrincipal AuthUser authUser, @PathVariable Long communityId, @PathVariable Long commentId){
         communityCommentService.deleteComment(authUser,communityId,commentId);
         return ResponseEntity.ok().build();
