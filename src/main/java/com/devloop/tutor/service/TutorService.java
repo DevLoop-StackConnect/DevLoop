@@ -4,7 +4,7 @@ import com.devloop.common.AuthUser;
 import com.devloop.common.apipayload.status.ErrorStatus;
 import com.devloop.common.exception.ApiException;
 import com.devloop.tutor.entity.TutorRequest;
-import com.devloop.tutor.enums.TutorRequestStatus;
+import com.devloop.common.enums.Approval;
 import com.devloop.tutor.repository.TutorRequestRepository;
 import com.devloop.tutor.request.TutorRequestSaveRequest;
 import com.devloop.user.entity.User;
@@ -46,7 +46,7 @@ public class TutorService {
                 tutorRequest.getName(),
                 tutorRequest.getSubUrl(),
                 tutorRequest.getAccountNum(),
-                TutorRequestStatus.WAITE,
+                Approval.WAITE,
                 requestUser
         );
         requestRepository.save(newTutorRequest);
