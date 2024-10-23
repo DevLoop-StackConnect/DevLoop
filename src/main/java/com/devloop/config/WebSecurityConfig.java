@@ -1,5 +1,6 @@
 package com.devloop.config;
 
+import com.devloop.user.enums.UserRole;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -40,8 +41,10 @@ public class WebSecurityConfig {
                                 "/api/v1/auth/signup",
                                 "/api/v1/auth/login",
                                 "/api/v1/auth/kakao/login",
-                                "/api/v1/auth/kakao/callback")
+                                "/api/v1/search/**"
+                                )
                         .permitAll()
+                        .requestMatchers("/api/v1/admin/**").hasAuthority(UserRole.authority.ADMIN)
                         .anyRequest().authenticated()
                 )
                 .build();

@@ -45,7 +45,6 @@ public class AuthController {
         return ResponseEntity.noContent().build();
     }
 
-
     @GetMapping("/v1/auth/kakao/login")
     public ResponseEntity<Object> kakaoLogin(@RequestParam String code) throws JsonProcessingException {
         String token = kakaoService.kakaoLogin(code);
