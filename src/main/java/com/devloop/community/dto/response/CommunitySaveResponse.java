@@ -1,31 +1,26 @@
 package com.devloop.community.dto.response;
 
+import com.devloop.common.Timestamped;
 import com.devloop.common.enums.Category;
 import com.devloop.community.entity.Community;
 import com.devloop.community.entity.ResolveStatus;
 import lombok.Getter;
 
-import java.time.LocalDateTime;
-
 @Getter
-public class CommunitySaveResponse {
+public class CommunitySaveResponse extends Timestamped {
     private final Long communityId;
     private final String title;
     private final String content;
     private final ResolveStatus status; //게시글 해결 상태 (SOLVED, UNSOLVED)
     private final Category category;
-    private final LocalDateTime createdAt;
-    private final LocalDateTime modifiedAt;
 
 
-    private CommunitySaveResponse(Long communityId, String title, String content, ResolveStatus status, Category category, LocalDateTime createdAt, LocalDateTime modifiedAt) {
+    private CommunitySaveResponse(Long communityId, String title, String content, ResolveStatus status, Category category) {
         this.communityId = communityId;
         this.title = title;
         this.content = content;
         this.status = status;
         this.category = category;
-        this.createdAt = createdAt;
-        this.modifiedAt = modifiedAt;
     }
 
     public static CommunitySaveResponse from(Community community) {
@@ -34,9 +29,7 @@ public class CommunitySaveResponse {
                 community.getTitle(),
                 community.getContent(),
                 community.getResolveStatus(),
-                community.getCategory(),
-                community.getCreatedAt(),
-                community.getModifiedAt()
+                community.getCategory()
         );
     }
 
