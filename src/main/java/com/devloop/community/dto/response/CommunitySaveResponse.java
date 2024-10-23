@@ -1,6 +1,7 @@
 package com.devloop.community.dto.response;
 
 import com.devloop.common.enums.Category;
+import com.devloop.community.entity.Community;
 import com.devloop.community.entity.ResolveStatus;
 import lombok.Getter;
 
@@ -17,7 +18,7 @@ public class CommunitySaveResponse {
     private final LocalDateTime modifiedAt;
 
 
-    public CommunitySaveResponse(Long communityId, String title, String content, ResolveStatus status, Category category, LocalDateTime createdAt, LocalDateTime modifiedAt) {
+    private CommunitySaveResponse(Long communityId, String title, String content, ResolveStatus status, Category category, LocalDateTime createdAt, LocalDateTime modifiedAt) {
         this.communityId = communityId;
         this.title = title;
         this.content = content;
@@ -26,4 +27,17 @@ public class CommunitySaveResponse {
         this.createdAt = createdAt;
         this.modifiedAt = modifiedAt;
     }
+
+    public static CommunitySaveResponse from(Community community) {
+        return new CommunitySaveResponse(
+                community.getId(),
+                community.getTitle(),
+                community.getContent(),
+                community.getResolveStatus(),
+                community.getCategory(),
+                community.getCreatedAt(),
+                community.getModifiedAt()
+        );
+    }
+
 }

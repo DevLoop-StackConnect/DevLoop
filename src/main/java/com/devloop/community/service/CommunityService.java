@@ -39,21 +39,13 @@ public class CommunityService {
         System.out.println(communitySaveRequest.getStatus());
         //사용자 조회
         User user = userRepository.findById(authUser.getId())
-                .orElseThrow(()->new ApiException(ErrorStatus._NOT_FOUND_USER));
+                .orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_USER));
         //게시글 Community객체 생성
-        Community community = Community.from(communitySaveRequest,user);
+        Community community = Community.from(communitySaveRequest, user);
         //게시글 저장
         Community savedCommunity = communityRepository.save(community);
         //응답반환
-        return new CommunitySaveResponse(
-                savedCommunity.getId(),
-                savedCommunity.getTitle(),
-                savedCommunity.getContent(),
-                savedCommunity.getResolveStatus(),
-                savedCommunity.getCategory(),
-                savedCommunity.getCreatedAt(),
-                savedCommunity.getModifiedAt()
-        );
+        return CommunitySaveResponse.from(savedCommunity);
     }
 
     //게시글 다건 조회
@@ -63,30 +55,23 @@ public class CommunityService {
 
         List<CommunitySimpleResponse> responseList = new ArrayList<>();
         //응답반환
-        for (Community community : communities){
-            CommunitySimpleResponse response = new CommunitySimpleResponse(
-                    community.getId(),
-                    community.getTitle(),
-                    community.getCreatedAt(),
-                    community.getModifiedAt(),
-                    community.getResolveStatus(),
-                    community.getCategory()
-            );
+        for (Community community : communities) {
+            CommunitySimpleResponse response = CommunitySimpleResponse.from(community);
             responseList.add(response);
         }
-        return new PageImpl<>(responseList,pageable,communities.getTotalElements());
+        return new PageImpl<>(responseList, pageable, communities.getTotalElements());
     }
 
     //게시글 단건(상세조회)
     public CommunityDetailResponse getCommunity(Long communityId) {
         //게시글 조회
         Community community = communityRepository.findById(communityId)
-                .orElseThrow(()->new ApiException(ErrorStatus._NOT_FOUND_COMMUNITY));
+                .orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_COMMUNITY));
         //댓글 조회
         List<CommunityComment> comments = communityCommentRepository.findByCommunityId(communityId);
 
         List<CommentResponse> commentResponses = new ArrayList<>();
-        for (CommunityComment comment : comments){
+        for (CommunityComment comment : comments) {
             commentResponses.add(new CommentResponse(
                     comment.getId(),
                     comment.getContent(),
@@ -96,16 +81,7 @@ public class CommunityService {
             ));
         }
         //게시글,댓글 정보 응답반환
-        return new CommunityDetailResponse(
-                community.getId(),
-                community.getTitle(),
-                community.getContent(),
-                community.getCreatedAt(),
-                community.getModifiedAt(),
-                community.getResolveStatus(),
-                community.getCategory(),
-                commentResponses
-        );
+        return CommunityDetailResponse.from(community, commentResponses);
     }
 
     //게시글 수정
@@ -113,7 +89,7 @@ public class CommunityService {
     public CommunityDetailResponse updateCommunity(Long communityId, CommunityUpdateRequest communityUpdateRequest) {
         //게시글 조회
         Community community = communityRepository.findById(communityId)
-                .orElseThrow(()->new ApiException(ErrorStatus._NOT_FOUND_COMMUNITY));
+                .orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_COMMUNITY));
 
         //수정 요청에서 값이 있는 필드만 업데이트시키기
         community.updateCommunity(
@@ -125,16 +101,7 @@ public class CommunityService {
         //수정된 게시글 저장
         communityRepository.save(community);
         //응답반환
-        return new CommunityDetailResponse(
-                community.getId(),
-                community.getTitle(),
-                community.getContent(),
-                community.getCreatedAt(),
-                community.getModifiedAt(),
-                community.getResolveStatus(),
-                community.getCategory(),
-                new ArrayList<>()
-        );
+        return CommunityDetailResponse.from(community, new ArrayList<>());
     }
 
     //게시글 삭제
@@ -142,7 +109,7 @@ public class CommunityService {
     public void deleteCommunity(Long communityId) {
         //게시글 존재하는지 확인
         Community community = communityRepository.findById(communityId)
-                .orElseThrow(()->new ApiException(ErrorStatus._NOT_FOUND_COMMUNITY));
+                .orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_COMMUNITY));
         //삭제
         communityRepository.delete(community);
     }
