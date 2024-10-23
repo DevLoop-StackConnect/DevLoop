@@ -99,5 +99,21 @@ public class ProjectWithTutor extends Timestamped {
         );
     }
 
-
+    public void update(
+            String title,
+            String description,
+            Integer price,
+            LocalDateTime deadline,
+            Integer maxParticipants,
+            Level level,
+            User user
+    ) {
+        this.title = title;
+        this.description = description;
+        this.price = price;
+        this.deadline = deadline;
+        this.maxParticipants = maxParticipants;
+        this.level = level;
+        this.user = user;
+    }
 }
