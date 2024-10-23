@@ -1,6 +1,7 @@
 package com.devloop.communitycomment.controller;
 
 import com.devloop.common.AuthUser;
+import com.devloop.common.apipayload.ApiResponse;
 import com.devloop.communitycomment.dto.CommentResponse;
 import com.devloop.communitycomment.dto.request.CommentSaveRequest;
 import com.devloop.communitycomment.dto.request.CommentUpdateRequest;
@@ -23,29 +24,29 @@ public class CommunityCommentController {
 
     //댓글 작성
     @PostMapping("/v1/communities/{communityId}/comments")
-    public ResponseEntity<CommentSaveResponse> createComment(@AuthenticationPrincipal AuthUser authUser, @Valid @RequestBody CommentSaveRequest commentSaveRequest, @PathVariable Long communityId){
+    public ApiResponse<CommentSaveResponse> createComment(@AuthenticationPrincipal AuthUser authUser, @Valid @RequestBody CommentSaveRequest commentSaveRequest, @PathVariable Long communityId){
        CommentSaveResponse commentSaveResponse = communityCommentService.creatComment(authUser,commentSaveRequest,communityId);
-       return ResponseEntity.ok(commentSaveResponse);
+       return ApiResponse.ok(commentSaveResponse);
     }
 
     //댓글 수정
     @PatchMapping("/v1/communities/{communityId}/comments/{commentId}")
-    public ResponseEntity<CommentUpdateResponse> updateComment(@AuthenticationPrincipal AuthUser authUser, @Valid @RequestBody CommentUpdateRequest commentUpdateRequest, @PathVariable Long communityId, @PathVariable Long commentId){
+    public ApiResponse<CommentUpdateResponse> updateComment(@AuthenticationPrincipal AuthUser authUser, @Valid @RequestBody CommentUpdateRequest commentUpdateRequest, @PathVariable Long communityId, @PathVariable Long commentId){
         CommentUpdateResponse commentUpdateResponse = communityCommentService.updateComment(authUser,commentUpdateRequest,communityId,commentId);
-        return  ResponseEntity.ok(commentUpdateResponse);
+        return  ApiResponse.ok(commentUpdateResponse);
     }
 
     //댓글 삭제
     @DeleteMapping("/v1/communities/{communityId}/comments/{commentId}")
-    public ResponseEntity<Void> deleteComment(@AuthenticationPrincipal AuthUser authUser, @PathVariable Long communityId, @PathVariable Long commentId){
+    public ApiResponse<Void> deleteComment(@AuthenticationPrincipal AuthUser authUser, @PathVariable Long communityId, @PathVariable Long commentId){
         communityCommentService.deleteComment(authUser,communityId,commentId);
-        return ResponseEntity.ok().build();
+        return ApiResponse.ok(null);
     }
 
     //댓글 조회
     @GetMapping
-    public ResponseEntity<List<CommentResponse>> getComments(@PathVariable Long communityId ){
+    public ApiResponse<List<CommentResponse>> getComments(@PathVariable Long communityId ){
         List<CommentResponse> comments = communityCommentService.getComments(communityId);
-        return ResponseEntity.ok(comments);
+        return ApiResponse.ok(comments);
     }
 }
