@@ -1,6 +1,7 @@
 package com.devloop.communitycomment.controller;
 
 import com.devloop.common.AuthUser;
+import com.devloop.communitycomment.dto.CommentResponse;
 import com.devloop.communitycomment.dto.request.CommentSaveRequest;
 import com.devloop.communitycomment.dto.request.CommentUpdateRequest;
 import com.devloop.communitycomment.dto.response.CommentSaveResponse;
@@ -10,6 +11,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -36,5 +39,12 @@ public class CommunityCommentController {
     public ResponseEntity<Void> deleteComment(@AuthenticationPrincipal AuthUser authUser, @PathVariable Long communityId, @PathVariable Long commentId){
         communityCommentService.deleteComment(authUser,communityId,commentId);
         return ResponseEntity.ok().build();
+    }
+
+    //댓글 조회
+    @GetMapping("/v1")
+    public ResponseEntity<List<CommentResponse>> getComments(@PathVariable Long communityId ){
+        List<CommentResponse> comments = communityCommentService.getComments(communityId);
+        return ResponseEntity.ok(comments);
     }
 }
