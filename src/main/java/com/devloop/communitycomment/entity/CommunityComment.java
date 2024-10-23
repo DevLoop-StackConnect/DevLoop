@@ -5,6 +5,7 @@ import com.devloop.community.entity.Community;
 import com.devloop.communitycomment.dto.request.CommentSaveRequest;
 import com.devloop.user.entity.User;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -20,6 +21,7 @@ public class CommunityComment extends Timestamped {
     @Column(name="communityComment_id")
     private Long id;
 
+    @NotNull
     @Column(name="communityComment_content",columnDefinition = "TEXT")
     private String content;
 

@@ -6,6 +6,7 @@ import com.devloop.community.dto.request.CommunitySaveRequest;
 import com.devloop.communitycomment.entity.CommunityComment;
 import com.devloop.user.entity.User;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -23,16 +24,20 @@ public class Community extends Timestamped {
     @Column(name="community_id")
     private Long id;
 
+    @NotNull
     @Column(name="title")
     private String title;
 
+    @NotNull
     @Column(name="content",columnDefinition = "TEXT")
     private String content;
 
+    @NotNull
     @Enumerated(EnumType.STRING)
     @Column(name = "category")
     private Category category;
 
+    @NotNull
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
     private ResolveStatus resolveStatus;
