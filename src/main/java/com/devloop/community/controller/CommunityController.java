@@ -16,29 +16,30 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/communities")
+@RequestMapping("/api/v1/communities")
 public class CommunityController {
     private final CommunityService communityService;
 
     //게시글 작성
-    @PostMapping("/v1")
+    @PostMapping
     public ResponseEntity<CommunitySaveResponse> createCommunity(@AuthenticationPrincipal AuthUser authUser, @RequestBody CommunitySaveRequest communitySaveRequest){
+        System.out.println("표시");
         CommunitySaveResponse communitySaveResponse = communityService.createCommunity(authUser,communitySaveRequest);
         return ResponseEntity.ok(communitySaveResponse);
     }
 
     //게시글 다건 조회
-    @GetMapping("/v1")
+    @GetMapping
     public ResponseEntity<Page<CommunitySimpleResponse>> getCommunities(@RequestParam(defaultValue = "0")int page,@RequestParam(defaultValue = "10")int size){
         Pageable pageable = PageRequest.of(page, size);
         Page<CommunitySimpleResponse> communitySimpleResponse = communityService.getCommunities(pageable);
         return ResponseEntity.ok(communitySimpleResponse);
     }
 
-//    //게시글 단건 조회
-//    @GetMapping("/v1/{communityId}")
-//    public ResponseEntity<CommunityDetailResponse> getCommunity(@PathVariable Long communityId){
-//        CommunityDetailResponse communityDetailResponse = communityService.getCommunity(communityId);
-//        return ResponseEntity.ok(communityDetailResponse);
-//    }
+    //게시글 단건 조회
+    @GetMapping("/{communityId}")
+    public ResponseEntity<CommunityDetailResponse> getCommunity(@PathVariable Long communityId){
+        CommunityDetailResponse communityDetailResponse = communityService.getCommunity(communityId);
+        return ResponseEntity.ok(communityDetailResponse);
+    }
 }
