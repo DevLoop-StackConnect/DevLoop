@@ -1,6 +1,8 @@
 package com.devloop.community.service;
 
 import com.devloop.common.AuthUser;
+import com.devloop.common.apipayload.status.ErrorStatus;
+import com.devloop.common.exception.ApiException;
 import com.devloop.community.dto.request.CommunitySaveRequest;
 import com.devloop.community.dto.request.CommunityUpdateRequest;
 import com.devloop.community.dto.response.CommunityDetailResponse;
@@ -37,7 +39,7 @@ public class CommunityService {
         System.out.println(communitySaveRequest.getStatus());
         //사용자 조회
         User user = userRepository.findById(authUser.getId())
-                .orElseThrow(()->new IllegalArgumentException("사용자 찾을수업음"));
+                .orElseThrow(()->new ApiException(ErrorStatus._NOT_FOUND_USER));
         //게시글 Community객체 생성
         Community community = Community.from(communitySaveRequest,user);
         //게시글 저장
@@ -79,7 +81,7 @@ public class CommunityService {
     public CommunityDetailResponse getCommunity(Long communityId) {
         //게시글 조회
         Community community = communityRepository.findById(communityId)
-                .orElseThrow(()->new IllegalArgumentException("해당 게시글을 찾을 수 없습니다."));
+                .orElseThrow(()->new ApiException(ErrorStatus._NOT_FOUND_COMMUNITY));
         //댓글 조회
         List<CommunityComment> comments = communityCommentRepository.findByCommunityId(communityId);
 
@@ -111,7 +113,7 @@ public class CommunityService {
     public CommunityDetailResponse updateCommunity(Long communityId, CommunityUpdateRequest communityUpdateRequest) {
         //게시글 조회
         Community community = communityRepository.findById(communityId)
-                .orElseThrow(()->new IllegalArgumentException("해당 게시글을 찾을 수 없습니다."));
+                .orElseThrow(()->new ApiException(ErrorStatus._NOT_FOUND_COMMUNITY));
 
         //수정 요청에서 값이 있는 필드만 업데이트시키기
         community.updateCommunity(
@@ -140,7 +142,7 @@ public class CommunityService {
     public void deleteCommunity(Long communityId) {
         //게시글 존재하는지 확인
         Community community = communityRepository.findById(communityId)
-                .orElseThrow(()->new IllegalArgumentException("해당 게시글을 찾을 수 없습니다."));
+                .orElseThrow(()->new ApiException(ErrorStatus._NOT_FOUND_COMMUNITY));
         //삭제
         communityRepository.delete(community);
     }
