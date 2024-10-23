@@ -6,8 +6,10 @@ import com.devloop.auth.request.SignoutRequest;
 import com.devloop.auth.request.SignupRequest;
 import com.devloop.auth.response.SignupResponse;
 import com.devloop.auth.service.AuthService;
+import com.devloop.auth.service.KakaoService;
 import com.devloop.common.AuthUser;
 import com.devloop.common.apipayload.ApiResponse;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -21,14 +23,17 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
 
     private final AuthService authService;
+    private final KakaoService kakaoService;
 
     @PostMapping("/v1/auth/signup")
     public ApiResponse<SignupResponse> signup(@Valid @RequestBody SignupRequest signupRequest) {
         return ApiResponse.ok(authService.createUser(signupRequest));
     }
+
+    //토큰 발급 방식에서는 ResponseEntity가 HTTP 표준이랑 보안적 측면으로 더 유용함
     @PostMapping("/v1/auth/login")
     public ResponseEntity<Object> login(@Valid @RequestBody LoginRequest loginRequest) {
-        return ResponseEntity.status(HttpStatus.OK).header("Authorization",authService.login(loginRequest)).build();
+        return ResponseEntity.status(HttpStatus.OK).header("Authorization", authService.login(loginRequest)).build();
     }
 
     @PutMapping("/v1/auth/signout")
@@ -37,4 +42,13 @@ public class AuthController {
         authService.deleteUser(id, signoutRequest);
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/v1/auth/kakao/login")
+    public ResponseEntity<Object> kakaoLogin(@RequestParam String code) throws JsonProcessingException {
+        String token = kakaoService.kakaoLogin(code);
+        return ResponseEntity.status(HttpStatus.OK)
+                .header("Authorization", token)
+                .build();
+    }
 }
+
