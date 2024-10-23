@@ -1,6 +1,7 @@
 package com.devloop.community.controller;
 
 import com.devloop.common.AuthUser;
+import com.devloop.common.apipayload.ApiResponse;
 import com.devloop.community.dto.request.CommunitySaveRequest;
 import com.devloop.community.dto.request.CommunityUpdateRequest;
 import com.devloop.community.dto.response.CommunityDetailResponse;
@@ -24,37 +25,37 @@ public class CommunityController {
 
     //게시글 작성
     @PostMapping("/v1/communities")
-    public ResponseEntity<CommunitySaveResponse> createCommunity(@AuthenticationPrincipal AuthUser authUser, @Valid @RequestBody CommunitySaveRequest communitySaveRequest){
+    public ApiResponse<CommunitySaveResponse> createCommunity(@AuthenticationPrincipal AuthUser authUser, @Valid @RequestBody CommunitySaveRequest communitySaveRequest){
         CommunitySaveResponse communitySaveResponse = communityService.createCommunity(authUser,communitySaveRequest);
-        return ResponseEntity.ok(communitySaveResponse);
+        return ApiResponse.ok(communitySaveResponse);
     }
 
     //게시글 다건 조회
     @GetMapping("/v1/communities")
-    public ResponseEntity<Page<CommunitySimpleResponse>> getCommunities(@RequestParam(defaultValue = "0")int page,@RequestParam(defaultValue = "10")int size){
+    public ApiResponse<Page<CommunitySimpleResponse>> getCommunities(@RequestParam(defaultValue = "0")int page,@RequestParam(defaultValue = "10")int size){
         Pageable pageable = PageRequest.of(page, size);
         Page<CommunitySimpleResponse> communitySimpleResponse = communityService.getCommunities(pageable);
-        return ResponseEntity.ok(communitySimpleResponse);
+        return ApiResponse.ok(communitySimpleResponse);
     }
 
     //게시글 단건 조회
     @GetMapping("/v1/communities/{communityId}")
-    public ResponseEntity<CommunityDetailResponse> getCommunity(@PathVariable Long communityId){
+    public ApiResponse<CommunityDetailResponse> getCommunity(@PathVariable Long communityId){
         CommunityDetailResponse communityDetailResponse = communityService.getCommunity(communityId);
-        return ResponseEntity.ok(communityDetailResponse);
+        return ApiResponse.ok(communityDetailResponse);
     }
 
     //게시글 수정
     @PatchMapping("/v1/communities/{communityId}")
-    public  ResponseEntity<CommunityDetailResponse> updateCommunity(@PathVariable Long communityId, @Valid @RequestBody CommunityUpdateRequest communityUpdateRequest){
+    public  ApiResponse<CommunityDetailResponse> updateCommunity(@PathVariable Long communityId, @Valid @RequestBody CommunityUpdateRequest communityUpdateRequest){
         CommunityDetailResponse communityDetailResponse = communityService.updateCommunity(communityId,communityUpdateRequest);
-        return ResponseEntity.ok(communityDetailResponse);
+        return ApiResponse.ok(communityDetailResponse);
     }
 
     //게시글 삭제
     @DeleteMapping("/v1/communities/{communityId}")
-    public ResponseEntity<Void> deleteCommunity(@PathVariable Long communityId){
+    public ApiResponse<Void> deleteCommunity(@PathVariable Long communityId){
         communityService.deleteCommunity(communityId);
-        return ResponseEntity.noContent().build();
+        return ApiResponse.ok(null);
     }
 }
