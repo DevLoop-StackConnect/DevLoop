@@ -22,8 +22,8 @@ import org.springframework.web.multipart.MultipartFile;
 @Transactional(readOnly = true)
 public class ProjectWithTutorService {
 
-    private ProjectWithTutorRepository projectWithTutorRepository;
-    private UserRepository userRepository;
+    private final ProjectWithTutorRepository projectWithTutorRepository;
+    private final UserRepository userRepository;
 
     // 튜터랑 함께하는 협업 프로젝트 게시글 생성
     @Transactional

@@ -7,6 +7,7 @@ import com.devloop.pwt.request.ProjectWithTutorSaveRequest;
 import com.devloop.pwt.service.ProjectWithTutorService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -22,11 +23,11 @@ public class ProjectWithTutorController {
 
     // 튜터랑 함께하는 협업 프로젝트 게시글 생성
     @PostMapping("/v1/pwts")
-    public ApiResponse<String> saveProjectWithTutor(
+    public ResponseEntity<String> saveProjectWithTutor(
             @AuthenticationPrincipal AuthUser authUser,
             @RequestParam("file") MultipartFile file,
             @Valid @ModelAttribute ProjectWithTutorSaveRequest projectWithTutorSaveRequest
     ) {
-        return ApiResponse.ok(projectWithTutorService.saveProjectWithTutor(authUser, file, projectWithTutorSaveRequest));
+        return ResponseEntity.ok(projectWithTutorService.saveProjectWithTutor(authUser, file, projectWithTutorSaveRequest));
     }
 }
