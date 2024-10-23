@@ -4,6 +4,7 @@ import com.devloop.common.Timestamped;
 import com.devloop.tutor.enums.TutorRequestStatus;
 import com.devloop.user.entity.User;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -17,21 +18,26 @@ public class TutorRequest extends Timestamped {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long tutorRequestId;
 
-    @Column(nullable = false, length = 20)
+    @NotNull
+    @Column(length = 20)
     private String name;
 
-    @Column(nullable = false, length = 255)
+    @NotNull
+    @Column(length = 255)
     private String subUrl;
 
-    @Column(nullable = false, length = 20)
+    @NotNull
+    @Column(length = 20)
     private String accountNum;
 
+    @NotNull
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 20)
+    @Column(length = 20)
     private TutorRequestStatus status;
 
+    @NotNull
     @OneToOne
-    @JoinColumn(name="user_id", nullable = false)  // 단방향 참조
+    @JoinColumn(name="user_id")  // 단방향 참조
     private User user;
 
     private TutorRequest(String name, String subUrl, String accountNum, TutorRequestStatus status, User userId) {
