@@ -5,6 +5,7 @@ import com.devloop.common.apipayload.ApiResponse;
 import com.devloop.tutor.entity.TutorRequest;
 import com.devloop.tutor.request.TutorRequestSaveRequest;
 import com.devloop.tutor.service.TutorService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,7 +24,7 @@ public class TutorController {
     @PostMapping("/v1/users/tutor-request")
     public ApiResponse<String> saveTutorRequest(
             @AuthenticationPrincipal AuthUser authUser,
-            @RequestBody TutorRequestSaveRequest tutorRequest
+            @Valid @RequestBody TutorRequestSaveRequest tutorRequest
     ) {
         return ApiResponse.ok(tutorService.saveTutorRequest(authUser, tutorRequest));
     }
