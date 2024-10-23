@@ -1,15 +1,12 @@
 package com.devloop.party.response;
 
-
 import com.devloop.party.entity.Party;
-import com.devloop.party.request.SavePartyRequest;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
 public class SavePartyResponse {
-
     private Long partyId;
     private String title;
     private String contents;

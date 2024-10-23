@@ -1,6 +1,5 @@
 package com.devloop.party.request;
 
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 

@@ -18,6 +18,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @Transactional
@@ -28,13 +29,15 @@ public class PartyService {
     private final UserRepository userRepository;
 
     //스터디 파티 모집 게시글 등록
-    public SavePartyResponse saveParty(AuthUser authUser,SavePartyRequest savePartyRequest) {
+    public SavePartyResponse saveParty(AuthUser authUser, MultipartFile file,SavePartyRequest savePartyRequest) {
         //유저가 존재하는 지 확인
         User user=userRepository.findById(authUser.getId()).orElseThrow(()->
                 new ApiException(ErrorStatus._NOT_FOUND_USER));
 
+        //새로운 파티 생성
         Party newParty=Party.from(savePartyRequest, user);
         partyRepository.save(newParty);
+
         return SavePartyResponse.from(newParty);
     }
 
@@ -78,7 +81,6 @@ public class PartyService {
         });
     }
 
-
     //스터디 파티 모집 게시글 삭제
     public void deleteParty(AuthUser authUser, Long partyId) {
         //게시글이 존재하는 지 확인
@@ -91,7 +93,4 @@ public class PartyService {
         }
         partyRepository.delete(party);
     }
-
-
-
 }
