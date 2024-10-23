@@ -1,3 +1,4 @@
+
 package com.devloop.user.entity;
 
 import com.devloop.common.Timestamped;
@@ -22,7 +23,7 @@ public class User extends Timestamped {
     @Enumerated(EnumType.STRING)
     private LoginType loginType = LoginType.LOCAL;
 
-    private Long attachmentId = 1L;
+    private Long attachmentId;
 
     @NotNull
     private String username;
@@ -34,7 +35,6 @@ public class User extends Timestamped {
     private String password;
 
     @Enumerated(EnumType.STRING)
-    @NotNull
     private UserStatus status = UserStatus.ACTIVE;
 
     @Enumerated(EnumType.STRING)
