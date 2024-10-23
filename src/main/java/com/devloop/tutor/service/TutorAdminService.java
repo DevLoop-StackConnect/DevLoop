@@ -1,10 +1,9 @@
 package com.devloop.tutor.service;
 
-import com.devloop.common.AuthUser;
 import com.devloop.common.apipayload.status.ErrorStatus;
 import com.devloop.common.exception.ApiException;
 import com.devloop.tutor.entity.TutorRequest;
-import com.devloop.tutor.enums.TutorRequestStatus;
+import com.devloop.common.enums.Approval;
 import com.devloop.tutor.repository.TutorRequestRepository;
 import com.devloop.tutor.response.TutorRequestResponse;
 import com.devloop.user.entity.User;
@@ -30,7 +29,7 @@ public class TutorAdminService {
         // 페이징 지정
         Pageable pageable = PageRequest.of(page - 1, size);
 
-        Page<TutorRequest> requests = requestRepository.findAllByStatus(pageable, TutorRequestStatus.WAITE)
+        Page<TutorRequest> requests = requestRepository.findAllByStatus(pageable, Approval.WAITE)
                 .filter(r -> !r.isEmpty())
                 .orElseThrow(() -> new ApiException(ErrorStatus._TUTOR_REQUEST_NOT_EXIST));
 
@@ -51,7 +50,7 @@ public class TutorAdminService {
         // 사용자 권한 변경
         user.changeUserRoleToTutor(UserRole.ROLE_TUTOR);
         // 튜터 신청 내역에서 승인여부 승인으로 변경
-        tutorRequest.changeStatus(TutorRequestStatus.APPROVED);
+        tutorRequest.changeStatus(Approval.APPROVED);
 
         return String.format("%s 님의 튜터 신청이 승인되었습니다.", user.getUsername());
     }
