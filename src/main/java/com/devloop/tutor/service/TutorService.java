@@ -32,7 +32,7 @@ public class TutorService {
         User requestUser = userRepository.findById(authUser.getId()).orElseThrow(()-> new ApiException(ErrorStatus._NOT_FOUND_USER));
 
         // 요청한 사용자의 권한이 USER인지 확인
-        if(requestUser.getUserRole().equals(UserRole.ROLE_USER)){
+        if((!requestUser.getUserRole().equals(UserRole.ROLE_USER))){
             throw new ApiException(ErrorStatus._HAS_NOT_ACCESS_PERMISSION);
         }
 
