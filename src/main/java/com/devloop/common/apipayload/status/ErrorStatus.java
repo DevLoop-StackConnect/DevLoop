@@ -58,6 +58,11 @@ public enum ErrorStatus implements BaseCode {
     //Auth
     _NOT_AUTHENTICATIONPRINCIPAL_USER(HttpStatus.UNAUTHORIZED, "401", "인증되지 않은 유저입니다."),
 
+
+
+    //Party
+    _NOT_FOUND_PARTY(HttpStatus.NOT_FOUND, "404", "존재하지 않는 스터디 파티입니다"),
+
     //Community
     _NOT_FOUND_COMMUNITY(HttpStatus.NOT_FOUND, "404", "존재하지 않는 게시글입니다");
 
