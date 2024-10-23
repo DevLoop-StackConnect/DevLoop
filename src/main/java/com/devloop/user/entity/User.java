@@ -39,6 +39,7 @@ public class User extends Timestamped {
     private String password;
 
     @Enumerated(EnumType.STRING)
+    @NotNull
     private UserStatus status = UserStatus.ACTIVE;
 
     @Enumerated(EnumType.STRING)
