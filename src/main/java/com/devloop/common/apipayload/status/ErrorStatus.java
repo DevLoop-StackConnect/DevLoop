@@ -53,6 +53,9 @@ public enum ErrorStatus implements BaseCode {
     _TUTOR_REQUEST_ALREADY_EXIST(HttpStatus.CONFLICT, "409", "이미 튜터 요청 신청 내역이 존재합니다."),
     _TUTOR_REQUEST_NOT_EXIST(HttpStatus.NOT_FOUND, "404", "튜터 요청 내역이 존재하지 않습니다."),
 
+    // Project With Tutor
+
+
     //Auth
     _NOT_AUTHENTICATIONPRINCIPAL_USER(HttpStatus.UNAUTHORIZED, "401", "인증되지 않은 유저입니다."),
 

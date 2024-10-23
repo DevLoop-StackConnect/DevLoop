@@ -7,7 +7,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum ProjectWithTutorStatus {
     IN_PROGRESS("모집중"),
-    COMPLETED("모집완료");
+    COMPLETED("모집종료");
 
     private final String status;
 }
