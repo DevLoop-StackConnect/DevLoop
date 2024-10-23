@@ -41,8 +41,10 @@ public class User extends Timestamped {
     @NotNull
     private UserRole userRole;
 
+    @Column(nullable = true)
     private Long kakaoId;
 
+    @Column(nullable = true)
     private String loginId;
 
     private User(String username, String email, String password, UserRole userRole) {

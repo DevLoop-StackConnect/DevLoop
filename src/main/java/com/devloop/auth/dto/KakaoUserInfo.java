@@ -10,9 +10,13 @@ public class KakaoUserInfo {
     private String nickname;
     private String email;
 
-    public KakaoUserInfo(Long id, String nickname, String email) {
+    private KakaoUserInfo(Long id, String nickname, String email) {
         this.id = id;
         this.nickname = nickname;
         this.email = email;
+    }
+
+    public static KakaoUserInfo from(Long id, String nickname, String email) {
+        return new KakaoUserInfo(id, nickname, email);
     }
 }

@@ -9,7 +9,6 @@ import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.UnsupportedJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.NonNull;
@@ -37,27 +36,9 @@ public class JwtSecurityFilter extends OncePerRequestFilter {
     ) throws ServletException, IOException {
         String jwt = null;
 
-        /**
-         *  헤더에서 토큰 확인 로직
-         */
         String authorizationHeader = httpRequest.getHeader("Authorization");
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
             jwt = jwtUtil.substringToken(authorizationHeader);
-        }
-
-        /**
-         * 헤더에 토근이 없을 때 쿠기에서 토큰을 찾는 로직
-         */
-        if (jwt == null) {
-            Cookie[] cookies = httpRequest.getCookies();
-            if (cookies != null) {
-                for (Cookie cookie : cookies) {
-                    if (JwtUtil.AUTHORIZATION_HEADER.equals(cookie.getName())) {
-                        jwt = cookie.getValue();
-                        break;
-                    }
-                }
-            }
         }
 
         if (jwt != null) {
