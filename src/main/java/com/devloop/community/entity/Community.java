@@ -25,7 +25,7 @@ public class Community extends Timestamped {
     private Long id;
 
     @NotNull
-    @Column(name="title")
+    @Column(name="title",length = 100)
     private String title;
 
     @NotNull
