@@ -16,12 +16,13 @@ public class CommunitySaveResponse {
     private final LocalDateTime createdAt;
     private final LocalDateTime modifiedAt;
 
-    public CommunitySaveResponse(Long communityId, String title, String content, ResolveStatus status, Category category,LocalDateTime createdAt, LocalDateTime modifiedAt) {
+
+    public CommunitySaveResponse(Long communityId, String title, String content, ResolveStatus status, Category category, LocalDateTime createdAt, LocalDateTime modifiedAt) {
         this.communityId = communityId;
         this.title = title;
         this.content = content;
         this.status = status;
-        this.category=Category;
+        this.category = category;
         this.createdAt = createdAt;
         this.modifiedAt = modifiedAt;
     }
