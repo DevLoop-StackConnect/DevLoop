@@ -5,15 +5,12 @@ import lombok.RequiredArgsConstructor;
 
 import java.util.Arrays;
 
-
 @Getter
 @RequiredArgsConstructor
 public enum UserRole {
-
     ROLE_USER(authority.USER),
     ROLE_TUTOR(authority.TUTOR),
     ROLE_ADMIN(authority.ADMIN);
-
     private final String role;
 
     public static UserRole of(String role) {
