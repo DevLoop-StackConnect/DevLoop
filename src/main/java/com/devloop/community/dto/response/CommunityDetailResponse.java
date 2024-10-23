@@ -1,41 +1,42 @@
 package com.devloop.community.dto.response;
 
-import com.devloop.common.Timestamped;
 import com.devloop.common.enums.Category;
 import com.devloop.community.entity.Community;
 import com.devloop.community.entity.ResolveStatus;
-import com.devloop.communitycomment.dto.CommentResponse;
 import lombok.Getter;
 
-import java.util.List;
+import java.time.LocalDateTime;
 
 @Getter
-public class CommunityDetailResponse extends Timestamped {
+public class CommunityDetailResponse {
     private final Long communityId;
     private final String title;
     private final String content;
     private final ResolveStatus status;
     private final Category category;
-    private final List<CommentResponse> comments;
+    private final LocalDateTime createdAt;
+    private final LocalDateTime modifiedAt;
 
-    private CommunityDetailResponse(Long communityId, String title, String content, ResolveStatus status, Category category, List<CommentResponse> comments) {
+    private CommunityDetailResponse(Long communityId, String title, String content, ResolveStatus status, Category category, LocalDateTime createdAt, LocalDateTime modifiedAt) {
         this.communityId = communityId;
         this.title = title;
         this.content = content;
         this.status = status;
         this.category = category;
-        this.comments = comments;
+        this.createdAt=createdAt;
+        this.modifiedAt=modifiedAt;
     }
 
     //코드컨벤션에 맞춰서 정적 팩토리 메서드 추가
-    public static CommunityDetailResponse from(Community community, List<CommentResponse> comments) {
+    public static CommunityDetailResponse from(Community community) {
         return new CommunityDetailResponse(
                 community.getId(),
                 community.getTitle(),
                 community.getContent(),
                 community.getResolveStatus(),
                 community.getCategory(),
-                comments
+                community.getCreatedAt(),
+                community.getModifiedAt()
         );
     }
 }
