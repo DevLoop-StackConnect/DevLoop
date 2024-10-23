@@ -22,7 +22,7 @@ public class User extends Timestamped {
     @Enumerated(EnumType.STRING)
     private LoginType loginType = LoginType.LOCAL;
 
-    private Long attachmentId;
+    private Long attachmentId = 1L;
 
     @NotNull
     private String username;
@@ -49,7 +49,6 @@ public class User extends Timestamped {
     private String loginId;
 
     private User(String username, String email, String password, UserRole userRole) {
-        this.attachmentId = 1L;
         this.username = username;
         this.email = email;
         this.password = password;
