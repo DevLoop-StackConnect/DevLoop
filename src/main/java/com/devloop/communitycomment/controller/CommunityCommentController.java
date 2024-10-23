@@ -7,6 +7,7 @@ import com.devloop.communitycomment.dto.request.CommentUpdateRequest;
 import com.devloop.communitycomment.dto.response.CommentSaveResponse;
 import com.devloop.communitycomment.dto.response.CommentUpdateResponse;
 import com.devloop.communitycomment.service.CommunityCommentService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -22,14 +23,14 @@ public class CommunityCommentController {
 
     //댓글 작성
     @PostMapping("/v1/communities/{communityId}/comments")
-    public ResponseEntity<CommentSaveResponse> createComment(@AuthenticationPrincipal AuthUser authUser, @RequestBody CommentSaveRequest commentSaveRequest, @PathVariable Long communityId){
+    public ResponseEntity<CommentSaveResponse> createComment(@AuthenticationPrincipal AuthUser authUser, @Valid @RequestBody CommentSaveRequest commentSaveRequest, @PathVariable Long communityId){
        CommentSaveResponse commentSaveResponse = communityCommentService.creatComment(authUser,commentSaveRequest,communityId);
        return ResponseEntity.ok(commentSaveResponse);
     }
 
     //댓글 수정
     @PatchMapping("/v1/communities/{communityId}/comments/{commentId}")
-    public ResponseEntity<CommentUpdateResponse> updateComment(@AuthenticationPrincipal AuthUser authUser, @RequestBody CommentUpdateRequest commentUpdateRequest, @PathVariable Long communityId, @PathVariable Long commentId){
+    public ResponseEntity<CommentUpdateResponse> updateComment(@AuthenticationPrincipal AuthUser authUser, @Valid @RequestBody CommentUpdateRequest commentUpdateRequest, @PathVariable Long communityId, @PathVariable Long commentId){
         CommentUpdateResponse commentUpdateResponse = communityCommentService.updateComment(authUser,commentUpdateRequest,communityId,commentId);
         return  ResponseEntity.ok(commentUpdateResponse);
     }
