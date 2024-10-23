@@ -3,11 +3,13 @@ package com.devloop.pwt.request;
 import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
 
 @Getter
+@AllArgsConstructor
 public class ProjectWithTutorSaveRequest {
 
     @NotBlank(message = "제목을 입력해 주세요.")
