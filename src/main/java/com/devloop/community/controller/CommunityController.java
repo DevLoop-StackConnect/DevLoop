@@ -2,15 +2,17 @@ package com.devloop.community.controller;
 
 import com.devloop.common.AuthUser;
 import com.devloop.community.dto.request.CommunitySaveRequest;
+import com.devloop.community.dto.response.CommunityDetailResponse;
 import com.devloop.community.dto.response.CommunitySaveResponse;
+import com.devloop.community.dto.response.CommunitySimpleResponse;
 import com.devloop.community.service.CommunityService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -25,4 +27,18 @@ public class CommunityController {
         return ResponseEntity.ok(communitySaveResponse);
     }
 
+    //게시글 다건 조회
+    @GetMapping("/v1")
+    public ResponseEntity<Page<CommunitySimpleResponse>> getCommunities(@RequestParam(defaultValue = "0")int page,@RequestParam(defaultValue = "10")int size){
+        Pageable pageable = PageRequest.of(page, size);
+        Page<CommunitySimpleResponse> communitySimpleResponse = communityService.getCommunities(pageable);
+        return ResponseEntity.ok(communitySimpleResponse);
+    }
+
+//    //게시글 단건 조회
+//    @GetMapping("/v1/{communityId}")
+//    public ResponseEntity<CommunityDetailResponse> getCommunity(@PathVariable Long communityId){
+//        CommunityDetailResponse communityDetailResponse = communityService.getCommunity(communityId);
+//        return ResponseEntity.ok(communityDetailResponse);
+//    }
 }
