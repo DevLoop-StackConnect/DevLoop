@@ -15,6 +15,9 @@ import com.devloop.communitycomment.repository.CommunityCommentRepository;
 import com.devloop.user.entity.User;
 import com.devloop.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -86,18 +89,17 @@ public class CommunityCommentService {
         communityCommentRepository.delete(communityComment);
     }
 
-    //댓글 조회
-    public List<CommentResponse> getComments(Long communityId) {
-        //게시글ID로 해당 게시글의 댓글 조회
-        List<CommunityComment> comments = communityCommentRepository.findByCommunityId(communityId);
+    //댓글 다건 조회
+    public Page<CommentResponse> getComments(Long communityId, Pageable pageable) {
+        //페이지네이션된 댓글 조회
+        Page<CommunityComment> comments = communityCommentRepository.findByCommunityId(communityId,pageable);
 
         List<CommentResponse> commentResponses = new ArrayList<>();
-        //응답 dto로 바꿔주고 반환
-        for (CommunityComment comment : comments) {
+        //응답반환
+        for(CommunityComment comment : comments.getContent()){
             CommentResponse commentResponse = CommentResponse.from(comment);
             commentResponses.add(commentResponse);
         }
-        return commentResponses;
-
+        return new PageImpl<>(commentResponses,comments.getPageable(),comments.getTotalElements());
     }
 }

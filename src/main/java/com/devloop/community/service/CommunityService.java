@@ -67,15 +67,9 @@ public class CommunityService {
         //게시글 조회
         Community community = communityRepository.findById(communityId)
                 .orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_COMMUNITY));
-        //댓글 조회
-        List<CommunityComment> comments = communityCommentRepository.findByCommunityId(communityId);
 
-        List<CommentResponse> commentResponses = new ArrayList<>();
-        for (CommunityComment comment : comments) {
-            commentResponses.add(CommentResponse.from(comment));
-        }
         //게시글,댓글 정보 응답반환
-        return CommunityDetailResponse.from(community, commentResponses);
+        return CommunityDetailResponse.from(community);
     }
 
     //게시글 수정
@@ -95,7 +89,7 @@ public class CommunityService {
         //수정된 게시글 저장
         communityRepository.save(community);
         //응답반환
-        return CommunityDetailResponse.from(community, new ArrayList<>());
+        return CommunityDetailResponse.from(community);
     }
 
     //게시글 삭제
