@@ -5,6 +5,7 @@ import com.devloop.user.enums.LoginType;
 import com.devloop.user.enums.UserRole;
 import com.devloop.user.enums.UserStatus;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -17,26 +18,34 @@ public class User extends Timestamped {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotNull
     private Long loginId;
 
     @Enumerated(EnumType.STRING)
+    @NotNull
     private LoginType loginType = LoginType.SOCIAL;
 
+    @NotNull
     private Long attachmentId;
 
+    @NotNull
     private String username;
 
+    @NotNull
     private String email;
 
+    @NotNull
     private String password;
 
     @Enumerated(EnumType.STRING)
     private UserStatus status = UserStatus.ACTIVE;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false,length = 50)
+    @Column(length = 50)
+    @NotNull
     private UserRole userRole;
 
+    @NotNull
     private Long kakaoid;
 
     private User(String username, String email, String password, UserRole userRole) {
