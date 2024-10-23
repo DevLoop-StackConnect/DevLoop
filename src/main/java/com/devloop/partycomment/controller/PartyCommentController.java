@@ -10,10 +10,10 @@ import com.devloop.partycomment.response.UpdatePartyCommentResponse;
 import com.devloop.partycomment.service.PartyCommentService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -44,10 +44,12 @@ public class PartyCommentController {
 
     //스터디 파티 게시글 댓글 다건 조회
     @GetMapping("/v1/search/parties/{partyId}/comments")
-    public ApiResponse<List<GetPartyCommentListResponse>> getPartyCommentList(
-            @PathVariable("partyId") Long partyId
+    public ApiResponse<Page<GetPartyCommentListResponse>> getPartyCommentList(
+            @PathVariable("partyId") Long partyId,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size
     ){
-        return ApiResponse.ok(partyCommentService.getPartyCommentList(partyId));
+        return ApiResponse.ok(partyCommentService.getPartyCommentList(partyId,page,size));
     }
 
     //스터디 파티 게시글 댓글 삭제

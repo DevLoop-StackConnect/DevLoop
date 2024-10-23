@@ -24,7 +24,7 @@ public class Party extends Timestamped {
     private String title;
 
     @NotNull
-    @Column(length = 255)
+    @Column(columnDefinition = "TEXT")
     private String contents;
 
     @NotNull

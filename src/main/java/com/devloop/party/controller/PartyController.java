@@ -9,6 +9,7 @@ import com.devloop.party.response.GetPartyListResponse;
 import com.devloop.party.response.SavePartyResponse;
 import com.devloop.party.response.UpdatePartyResponse;
 import com.devloop.party.service.PartyService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -29,7 +30,7 @@ public class PartyController {
     public ApiResponse<SavePartyResponse> saveParty(
             @AuthenticationPrincipal AuthUser authUser,
             @RequestParam("file") MultipartFile file,
-            @ModelAttribute SavePartyRequest savePartyRequest
+            @Valid @ModelAttribute SavePartyRequest savePartyRequest
     ){
         return ApiResponse.ok(partyService.saveParty(authUser,file,savePartyRequest));
     }
@@ -39,12 +40,12 @@ public class PartyController {
     public ApiResponse<UpdatePartyResponse> updateParty(
             @AuthenticationPrincipal AuthUser authUser,
             @PathVariable Long partyId,
-            @ModelAttribute UpdatePartyRequest updatePartyRequest
+            @Valid @ModelAttribute UpdatePartyRequest updatePartyRequest
     ){
         return ApiResponse.ok(partyService.updateParty(authUser,partyId,updatePartyRequest));
     }
 
-    //스터디 파티 모집 전체 조회
+    //스터디 파티 모집 다건 조회
     @GetMapping("/v1/search/parties")
     public ApiResponse<Page<GetPartyListResponse>> getPartyList(
         @RequestParam(required = false) String title,

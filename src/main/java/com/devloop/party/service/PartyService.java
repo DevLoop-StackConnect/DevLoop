@@ -22,8 +22,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 @Service
-@Transactional
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class PartyService {
 
     private final PartyRepository partyRepository;
@@ -31,6 +31,7 @@ public class PartyService {
     private final S3Util s3Util;
 
     //스터디 파티 모집 게시글 등록
+    @Transactional
     public SavePartyResponse saveParty(AuthUser authUser, MultipartFile file,SavePartyRequest savePartyRequest) {
         //유저가 존재하는 지 확인
         User user=userRepository.findById(authUser.getId()).orElseThrow(()->
@@ -47,6 +48,7 @@ public class PartyService {
     }
 
     //스터디 파티 모집 게시글 수정
+    @Transactional
     public UpdatePartyResponse updateParty(AuthUser authUser, Long partyId, UpdatePartyRequest updatePartyRequest) {
         //게시글이 존재하는 지 확인
         Party party=partyRepository.findById(partyId).orElseThrow(()->
@@ -61,7 +63,6 @@ public class PartyService {
     }
 
     //스터디 파티 모집 게시글 단건 조회
-    @Transactional(readOnly = true)
     public GetPartyDetailResponse getParty(Long partyId) {
         //게시글이 존재하는 지 확인
         Party party=partyRepository.findById(partyId).orElseThrow(()->
@@ -70,7 +71,6 @@ public class PartyService {
     }
 
     //스터디 파티 모집 게시글 다건 조회
-    @Transactional(readOnly = true)
     public Page<GetPartyListResponse> getPartyList(String title,int page, int size) {
         PageRequest pageable= PageRequest.of(page-1,size);
 
@@ -87,6 +87,7 @@ public class PartyService {
     }
 
     //스터디 파티 모집 게시글 삭제
+    @Transactional
     public void deleteParty(AuthUser authUser, Long partyId) {
         //게시글이 존재하는 지 확인
         Party party=partyRepository.findById(partyId).orElseThrow(()->
