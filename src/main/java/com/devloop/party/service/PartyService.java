@@ -3,6 +3,7 @@ package com.devloop.party.service;
 import com.devloop.common.AuthUser;
 import com.devloop.common.apipayload.status.ErrorStatus;
 import com.devloop.common.exception.ApiException;
+import com.devloop.common.utils.S3Util;
 import com.devloop.party.entity.Party;
 import com.devloop.party.repository.PartyRepository;
 import com.devloop.party.request.SavePartyRequest;
@@ -27,6 +28,7 @@ public class PartyService {
 
     private final PartyRepository partyRepository;
     private final UserRepository userRepository;
+    private final S3Util s3Util;
 
     //스터디 파티 모집 게시글 등록
     public SavePartyResponse saveParty(AuthUser authUser, MultipartFile file,SavePartyRequest savePartyRequest) {
@@ -37,6 +39,9 @@ public class PartyService {
         //새로운 파티 생성
         Party newParty=Party.from(savePartyRequest, user);
         partyRepository.save(newParty);
+
+//        //파일 업로드
+//        s3Util.uploadFile(file);
 
         return SavePartyResponse.from(newParty);
     }
