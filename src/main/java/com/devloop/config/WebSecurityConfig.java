@@ -36,7 +36,12 @@ public class WebSecurityConfig {
                 .httpBasic(httpBasic -> httpBasic.disable())
                 .logout(logout -> logout.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/v1/auth/**").permitAll()
+                        .requestMatchers(
+                                "/api/v1/auth/signup",
+                                "/api/v1/auth/login",
+                                "/api/v1/auth/kakao/login",
+                                "/api/v1/auth/kakao/callback")
+                        .permitAll()
                         .anyRequest().authenticated()
                 )
                 .build();
