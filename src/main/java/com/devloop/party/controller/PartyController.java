@@ -1,6 +1,5 @@
 package com.devloop.party.controller;
 
-
 import com.devloop.common.AuthUser;
 import com.devloop.common.apipayload.ApiResponse;
 import com.devloop.party.request.SavePartyRequest;
@@ -16,11 +15,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
-@RequestMapping("/api")
 @RequiredArgsConstructor
 @Slf4j
+@RequestMapping("/api")
 public class PartyController {
     private final PartyService partyService;
 
@@ -28,9 +28,10 @@ public class PartyController {
     @PostMapping("/v1/parties")
     public ApiResponse<SavePartyResponse> saveParty(
             @AuthenticationPrincipal AuthUser authUser,
+            @RequestParam("file") MultipartFile file,
             @ModelAttribute SavePartyRequest savePartyRequest
     ){
-        return ApiResponse.ok(partyService.saveParty(authUser,savePartyRequest));
+        return ApiResponse.ok(partyService.saveParty(authUser,file,savePartyRequest));
     }
 
     //스터디 파티 게시글 수정
@@ -44,7 +45,7 @@ public class PartyController {
     }
 
     //스터디 파티 모집 전체 조회
-    @GetMapping("/v1/auth/parties")
+    @GetMapping("/v1/search/parties")
     public ApiResponse<Page<GetPartyListResponse>> getPartyList(
         @RequestParam(required = false) String title,
         @RequestParam(defaultValue = "1") int page,
@@ -54,13 +55,12 @@ public class PartyController {
     }
 
     //스터디 파티 모집 게시글 단건 조회
-    @GetMapping("/v1/auth/parties/{partyId}")
+    @GetMapping("/v1/search/parties/{partyId}")
     public ApiResponse<GetPartyDetailResponse> getParty(
             @PathVariable Long partyId
     ){
         return ApiResponse.ok(partyService.getParty(partyId));
     }
-
 
     //파티모집 게시글 삭제
     @DeleteMapping("/v1/parties/{partyId}")

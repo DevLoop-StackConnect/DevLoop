@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 public class UpdatePartyResponse {
-
     private Long partyId;
     private String title;
     private String contents;

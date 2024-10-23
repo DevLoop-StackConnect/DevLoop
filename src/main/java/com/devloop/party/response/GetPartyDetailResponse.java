@@ -1,14 +1,12 @@
 package com.devloop.party.response;
 
 import com.devloop.party.entity.Party;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
 public class GetPartyDetailResponse {
-
     private Long partyId;
     private String title;
     private String contents;

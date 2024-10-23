@@ -55,6 +55,8 @@ public enum ErrorStatus implements BaseCode {
     //Party
     _NOT_FOUND_PARTY(HttpStatus.NOT_FOUND, "404", "존재하지 않는 스터디 파티입니다");
 
+
+
     private HttpStatus httpStatus;
     private String statusCode;
     private String message;
