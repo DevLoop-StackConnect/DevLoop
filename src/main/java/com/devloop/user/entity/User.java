@@ -19,14 +19,9 @@ public class User extends Timestamped {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotNull
-    private Long loginId;
-
     @Enumerated(EnumType.STRING)
-    @NotNull
-    private LoginType loginType = LoginType.SOCIAL;
+    private LoginType loginType = LoginType.LOCAL;
 
-    @NotNull
     private Long attachmentId;
 
     @NotNull
@@ -47,17 +42,19 @@ public class User extends Timestamped {
     @NotNull
     private UserRole userRole;
 
-    @NotNull
-    private Long kakaoid;
+    @Column(nullable = true)
+    private Long kakaoId;
+
+    @Column(nullable = true)
+    private String loginId;
 
     private User(String username, String email, String password, UserRole userRole) {
-        this.loginId = 1L;
         this.attachmentId = 1L;
         this.username = username;
         this.email = email;
         this.password = password;
         this.userRole = userRole;
-        this.kakaoid = 1L;
+        this.loginType = LoginType.LOCAL;
     }
 
     public static User from(String username, String email, String password, UserRole userRole) {
@@ -72,5 +69,21 @@ public class User extends Timestamped {
 
     public void changeUserRoleToTutor(UserRole userRole) {
         this.userRole = userRole;
+    }
+
+    public User(String username, String password, String email, UserRole userRole, Long kakaoId) {
+        this.username = username;
+        this.password = password;
+        this.email = email;
+        this.userRole = userRole;
+        this.kakaoId =kakaoId;
+        this.loginType = LoginType.SOCIAL;
+        this.loginId = email;
+        this.attachmentId = 1L;
+    }
+
+    public User kakaoIdUpdate(Long kakaoId) {
+        this.kakaoId = kakaoId;
+        return this;
     }
 }
