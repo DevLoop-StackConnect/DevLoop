@@ -57,8 +57,8 @@ public enum ErrorStatus implements BaseCode {
 
     //Auth
     _NOT_AUTHENTICATIONPRINCIPAL_USER(HttpStatus.UNAUTHORIZED, "401", "인증되지 않은 유저입니다."),
-
-
+    _INVALID_LOGIN_TYPE(HttpStatus.BAD_REQUEST, "400", "로그인 타입이 올바르지 않습니다."),
+    _DUPLICATE_EMAIL(HttpStatus.CONFLICT, "409", "이미 존재하는 이메일입니다."),
 
     //Party
     _NOT_FOUND_PARTY(HttpStatus.NOT_FOUND, "404", "존재하지 않는 스터디 파티입니다"),
