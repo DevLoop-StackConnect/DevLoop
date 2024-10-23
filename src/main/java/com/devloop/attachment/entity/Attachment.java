@@ -2,21 +2,21 @@ package com.devloop.attachment.entity;
 
 import com.devloop.attachment.enums.Domain;
 import com.devloop.attachment.enums.FileFormat;
-import com.devloop.common.Timestamped;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.NoArgsConstructor;
 
-@Entity
 @Getter
-@RequiredArgsConstructor
-@Table
-public class Attachment extends Timestamped {
+@NoArgsConstructor
+@Entity
+@DiscriminatorColumn
+@Inheritance(strategy = InheritanceType.JOINED)
+public abstract class Attachment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
     @NotNull
     private String imageURL;
@@ -29,13 +29,10 @@ public class Attachment extends Timestamped {
     @NotNull
     private Domain domain;
 
-    private Attachment(String imageURL, FileFormat fileFormat, Domain domain) {
+    public Attachment(String imageURL, FileFormat fileFormat, Domain domain) {
         this.imageURL = imageURL;
         this.fileFormat = fileFormat;
         this.domain = domain;
     }
-    public static Attachment from(String imageURL, FileFormat fileFormat, Domain domain){
-        return new Attachment(imageURL,fileFormat,domain);
-    }
-
 }
+
