@@ -15,7 +15,6 @@ import com.devloop.communitycomment.repository.CommunityCommentRepository;
 import com.devloop.user.entity.User;
 import com.devloop.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.hibernate.annotations.Comments;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,16 +34,16 @@ public class CommunityCommentService {
     public CommentSaveResponse creatComment(AuthUser authUser, CommentSaveRequest commentSaveRequest, Long communityId) {
         //커뮤니티 게시글 조회
         Community community = communityRepository.findById(communityId)
-                .orElseThrow(()->new ApiException(ErrorStatus._NOT_FOUND_COMMUNITY));
+                .orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_COMMUNITY));
         //사용자 조회
         User user = userRepository.findById(authUser.getId())
-                .orElseThrow(()->new ApiException(ErrorStatus._NOT_FOUND_USER));
+                .orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_USER));
         //댓글 생성..?생성자가 프라이빗이고..?
-        CommunityComment communityComment = CommunityComment.from(commentSaveRequest,community,user);
+        CommunityComment communityComment = CommunityComment.from(commentSaveRequest, community, user);
         //댓글 저장
         CommunityComment savedComment = communityCommentRepository.save(communityComment);
         //응답으로 변환
-        return new CommentSaveResponse(savedComment.getId(), savedComment.getContent(), savedComment.getCreatedAt());
+        return CommentSaveResponse.from(savedComment);
     }
 
     //댓글 수정
@@ -52,13 +51,13 @@ public class CommunityCommentService {
     public CommentUpdateResponse updateComment(AuthUser authUser, CommentUpdateRequest commentUpdateRequest, Long communityId, Long commentId) {
         //댓글 유무확인
         CommunityComment communityComment = communityCommentRepository.findById(commentId)
-                .orElseThrow(()->new ApiException(ErrorStatus._NOT_FOUND_COMMENT));
+                .orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_COMMENT));
         //댓글이 해당 게시글에 속해있는지 확인
-        if (!communityComment.getCommunity().getId().equals(communityId)){
-            throw  new ApiException(ErrorStatus._NOT_INCLUDE_COMMENT);
+        if (!communityComment.getCommunity().getId().equals(communityId)) {
+            throw new ApiException(ErrorStatus._NOT_INCLUDE_COMMENT);
         }
         //권한 확인 : 댓글 작성자와 현재 사용자(authUser)가 같은지 확인
-        if (!communityComment.getUser().getId().equals(authUser.getId())){
+        if (!communityComment.getUser().getId().equals(authUser.getId())) {
             throw new ApiException(ErrorStatus._INVALID_COMMENTUSER);
         }
         //댓글내용 업데이트
@@ -66,12 +65,7 @@ public class CommunityCommentService {
         //업데이트 내용 저장
         CommunityComment updatedComment = communityCommentRepository.save(communityComment);
         //응답으로 반환
-        return new CommentUpdateResponse(
-                updatedComment.getId(),
-                updatedComment.getContent(),
-                updatedComment.getCreatedAt(),
-                updatedComment.getModifiedAt()
-        );
+        return CommentUpdateResponse.from(updatedComment);
     }
 
     //댓글 삭제
@@ -79,13 +73,13 @@ public class CommunityCommentService {
     public void deleteComment(AuthUser authUser, Long communityId, Long commentId) {
         //댓글 유무 확인
         CommunityComment communityComment = communityCommentRepository.findById(commentId)
-                .orElseThrow(()->new ApiException(ErrorStatus._NOT_FOUND_COMMENT));
+                .orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_COMMENT));
         //댓글이 해당 게시글에 속한건지 확인
-        if (!communityComment.getCommunity().getId().equals(communityId)){
+        if (!communityComment.getCommunity().getId().equals(communityId)) {
             throw new ApiException(ErrorStatus._NOT_INCLUDE_COMMENT);
         }
         //댓글 작성자와 현재 사용자가 같은지 확인
-        if (!communityComment.getUser().getId().equals(authUser.getId())){
+        if (!communityComment.getUser().getId().equals(authUser.getId())) {
             throw new ApiException(ErrorStatus._INVALID_COMMENTUSER);
         }
         //삭제
@@ -99,14 +93,8 @@ public class CommunityCommentService {
 
         List<CommentResponse> commentResponses = new ArrayList<>();
         //응답 dto로 바꿔주고 반환
-        for (CommunityComment comment : comments){
-            CommentResponse commentResponse = new CommentResponse(
-                    comment.getId(),
-                    comment.getContent(),
-                    comment.getUser().getUsername(),
-                    comment.getCreatedAt(),
-                    comment.getModifiedAt()
-            );
+        for (CommunityComment comment : comments) {
+            CommentResponse commentResponse = CommentResponse.from(comment);
             commentResponses.add(commentResponse);
         }
         return commentResponses;

@@ -72,13 +72,7 @@ public class CommunityService {
 
         List<CommentResponse> commentResponses = new ArrayList<>();
         for (CommunityComment comment : comments) {
-            commentResponses.add(new CommentResponse(
-                    comment.getId(),
-                    comment.getContent(),
-                    comment.getUser().getUsername(),
-                    comment.getCreatedAt(),
-                    comment.getModifiedAt()
-            ));
+            commentResponses.add(CommentResponse.from(comment));
         }
         //게시글,댓글 정보 응답반환
         return CommunityDetailResponse.from(community, commentResponses);
