@@ -37,9 +37,14 @@ public class WebSecurityConfig {
                 .httpBasic(httpBasic -> httpBasic.disable())
                 .logout(logout -> logout.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/v1/auth/**").permitAll()
-                        .requestMatchers("/api/v1/admin/**").hasAuthority(UserRole.authority.ADMIN) //ADMIN 권한을 가진 사용자만 접근 가능한 경로 지정
-                        .requestMatchers("/api/v1/search/**").permitAll()
+                        .requestMatchers(
+                                "/api/v1/auth/signup",
+                                "/api/v1/auth/login",
+                                "/api/v1/auth/kakao/login",
+                                "/api/v1/search/**"
+                                )
+                        .permitAll()
+                        .requestMatchers("/api/v1/admin/**").hasAuthority(UserRole.authority.ADMIN)
                         .anyRequest().authenticated()
                 )
                 .build();
