@@ -7,6 +7,9 @@ import com.devloop.community.dto.response.CommunitySaveResponse;
 import com.devloop.community.dto.response.CommunitySimpleResponse;
 import com.devloop.community.entity.Community;
 import com.devloop.community.repository.CommunityRepository;
+import com.devloop.communitycomment.dto.CommentResponse;
+import com.devloop.communitycomment.entity.CommunityComment;
+import com.devloop.communitycomment.repository.CommunityCommentRepository;
 import com.devloop.user.entity.User;
 import com.devloop.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -25,10 +28,12 @@ import java.util.List;
 public class CommunityService {
     private final CommunityRepository communityRepository;
     private final UserRepository userRepository;
+    private final CommunityCommentRepository communityCommentRepository;
 
     //게시글 작성
     @Transactional
     public CommunitySaveResponse createCommunity(AuthUser authUser, CommunitySaveRequest communitySaveRequest) {
+        System.out.println(communitySaveRequest.getStatus());
         //사용자 조회
         User user = userRepository.findById(authUser.getId())
                 .orElseThrow(()->new IllegalArgumentException("사용자 찾을수업음"));
@@ -69,7 +74,34 @@ public class CommunityService {
         return new PageImpl<>(responseList,pageable,communities.getTotalElements());
     }
 
-//    //게시글 단건(상세조회)
-//    public CommunityDetailResponse getCommunity(Long communityId) {
-//    }
+    //게시글 단건(상세조회)
+    public CommunityDetailResponse getCommunity(Long communityId) {
+        //게시글 조회
+        Community community = communityRepository.findById(communityId)
+                .orElseThrow(()->new IllegalArgumentException("해당 게시글을 찾을 수 없습니다."));
+        //댓글 조회
+        List<CommunityComment> comments = communityCommentRepository.findByCommunityId(communityId);
+
+        List<CommentResponse> commentResponses = new ArrayList<>();
+        for (CommunityComment comment : comments){
+            commentResponses.add(new CommentResponse(
+                    comment.getId(),
+                    comment.getContent(),
+                    comment.getUser().getUsername(),
+                    comment.getCreatedAt(),
+                    comment.getModifiedAt()
+            ));
+        }
+        //게시글,댓글 정보 응답반환
+        return new CommunityDetailResponse(
+                community.getId(),
+                community.getTitle(),
+                community.getContent(),
+                community.getCreatedAt(),
+                community.getModifiedAt(),
+                community.getResolveStatus(),
+                community.getCategory(),
+                commentResponses
+        );
+    }
 }

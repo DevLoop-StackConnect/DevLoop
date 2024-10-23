@@ -12,6 +12,6 @@ import lombok.RequiredArgsConstructor;
 public class CommunitySaveRequest {
     private String title;
     private String content;
-    private ResolveStatus status;
-    private Category category;//게시글 해결 상태 (SOLVED, UNSOLVED)
+    private ResolveStatus status; //게시글 해결 상태 (SOLVED, UNSOLVED)
+    private Category category;
 }
