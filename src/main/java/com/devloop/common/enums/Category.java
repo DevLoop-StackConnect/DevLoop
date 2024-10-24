@@ -22,7 +22,7 @@ public enum Category {
         return Arrays.stream(Category.values())
                 .filter(c -> c.name().equalsIgnoreCase(category))
                 .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("잘못된 카테고리 값입니다: " + category));
+                .orElseThrow(() -> new IllegalArgumentException("잘못된 카테고리 입력값입니다. 오타를 확인하세요 -> " + category));
     }
 
 }

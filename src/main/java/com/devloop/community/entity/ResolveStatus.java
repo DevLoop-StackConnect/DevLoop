@@ -21,7 +21,7 @@ public enum ResolveStatus {
         return Arrays.stream(ResolveStatus.values())
                 .filter(s -> s.name().equalsIgnoreCase(status))
                 .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("잘못된 해결 상태 값입니다: " + status));
+                .orElseThrow(() -> new IllegalArgumentException("잘못된 해결 상태 입력값입니다. 오타를 확인하세요 ->  " + status));
     }
 }
 

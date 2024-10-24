@@ -11,9 +11,9 @@ public class CommunitySimpleResponse {
     private final Long communityId;
     private final String title;
     private final String status;
-    private final Category category;
+    private final String category;
 
-    private CommunitySimpleResponse(Long communityId, String title, String status, Category category) {
+    private CommunitySimpleResponse(Long communityId, String title, String status, String category) {
         this.communityId = communityId;
         this.title = title;
         this.status = status;
@@ -25,7 +25,7 @@ public class CommunitySimpleResponse {
                 community.getId(),
                 community.getTitle(),
                 community.getResolveStatus().getDescription(),
-                community.getCategory()
+                community.getCategory().getDescription()
         );
     }
 }
