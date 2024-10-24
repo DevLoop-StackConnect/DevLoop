@@ -1,8 +1,6 @@
 package com.devloop.user.service;
 
 import com.devloop.attachment.entity.ProfileAttachment;
-import com.devloop.attachment.enums.Domain;
-import com.devloop.attachment.enums.FileFormat;
 import com.devloop.attachment.repository.FARepository;
 import com.devloop.common.AuthUser;
 import com.devloop.common.apipayload.status.ErrorStatus;
