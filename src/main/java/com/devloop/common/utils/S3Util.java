@@ -15,7 +15,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.io.IOException;
 import java.net.URL;
 import java.util.Objects;
@@ -27,14 +26,12 @@ public class S3Util {
 
     @Value("${cloud.aws.s3.bucketName}")
     private String bucketName;
-
     private final AmazonS3Client amazonS3Client;
     private final FARepository faRepository;
     private final FileValidator fileValidator;
 
     public String makeFileName(MultipartFile file){
         return UUID.randomUUID() + file.getOriginalFilename();
-
     }
 
     public String uploadFile(MultipartFile file){
@@ -42,7 +39,6 @@ public class S3Util {
         ObjectMetadata metadata = new ObjectMetadata();
         metadata.setContentType(file.getContentType());
         metadata.setContentLength(file.getSize());
-
         try {
             amazonS3Client.putObject(bucketName, fileName, file.getInputStream(), metadata);
             return fileName;
@@ -76,8 +72,6 @@ public class S3Util {
         if(amazonS3Client.doesObjectExist(bucketName, fileName)) {
             try {
                 amazonS3Client.deleteObject(new DeleteObjectRequest(bucketName,fileName));
-
-
             } catch (AmazonServiceException e) {
                 throw new ApiException(ErrorStatus._HAS_NOT_ACCESS_PERMISSION);
             }
@@ -95,6 +89,5 @@ public class S3Util {
         String path = s3Url.getPath();
         String[] parts = path.split("/");
         return parts[parts.length - 1];
-
     }
 }
