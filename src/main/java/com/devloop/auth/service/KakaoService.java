@@ -20,6 +20,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -52,8 +53,6 @@ public class KakaoService {
     }
 
     private String getToken(String code) throws JsonProcessingException {
-        log.info("Redirect URI: {}", "http://localhost:8080/api/v1/auth/kakao/login");
-        log.info("Authorization Code: {}", code);
         URI uri = UriComponentsBuilder
                 .fromUriString("https://kauth.kakao.com")
                 .path("/oauth/token")
@@ -69,19 +68,34 @@ public class KakaoService {
         body.add("client_id", "3d49a145e53a056301badcfd23ac5373");
         body.add("redirect_uri", "http://localhost:8080/api/v1/auth/kakao/login");
         body.add("code", code);
+        log.info("Request body parameters: grant_type={}, client_id={}, redirect_uri={}, code={}",
+                body.getFirst("grant_type"),
+                body.getFirst("client_id"),
+                body.getFirst("redirect_uri"),
+                body.getFirst("code"));
 
         RequestEntity<MultiValueMap<String, String>> requestEntity = RequestEntity
                 .post(uri)
                 .headers(headers)
                 .body(body);
 
-        ResponseEntity<String> response = restTemplate.exchange(
-                requestEntity,
-                String.class
-        );
+        try {
+            ResponseEntity<String> response = restTemplate.exchange(
+                    requestEntity,
+                    String.class
+            );
+            log.info("Response status code: {}", response.getStatusCode());
+            log.info("Response body: {}", response.getBody());
 
-        JsonNode jsonNode = new ObjectMapper().readTree(response.getBody());
-        return jsonNode.get("access_token").asText();
+            JsonNode jsonNode = new ObjectMapper().readTree(response.getBody());
+            return jsonNode.get("access_token").asText();
+        } catch (HttpClientErrorException e) {
+            log.error("Error response from Kakao: {}", e.getResponseBodyAsString());
+            throw e;
+        } catch (Exception e) {
+            log.error("Unexpected error: ", e);
+            throw e;
+        }
     }
 
     private KakaoUserInfo getKakaoUserInfo(String accessToken) throws JsonProcessingException {
@@ -126,7 +140,7 @@ public class KakaoService {
             String kakaoEmail = kakaoUserInfo.getEmail();
             User sameEmailUser = userRepository.findByEmail(kakaoEmail).orElse(null);
 
-            if (sameEmailUser != null && sameEmailUser.getLoginType() == LoginType.LOCAL) {
+            if (sameEmailUser != null && sameEmailUser.getLoginType() == LoginType.SOCIAL) {
                 kakaoUser = sameEmailUser;
                 kakaoUser = kakaoUser.kakaoIdUpdate(kakaoId);
             } else if (sameEmailUser != null) {
