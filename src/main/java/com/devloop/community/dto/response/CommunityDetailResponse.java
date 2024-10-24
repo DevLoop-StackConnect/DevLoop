@@ -28,15 +28,15 @@ public class CommunityDetailResponse {
     }
 
     //코드컨벤션에 맞춰서 정적 팩토리 메서드 추가
-    public static CommunityDetailResponse from(Community community) {
+    public static CommunityDetailResponse of(Long communityId, String title, String content, String status, String category, LocalDateTime createdAt, LocalDateTime modifiedAt) {
         return new CommunityDetailResponse(
-                community.getId(),
-                community.getTitle(),
-                community.getContent(),
-                community.getResolveStatus().getDescription(),
-                community.getCategory().getDescription(),
-                community.getCreatedAt(),
-                community.getModifiedAt()
+                communityId,
+                title,
+                content,
+                status,
+                category,
+                createdAt,
+                modifiedAt
         );
     }
 }

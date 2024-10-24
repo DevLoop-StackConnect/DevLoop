@@ -20,12 +20,12 @@ public class CommunitySimpleResponse {
         this.category = category;
     }
 
-    public static CommunitySimpleResponse from(Community community) {
+    public static CommunitySimpleResponse of(Long communityId, String title, String status, String category) {
         return new CommunitySimpleResponse(
-                community.getId(),
-                community.getTitle(),
-                community.getResolveStatus().getDescription(),
-                community.getCategory().getDescription()
+                communityId,
+                title,
+                status,
+                category
         );
     }
 }

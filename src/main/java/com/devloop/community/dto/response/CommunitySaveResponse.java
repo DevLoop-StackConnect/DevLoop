@@ -26,14 +26,14 @@ public class CommunitySaveResponse  {
         this.createdAt=createdAt;
     }
 
-    public static CommunitySaveResponse from(Community community) {
+    public static CommunitySaveResponse of(Long communityId, String title, String content, String status, String category, LocalDateTime createdAt) {
         return new CommunitySaveResponse(
-                community.getId(),
-                community.getTitle(),
-                community.getContent(),
-                community.getResolveStatus().getDescription(),
-                community.getCategory().getDescription(),
-                community.getCreatedAt()
+                communityId,
+                title,
+                content,
+                status,
+                category,
+                createdAt
         );
     }
 
