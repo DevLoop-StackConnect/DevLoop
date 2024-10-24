@@ -50,7 +50,7 @@ public class UserService {
 
         Party party = partyRepository.findByUserId(user.getId());
         GetPartyListResponse getPartyListResponse = GetPartyListResponse.from(party);
-        return UserResponse.of(user.getUsername(),user.getEmail(),user.getUserRole(),imageURL,getPartyListResponse);
+        return UserResponse.of(user.getUsername(),user.getEmail(),user.getUserRole().toString(),imageURL,getPartyListResponse);
     }
 
     @Transactional
