@@ -31,6 +31,7 @@ public abstract class Attachment {
     @NotNull
     private Domain domain;
 
+    @NotNull
     private String fileName;
 
     public Attachment(URL imageURL, FileFormat fileFormat, Domain domain,String fileName) {
