@@ -6,8 +6,8 @@ import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.devloop.attachment.entity.ProfileAttachment;
 import com.devloop.attachment.enums.Domain;
-import com.devloop.attachment.enums.FileFormat;
 import com.devloop.attachment.repository.FARepository;
+import com.devloop.common.Validator.FileValidator;
 import com.devloop.common.apipayload.status.ErrorStatus;
 import com.devloop.common.exception.ApiException;
 import com.devloop.user.entity.User;
@@ -18,6 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.Objects;
 import java.util.UUID;
 
 @Component
@@ -29,6 +30,7 @@ public class S3Util {
 
     private final AmazonS3Client amazonS3Client;
     private final FARepository faRepository;
+    private final FileValidator fileValidator;
 
     public String makeFileName(MultipartFile file){
         return UUID.randomUUID() + file.getOriginalFilename();
@@ -54,21 +56,20 @@ public class S3Util {
             // 디폴트 이미지가 아닐때 S3에서 삭제
             ProfileAttachment currentImg = faRepository.findById(user.getAttachmentId())
                     .orElseThrow(()->new ApiException(ErrorStatus._ATTACHMENT_NOT_FOUND));
-
-            URL imageURL = currentImg.getImageURL();
             String currentImgName = currentImg.getFileName();
             delete(currentImgName);
             faRepository.delete(currentImg);
         }
         String fileName = uploadFile(file);
-        ProfileAttachment profileAttachment = ProfileAttachment.from(getUrl(file.getOriginalFilename()),
-                FileFormat.PNG,
+        ProfileAttachment profileAttachment = ProfileAttachment.from(
+                user.getId(),
+                getUrl(file.getOriginalFilename()),
+                fileValidator.mapStringToFileFormat(Objects.requireNonNull(file.getContentType())),
                 Domain.PROFILE,
                 fileName
         );
         faRepository.save(profileAttachment);
-        user.updateProfileImg(profileAttachment.getId());
-
+        user.updateProfileImg(profileAttachment.getId());;
     }
 
         public void delete(String fileName){
