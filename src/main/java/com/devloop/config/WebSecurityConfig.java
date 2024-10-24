@@ -43,9 +43,17 @@ public class WebSecurityConfig {
                                 "/api/v1/auth/kakao/login",
                                 "/api/v1/search/**",
                                 "api/v1/pwts/**"
-                                )
+                        )
                         .permitAll()
-                        .requestMatchers("/api/v1/admin/**").hasAuthority(UserRole.authority.ADMIN)
+                        .requestMatchers(
+                                "/api/v1/tutor/**"
+                        )
+                        .hasAuthority(UserRole.authority.TUTOR)
+                        .requestMatchers(
+                                "/api/v1/admin/**",
+                                "/api/v1/tutor/**"
+                        )
+                        .hasAuthority(UserRole.authority.ADMIN)
                         .anyRequest().authenticated()
                 )
                 .build();
