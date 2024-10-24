@@ -1,6 +1,8 @@
 package com.devloop.party.entity;
 
+import com.devloop.common.BoardType;
 import com.devloop.common.Timestamped;
+import com.devloop.common.enums.Category;
 import com.devloop.party.enums.PartyStatus;
 import com.devloop.party.request.SavePartyRequest;
 import com.devloop.party.request.UpdatePartyRequest;
@@ -19,6 +21,9 @@ public class Party extends Timestamped {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Enumerated(EnumType.STRING)
+    private BoardType boardType = BoardType.PARTY;
+
     @NotNull
     @Column(length = 20)
     private String title;
@@ -31,33 +36,43 @@ public class Party extends Timestamped {
     @Enumerated(EnumType.STRING)
     private PartyStatus status;
 
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    private Category category;
+
     @ManyToOne
     @JoinColumn(name="user_id")
     private User user;
 
-    private Party(String title,String contents, PartyStatus status,User user){
+    private Party(String title,String contents, PartyStatus status, Category category,User user){
         this.title=title;
         this.contents=contents;
         this.status=status;
+        this.category=category;
         this.user=user;
     }
 
     public static Party from(SavePartyRequest request,User user){
         PartyStatus partyStatus=PartyStatus.valueOf(request.getStatus().toUpperCase());
+        Category category=Category.valueOf(request.getCategory().toUpperCase());
 
         return new Party(
                 request.getTitle(),
                 request.getContents(),
                 partyStatus,
+                category,
                 user
         );
     }
 
     public void update(UpdatePartyRequest request){
         PartyStatus partyStatus=PartyStatus.valueOf(request.getStatus().toUpperCase());
+        Category category=Category.valueOf(request.getCategory().toUpperCase());
+
         this.title=request.getTitle();
         this.contents=request.getContents();
         this.status=partyStatus;
+        this.category=category;
     }
 
 }
