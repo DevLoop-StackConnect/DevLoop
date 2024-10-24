@@ -17,11 +17,11 @@ public class UpdatePartyCommentResponse {
         this.comment=comment;
     }
 
-    public static UpdatePartyCommentResponse from(Long partyId, PartyComment partyComment){
+    public static UpdatePartyCommentResponse of(Long partyId,Long commentId,String comment){
         return new UpdatePartyCommentResponse(
                 partyId,
-                partyComment.getId(),
-                partyComment.getComment()
+                commentId,
+                comment
         );
     }
 }
