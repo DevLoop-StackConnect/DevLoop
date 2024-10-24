@@ -1,5 +1,6 @@
 package com.devloop.party.entity;
 
+import com.devloop.common.BoardType;
 import com.devloop.common.Timestamped;
 import com.devloop.common.enums.Category;
 import com.devloop.party.enums.PartyStatus;
@@ -19,6 +20,9 @@ public class Party extends Timestamped {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Enumerated(EnumType.STRING)
+    private BoardType boardType = BoardType.PARTY;
 
     @NotNull
     @Column(length = 20)

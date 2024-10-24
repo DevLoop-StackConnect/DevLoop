@@ -1,8 +1,5 @@
 package com.devloop.auth.response;
 
-import com.devloop.auth.request.SignupRequest;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
