@@ -2,7 +2,7 @@ package com.devloop.party.repository;
 
 import com.devloop.party.entity.Party;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
