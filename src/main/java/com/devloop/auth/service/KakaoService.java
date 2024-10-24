@@ -52,6 +52,8 @@ public class KakaoService {
     }
 
     private String getToken(String code) throws JsonProcessingException {
+        log.info("Redirect URI: {}", "http://localhost:8080/api/v1/auth/kakao/login");
+        log.info("Authorization Code: {}", code);
         URI uri = UriComponentsBuilder
                 .fromUriString("https://kauth.kakao.com")
                 .path("/oauth/token")
@@ -83,6 +85,7 @@ public class KakaoService {
     }
 
     private KakaoUserInfo getKakaoUserInfo(String accessToken) throws JsonProcessingException {
+
         URI uri = UriComponentsBuilder
                 .fromUriString("https://kapi.kakao.com")
                 .path("/v2/user/me")
