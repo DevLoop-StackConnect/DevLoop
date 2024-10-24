@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import java.net.MalformedURLException;
 
 @RestController
 @RequiredArgsConstructor
@@ -26,7 +27,7 @@ public class UserController {
     }
 
     @GetMapping("/v1/users/profiles")
-    public ApiResponse<UserResponse> getUser(@AuthenticationPrincipal AuthUser authUser){
+    public ApiResponse<UserResponse> getUser(@AuthenticationPrincipal AuthUser authUser) throws MalformedURLException {
         return ApiResponse.ok(userService.getUser(authUser));
     }
 
