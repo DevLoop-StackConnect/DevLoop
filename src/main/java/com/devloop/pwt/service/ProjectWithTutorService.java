@@ -10,6 +10,7 @@ import com.devloop.pwt.enums.ProjectWithTutorStatus;
 import com.devloop.pwt.repository.ProjectWithTutorRepository;
 import com.devloop.pwt.request.ProjectWithTutorSaveRequest;
 import com.devloop.pwt.request.ProjectWithTutorUpdateRequest;
+import com.devloop.pwt.response.ProjectWithTutorDetailResponse;
 import com.devloop.user.entity.User;
 import com.devloop.user.enums.UserRole;
 import com.devloop.user.repository.UserRepository;
@@ -35,10 +36,10 @@ public class ProjectWithTutorService {
     ) {
         // 사용자 객체 가져오기
         User user = userRepository.findById(authUser.getId())
-                .orElseThrow(()-> new ApiException(ErrorStatus._NOT_FOUND_USER));
+                .orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_USER));
 
         // 요청한 사용자의 권한이 USER일 경우 예외 처리
-        if(user.getUserRole().equals(UserRole.ROLE_USER)){
+        if (user.getUserRole().equals(UserRole.ROLE_USER)) {
             throw new ApiException(ErrorStatus._HAS_NOT_ACCESS_PERMISSION);
         }
 
@@ -61,6 +62,29 @@ public class ProjectWithTutorService {
         return String.format("%s 님의 튜터랑 함께하는 협업 프로젝트 게시글이 작성 완료되었습니다. 승인까지 3~5일 정도 소요될 수 있습니다.", user.getUsername());
     }
 
+    // 튜터랑 함께하는 협업 프로젝트 게시글 단건 조회 (승인이 완료된 게시글 단건 조회)
+    public ProjectWithTutorDetailResponse getProjectWithTutor(Long projectId) {
+        // PWT 게시글 객체 가져오기
+        ProjectWithTutor projectWithTutor = projectWithTutorRepository.findById(projectId)
+                .orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_PROJECT_WITH_TUTOR));
+
+        // PWT 게시글이 승인 되었는지 확인 하는 예외 처리
+        if(projectWithTutor.getApproval().equals(Approval.APPROVED)) {
+            throw new ApiException(ErrorStatus._ACCESS_PERMISSION_DENIED);
+        }
+
+        return ProjectWithTutorDetailResponse.from(
+                projectWithTutor.getTitle(),
+                projectWithTutor.getDescription(),
+                projectWithTutor.getPrice(),
+                projectWithTutor.getStatus(),
+                projectWithTutor.getDeadline(),
+                projectWithTutor.getMaxParticipants(),
+                projectWithTutor.getLevel(),
+                projectWithTutor.getUser()
+        );
+    }
+
     // 튜터랑 함께하는 협업 프로젝트 게시글 수정
     @Transactional
     public String updateProjectWithTutor(
@@ -71,14 +95,14 @@ public class ProjectWithTutorService {
     ) {
         // 사용자 객체 가져오기
         User user = userRepository.findById(authUser.getId())
-                .orElseThrow(()-> new ApiException(ErrorStatus._NOT_FOUND_USER));
+                .orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_USER));
 
         // PWT 게시글 객체 가져오기
         ProjectWithTutor projectWithTutor = projectWithTutorRepository.findById(projectId)
-                .orElseThrow(()-> new ApiException(ErrorStatus._NOT_FOUND_PROJECT_WITH_TUTOR));
+                .orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_PROJECT_WITH_TUTOR));
 
         // 게시글 작성자와 현재 로그인된 사용자 일치 여부 예외 처리
-        if(!user.getId().equals(projectWithTutor.getUser().getId())){
+        if (!user.getId().equals(projectWithTutor.getUser().getId())) {
             throw new ApiException(ErrorStatus._HAS_NOT_ACCESS_PERMISSION);
         }
 
@@ -102,14 +126,14 @@ public class ProjectWithTutorService {
 
         // 사용자 객체 가져오기
         User user = userRepository.findById(authUser.getId())
-                .orElseThrow(()-> new ApiException(ErrorStatus._NOT_FOUND_USER));
+                .orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_USER));
 
         // PWT 게시글 객체 가져오기
         ProjectWithTutor projectWithTutor = projectWithTutorRepository.findById(projectId)
-                .orElseThrow(()-> new ApiException(ErrorStatus._NOT_FOUND_PROJECT_WITH_TUTOR));
+                .orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_PROJECT_WITH_TUTOR));
 
         // 게시글 작성자와 현재 로그인된 사용자 일치 여부 예외 처리
-        if(!user.getId().equals(projectWithTutor.getUser().getId())){
+        if (!user.getId().equals(projectWithTutor.getUser().getId())) {
             throw new ApiException(ErrorStatus._HAS_NOT_ACCESS_PERMISSION);
         }
 
@@ -118,4 +142,5 @@ public class ProjectWithTutorService {
 
         return String.format("%s 게시글을 삭제하였습니다.", projectWithTutor.getTitle());
     }
+
 }
