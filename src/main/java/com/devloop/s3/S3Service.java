@@ -48,6 +48,7 @@ public class S3Service {
             throw new RuntimeException(e);
         }
     }
+
     public <T> void uploadFile(MultipartFile file, T object){
         String fileName = makeFileName(file);
         ObjectMetadata metadata = new ObjectMetadata();
@@ -69,7 +70,6 @@ public class S3Service {
         else {
             throw new ApiException(ErrorStatus._UNSUPPORTED_OBJECT_TYPE);
         }
-
     }
 
 
@@ -86,8 +86,8 @@ public class S3Service {
     }
 
     // 버킷 이름과 오리지널 파일이름으로 URL 반환하는 메서드
-    public URL getUrl(String orginalFileName) {
-        return amazonS3Client.getUrl(bucketName, orginalFileName);
+    public URL getUrl(String originalFileName) {
+        return amazonS3Client.getUrl(bucketName, originalFileName);
     }
 
     public String extractFileNameFromS3Url(URL s3Url) {
