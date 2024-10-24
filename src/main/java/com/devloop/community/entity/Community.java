@@ -58,10 +58,10 @@ public class Community extends Timestamped {
         this.user = user;
     }
 
-    public static Community from(CommunitySaveRequest communitySaveRequest, User user, ResolveStatus resolvedStatus, Category category) {
+    public static Community of(String title,String content, ResolveStatus resolvedStatus, Category category,User user) {
         return new Community(
-                communitySaveRequest.getTitle(),
-                communitySaveRequest.getContent(),
+                title,
+                content,
                 resolvedStatus,
                 category,
                 user
