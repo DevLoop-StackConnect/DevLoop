@@ -1,39 +1,41 @@
-package com.devloop.common.utils;
+package com.devloop.s3;
 
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
-import com.devloop.attachment.entity.ProfileAttachment;
-import com.devloop.attachment.enums.Domain;
-import com.devloop.attachment.repository.FARepository;
-import com.devloop.common.Validator.FileValidator;
 import com.devloop.common.apipayload.status.ErrorStatus;
 import com.devloop.common.exception.ApiException;
-import com.devloop.user.entity.User;
+import com.devloop.community.entity.Community;
+import com.devloop.community.repository.CommunityRepository;
+import com.devloop.party.entity.Party;
+import com.devloop.party.repository.PartyRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+
 import java.io.IOException;
 import java.net.URL;
-import java.util.Objects;
 import java.util.UUID;
 
-@Component
+@Service
 @RequiredArgsConstructor
-public class S3Util {
+@Transactional
+public class S3Service {
 
     @Value("${cloud.aws.s3.bucketName}")
     private String bucketName;
     private final AmazonS3Client amazonS3Client;
-    private final FARepository faRepository;
-    private final FileValidator fileValidator;
+    private final CommunityRepository communityRepository;
+    private final PartyRepository partyRepository;
 
     public String makeFileName(MultipartFile file){
         return UUID.randomUUID() + file.getOriginalFilename();
     }
 
+    //유저 프로필에서 사용하는 업로드 메서드
     public String uploadFile(MultipartFile file){
         String fileName = makeFileName(file);
         ObjectMetadata metadata = new ObjectMetadata();
@@ -46,29 +48,32 @@ public class S3Util {
             throw new RuntimeException(e);
         }
     }
-    // 유저 프로필 변경시 사용
-    public void uploadFile(MultipartFile file, User user) {
-        if(user.getAttachmentId() != null) {
-            // 디폴트 이미지가 아닐때 S3에서 삭제
-            ProfileAttachment currentImg = faRepository.findById(user.getAttachmentId())
-                    .orElseThrow(()->new ApiException(ErrorStatus._ATTACHMENT_NOT_FOUND));
-            String currentImgName = currentImg.getFileName();
-            delete(currentImgName);
-            faRepository.delete(currentImg);
+    public <T> void uploadFile(MultipartFile file, T object){
+        String fileName = makeFileName(file);
+        ObjectMetadata metadata = new ObjectMetadata();
+        metadata.setContentType(file.getContentType());
+        metadata.setContentLength(file.getSize());
+
+        try {
+            amazonS3Client.putObject(bucketName, fileName, file.getInputStream(), metadata);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
-        String fileName = uploadFile(file);
-        ProfileAttachment profileAttachment = ProfileAttachment.from(
-                user.getId(),
-                getUrl(file.getOriginalFilename()),
-                fileValidator.mapStringToFileFormat(Objects.requireNonNull(file.getContentType())),
-                Domain.PROFILE,
-                fileName
-        );
-        faRepository.save(profileAttachment);
-        user.updateProfileImg(profileAttachment.getId());;
+        if (object instanceof Party) {
+            partyRepository.save((Party) object);
+        } else if (object instanceof Community) {
+            communityRepository.save((Community) object);
+        } /*else if (object instanceof PWT) {
+            return 3;
+        } */
+        else {
+            throw new ApiException(ErrorStatus._UNSUPPORTED_OBJECT_TYPE);
+        }
+
     }
 
-        public void delete(String fileName){
+
+    public void delete(String fileName){
         if(amazonS3Client.doesObjectExist(bucketName, fileName)) {
             try {
                 amazonS3Client.deleteObject(new DeleteObjectRequest(bucketName,fileName));
