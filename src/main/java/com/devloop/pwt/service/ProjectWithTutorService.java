@@ -96,7 +96,7 @@ public class ProjectWithTutorService {
 
 
         Page<ProjectWithTutorResponseDto> projectWithTutors = projectWithTutorRepository.findAllApprovedProjectWithTutor(Approval.APPROVED, pageable)
-                .filter(p -> !p.isEmpty())
+                .filter(p->!p.isEmpty())
                 .orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_PROJECT_WITH_TUTOR));
 
         return projectWithTutors.map(ProjectWithTutorListResponse::from);

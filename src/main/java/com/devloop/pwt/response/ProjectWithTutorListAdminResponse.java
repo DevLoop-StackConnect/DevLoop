@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 
 @Getter
 @RequiredArgsConstructor
-public class ProjectWithTutorListResponse {
+public class ProjectWithTutorListAdminResponse {
 
     private final Long id;
     private final String title;
@@ -22,7 +22,7 @@ public class ProjectWithTutorListResponse {
     private final String level;
     private final String tutorName;
 
-    private ProjectWithTutorListResponse(
+    private ProjectWithTutorListAdminResponse(
             Long id,
             String title,
             Integer price,
@@ -42,10 +42,10 @@ public class ProjectWithTutorListResponse {
         this.tutorName = tutorName.getUsername();
     }
 
-    public static ProjectWithTutorListResponse from(
+    public static ProjectWithTutorListAdminResponse from(
             ProjectWithTutorResponseDto project
     ) {
-        return new ProjectWithTutorListResponse(
+        return new ProjectWithTutorListAdminResponse(
                 project.getId(),
                 project.getTitle(),
                 project.getPrice(),
@@ -56,5 +56,4 @@ public class ProjectWithTutorListResponse {
                 project.getUser()
         );
     }
-
 }
