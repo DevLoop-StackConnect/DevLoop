@@ -26,6 +26,6 @@ public class CommunitySaveRequest {
     }
 
     public Category getCategory() {
-        return Category.fromString(this.category);
+        return Category.fromString(category);
     }
 }
