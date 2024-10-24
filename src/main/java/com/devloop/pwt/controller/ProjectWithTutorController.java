@@ -46,9 +46,10 @@ public class ProjectWithTutorController {
     // 튜터랑 함께하는 협업 프로젝트 게시글 다건 조회 (승인이 완료된 게시글 다건 조회)
     @GetMapping("/v1/pwts")
     public ApiResponse<Page<ProjectWithTutorListResponse>> getAllProjectWithTutors(
-
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size
     ){
-
+        return ApiResponse.ok(projectWithTutorService.getAllProjectWithTutors(page,size));
     }
 
     // 튜터랑 함께하는 협업 프로젝트 게시글 수정 (일반 사용자 접근 불가)

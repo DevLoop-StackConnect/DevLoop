@@ -1,6 +1,7 @@
 package com.devloop.pwt.service;
 
 import com.devloop.common.AuthUser;
+import com.devloop.common.apipayload.dto.ProjectWithTutorResponseDto;
 import com.devloop.common.apipayload.status.ErrorStatus;
 import com.devloop.common.enums.Approval;
 import com.devloop.common.exception.ApiException;
@@ -11,10 +12,14 @@ import com.devloop.pwt.repository.ProjectWithTutorRepository;
 import com.devloop.pwt.request.ProjectWithTutorSaveRequest;
 import com.devloop.pwt.request.ProjectWithTutorUpdateRequest;
 import com.devloop.pwt.response.ProjectWithTutorDetailResponse;
+import com.devloop.pwt.response.ProjectWithTutorListResponse;
 import com.devloop.user.entity.User;
 import com.devloop.user.enums.UserRole;
 import com.devloop.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -69,7 +74,7 @@ public class ProjectWithTutorService {
                 .orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_PROJECT_WITH_TUTOR));
 
         // PWT 게시글이 승인 되었는지 확인 하는 예외 처리
-        if(projectWithTutor.getApproval().equals(Approval.APPROVED)) {
+        if (projectWithTutor.getApproval().equals(Approval.APPROVED)) {
             throw new ApiException(ErrorStatus._ACCESS_PERMISSION_DENIED);
         }
 
@@ -83,6 +88,18 @@ public class ProjectWithTutorService {
                 projectWithTutor.getLevel(),
                 projectWithTutor.getUser()
         );
+    }
+
+    // 튜터랑 함께하는 협업 프로젝트 게시글 다건 조회 (승인이 완료된 게시글 다건 조회)
+    public Page<ProjectWithTutorListResponse> getAllProjectWithTutors(int page, int size) {
+        Pageable pageable = PageRequest.of(page - 1, size);
+
+
+        Page<ProjectWithTutorResponseDto> projectWithTutors = projectWithTutorRepository.findAllApprovedProjectWithTutor(Approval.APPROVED, pageable)
+                .filter(p -> !p.isEmpty())
+                .orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_PROJECT_WITH_TUTOR));
+
+        return projectWithTutors.map(ProjectWithTutorListResponse::from);
     }
 
     // 튜터랑 함께하는 협업 프로젝트 게시글 수정
