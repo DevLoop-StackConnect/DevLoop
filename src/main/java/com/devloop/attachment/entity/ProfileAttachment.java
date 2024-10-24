@@ -14,11 +14,15 @@ import java.net.URL;
 @Entity
 @DiscriminatorValue("F")
 public class ProfileAttachment extends Attachment {
-    private ProfileAttachment(URL imageURL, FileFormat fileFormat, Domain domain,  String fileName){
+
+    private Long userId;
+
+    private ProfileAttachment(Long userId, URL imageURL, FileFormat fileFormat, Domain domain,  String fileName){
         super(imageURL, fileFormat, domain,fileName);
+        this.userId = userId;
     }
 
-    public static ProfileAttachment from(URL imageURL, FileFormat fileFormat, Domain domain,String fileName){
-        return new ProfileAttachment(imageURL, fileFormat, domain,fileName);
+    public static ProfileAttachment from(Long userId, URL imageURL, FileFormat fileFormat, Domain domain,String fileName){
+        return new ProfileAttachment(userId, imageURL, fileFormat, domain,fileName);
     }
 }
