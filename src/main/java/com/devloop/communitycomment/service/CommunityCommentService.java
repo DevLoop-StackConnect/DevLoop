@@ -42,11 +42,11 @@ public class CommunityCommentService {
         User user = userRepository.findById(authUser.getId())
                 .orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_USER));
         //댓글 생성..?생성자가 프라이빗이고..?
-        CommunityComment communityComment = CommunityComment.from(commentSaveRequest, community, user);
+        CommunityComment communityComment = CommunityComment.of(commentSaveRequest.getContent(), community, user);
         //댓글 저장
         CommunityComment savedComment = communityCommentRepository.save(communityComment);
         //응답으로 변환
-        return CommentSaveResponse.from(savedComment);
+        return CommentSaveResponse.of(savedComment.getId(), savedComment.getContent(), savedComment.getCreatedAt());
     }
 
     //댓글 수정
@@ -68,7 +68,7 @@ public class CommunityCommentService {
         //업데이트 내용 저장
         CommunityComment updatedComment = communityCommentRepository.save(communityComment);
         //응답으로 반환
-        return CommentUpdateResponse.from(updatedComment);
+        return CommentUpdateResponse.of(updatedComment.getId(), updatedComment.getContent(), updatedComment.getModifiedAt());
     }
 
     //댓글 삭제
@@ -97,7 +97,7 @@ public class CommunityCommentService {
         List<CommentResponse> commentResponses = new ArrayList<>();
         //응답반환
         for(CommunityComment comment : comments.getContent()){
-            CommentResponse commentResponse = CommentResponse.from(comment);
+            CommentResponse commentResponse = CommentResponse.of(comment.getId(), comment.getContent(), comment.getUser().getUsername(), comment.getCreatedAt());
             commentResponses.add(commentResponse);
         }
         return new PageImpl<>(commentResponses,comments.getPageable(),comments.getTotalElements());

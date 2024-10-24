@@ -18,11 +18,9 @@ public class CommentSaveResponse  {
         this.createdAt=createdAt;
     }
 
-    public static CommentSaveResponse from(CommunityComment communityComment) {
-        return new CommentSaveResponse(
-                communityComment.getId(),
-                communityComment.getContent(),
-                communityComment.getCreatedAt()
-        );
+    public static CommentSaveResponse of(Long commentId, String content, LocalDateTime createdAt) {
+        return new CommentSaveResponse(commentId,
+                content,
+                createdAt);
     }
 }

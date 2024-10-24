@@ -1,9 +1,5 @@
 package com.devloop.community.dto.response;
 
-import com.devloop.common.Timestamped;
-import com.devloop.common.enums.Category;
-import com.devloop.community.entity.Community;
-import com.devloop.community.entity.ResolveStatus;
 import lombok.Getter;
 
 @Getter

@@ -17,11 +17,9 @@ public class CommentUpdateResponse  {
         this.modifiedAt=modifiedAt;
     }
 
-    public static CommentUpdateResponse from(CommunityComment communityComment) {
-        return new CommentUpdateResponse(
-                communityComment.getId(),
-                communityComment.getContent(),
-                communityComment.getModifiedAt()
-        );
+    public static CommentUpdateResponse of(Long commentId, String content, LocalDateTime modifiedAt) {
+        return new CommentUpdateResponse(commentId,
+                content,
+                modifiedAt);
     }
 }
