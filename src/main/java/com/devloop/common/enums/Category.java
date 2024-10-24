@@ -1,5 +1,6 @@
 package com.devloop.common.enums;
 
+import com.devloop.party.enums.PartyStatus;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -11,5 +12,9 @@ public enum Category {
     GAME_DEV("게임개발");
 
     private final String description;
+
+    public static Category of(String category) {
+        return Category.valueOf(category.toUpperCase());
+    }
 
 }

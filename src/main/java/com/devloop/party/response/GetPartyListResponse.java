@@ -1,6 +1,5 @@
 package com.devloop.party.response;
 
-import com.devloop.party.entity.Party;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -21,14 +20,13 @@ public class GetPartyListResponse {
         this.category=category;
     }
 
-    public static GetPartyListResponse from(Party party){
-
+    public static GetPartyListResponse of(Long partyId,String title,String contents,String status,String category){
         return new GetPartyListResponse(
-                party.getId(),
-                party.getTitle(),
-                party.getContents(),
-                party.getStatus().getStatus(),
-                party.getCategory().getDescription()
+                partyId,
+                title,
+                contents,
+                status,
+                category
         );
     }
 }
