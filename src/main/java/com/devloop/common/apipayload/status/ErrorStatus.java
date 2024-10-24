@@ -59,7 +59,10 @@ public enum ErrorStatus implements BaseCode {
     _DUPLICATE_EMAIL(HttpStatus.CONFLICT, "409", "이미 존재하는 이메일입니다."),
 
     //Party
-    _NOT_FOUND_PARTY(HttpStatus.NOT_FOUND, "404", "존재하지 않는 스터디 파티입니다");
+    _NOT_FOUND_PARTY(HttpStatus.NOT_FOUND, "404", "존재하지 않는 스터디 파티입니다"),
+
+    //Search
+    _BAD_SEARCH_KEYWORD(HttpStatus.BAD_REQUEST, "400", "검색 오류");
 
 
     private HttpStatus httpStatus;
