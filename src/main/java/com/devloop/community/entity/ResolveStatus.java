@@ -3,6 +3,8 @@ package com.devloop.community.entity;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import java.util.Arrays;
+
 @Getter
 @RequiredArgsConstructor
 public enum ResolveStatus {
@@ -11,6 +13,16 @@ public enum ResolveStatus {
 
     private final String description;
 
+    public String getDescription(){
+        return this.description;
+    }
+
+    public static ResolveStatus fromString(String status) {
+        return Arrays.stream(ResolveStatus.values())
+                .filter(s -> s.name().equalsIgnoreCase(status))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("잘못된 해결 상태 값입니다: " + status));
+    }
 }
 
 
