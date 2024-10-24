@@ -101,14 +101,12 @@ public class PartyService {
         }else{
             parties=partyRepository.findByTitleContaining(title,pageable);
         }
-        return parties.map(party->{
-            return GetPartyListResponse.of(
+        return parties.map(party->GetPartyListResponse.of(
                     party.getId(),
                     party.getTitle(),
                     party.getContents(),
                     party.getStatus().getStatus(),
-                    party.getCategory().getDescription());
-        });
+                    party.getCategory().getDescription()));
     }
 
     //스터디 파티 모집 게시글 삭제

@@ -4,6 +4,8 @@ import com.devloop.party.enums.PartyStatus;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import java.util.Arrays;
+
 @Getter
 @RequiredArgsConstructor
 public enum Category {
@@ -14,7 +16,10 @@ public enum Category {
     private final String description;
 
     public static Category of(String category) {
-        return Category.valueOf(category.toUpperCase());
+        return Arrays.stream(Category.values())
+                .filter(c -> c.name().equalsIgnoreCase(category))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 카테고리 입니다."));
     }
 
 }

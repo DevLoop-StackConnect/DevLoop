@@ -1,6 +1,5 @@
 package com.devloop.partycomment.response;
 
-import com.devloop.partycomment.entity.PartyComment;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
