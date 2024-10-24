@@ -19,7 +19,7 @@ public class ProjectWithTutorDetailResponse {
     private final LocalDateTime deadline;
     private final Integer maxParticipants;
     private final String level;
-    private final String userName;
+    private final String tutorName;
 
     private ProjectWithTutorDetailResponse(
             String title,
@@ -38,7 +38,7 @@ public class ProjectWithTutorDetailResponse {
         this.deadline = deadline;
         this.maxParticipants = maxParticipants;
         this.level = level.getLevel();
-        this.userName = user.getUsername();
+        this.tutorName = user.getUsername();
     }
 
     public static ProjectWithTutorDetailResponse from(
