@@ -2,13 +2,11 @@ package com.devloop.community.controller;
 
 import com.devloop.common.AuthUser;
 import com.devloop.common.apipayload.ApiResponse;
-import com.devloop.common.enums.Category;
 import com.devloop.community.dto.request.CommunitySaveRequest;
 import com.devloop.community.dto.request.CommunityUpdateRequest;
 import com.devloop.community.dto.response.CommunityDetailResponse;
 import com.devloop.community.dto.response.CommunitySaveResponse;
 import com.devloop.community.dto.response.CommunitySimpleResponse;
-import com.devloop.community.entity.ResolveStatus;
 import com.devloop.community.service.CommunityService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -27,9 +25,9 @@ public class CommunityController {
     //게시글 작성
     @PostMapping("/v1/communities")
     public ApiResponse<CommunitySaveResponse> createCommunity(@AuthenticationPrincipal AuthUser authUser, @Valid @RequestBody CommunitySaveRequest communitySaveRequest) {
-        ResolveStatus resolvedStatus = communitySaveRequest.getResolvedStatus();
-        Category category = communitySaveRequest.getCategory();
-        CommunitySaveResponse communitySaveResponse = communityService.createCommunity(authUser, communitySaveRequest, resolvedStatus, category);
+//        ResolveStatus resolvedStatus = communitySaveRequest.getResolvedStatus();
+//        Category category = communitySaveRequest.getCategory();
+        CommunitySaveResponse communitySaveResponse = communityService.createCommunity(authUser, communitySaveRequest);
         return ApiResponse.ok(communitySaveResponse);
     }
 
@@ -51,9 +49,9 @@ public class CommunityController {
     //게시글 수정
     @PatchMapping("/v1/communities/{communityId}")
     public ApiResponse<CommunityDetailResponse> updateCommunity(@PathVariable Long communityId, @Valid @RequestBody CommunityUpdateRequest communityUpdateRequest) {
-        ResolveStatus resolvedStatus = communityUpdateRequest.getResolvedStatus();
-        Category category = communityUpdateRequest.getCategory();
-        CommunityDetailResponse communityDetailResponse = communityService.updateCommunity(communityId, communityUpdateRequest, resolvedStatus, category);
+//        ResolveStatus resolvedStatus = communityUpdateRequest.getResolvedStatus();
+//        Category category = communityUpdateRequest.getCategory();
+        CommunityDetailResponse communityDetailResponse = communityService.updateCommunity(communityId, communityUpdateRequest);
         return ApiResponse.ok(communityDetailResponse);
     }
 
