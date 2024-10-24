@@ -10,10 +10,10 @@ import lombok.Getter;
 public class CommunitySimpleResponse {
     private final Long communityId;
     private final String title;
-    private final ResolveStatus status;
+    private final String status;
     private final Category category;
 
-    private CommunitySimpleResponse(Long communityId, String title, ResolveStatus status, Category category) {
+    private CommunitySimpleResponse(Long communityId, String title, String status, Category category) {
         this.communityId = communityId;
         this.title = title;
         this.status = status;
@@ -24,7 +24,7 @@ public class CommunitySimpleResponse {
         return new CommunitySimpleResponse(
                 community.getId(),
                 community.getTitle(),
-                community.getResolveStatus(),
+                community.getResolveStatus().getDescription(),
                 community.getCategory()
         );
     }

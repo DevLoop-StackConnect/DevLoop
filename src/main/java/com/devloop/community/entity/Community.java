@@ -19,15 +19,15 @@ import java.util.List;
 public class Community extends Timestamped {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="community_id")
+    @Column(name = "community_id")
     private Long id;
 
     @NotNull
-    @Column(name="title",length = 100)
+    @Column(name = "title", length = 100)
     private String title;
 
     @NotNull
-    @Column(name="content",columnDefinition = "TEXT")
+    @Column(name = "content", columnDefinition = "TEXT")
     private String content;
 
     @NotNull
@@ -40,7 +40,7 @@ public class Community extends Timestamped {
     @Column(name = "status")
     private ResolveStatus resolveStatus;
 
-    @OneToMany(mappedBy = "community",fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "community", fetch = FetchType.LAZY)
     private List<CommunityComment> communityComments = new ArrayList<>();
 
     //!!!!!!!!!!원투매니로 이미지 첨부파일 연관관계 맺어야함
@@ -50,35 +50,31 @@ public class Community extends Timestamped {
     private User user;
 
     //커뮤니티 글 생성자
-    private Community(String title, String content,ResolveStatus resolveStatus,Category category,User user){
-        this.title=title;
-        this.content=content;
-        this.resolveStatus=resolveStatus;
-        this.category=category;
-        this.user=user;
+    private Community(String title, String content, ResolveStatus resolveStatus, Category category, User user) {
+        this.title = title;
+        this.content = content;
+        this.resolveStatus = resolveStatus;
+        this.category = category;
+        this.user = user;
     }
 
-    public static Community from(CommunitySaveRequest communitySaveRequest, User user){
+    public static Community from(CommunitySaveRequest communitySaveRequest, User user, ResolveStatus resolvedStatus, Category category) {
         return new Community(
                 communitySaveRequest.getTitle(),
                 communitySaveRequest.getContent(),
-                communitySaveRequest.getStatus(),
-                communitySaveRequest.getCategory(),
+                resolvedStatus,
+                category,
                 user
         );
     }
 
     //커뮤니티 글 수정 메서드
-    public void updateCommunity(String title, String content,ResolveStatus resolveStatus,Category category){
-        this.title=title;
-        this.content=content;
-        this.resolveStatus=resolveStatus;
-        this.category=category;
+    public void updateCommunity(String title, String content, ResolveStatus resolveStatus, Category category) {
+        this.title = title;
+        this.content = content;
+        this.resolveStatus = resolveStatus;
+        this.category = category;
     }
-
-
-
-
 
 
 }

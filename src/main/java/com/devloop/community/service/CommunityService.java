@@ -2,6 +2,7 @@ package com.devloop.community.service;
 
 import com.devloop.common.AuthUser;
 import com.devloop.common.apipayload.status.ErrorStatus;
+import com.devloop.common.enums.Category;
 import com.devloop.common.exception.ApiException;
 import com.devloop.community.dto.request.CommunitySaveRequest;
 import com.devloop.community.dto.request.CommunityUpdateRequest;
@@ -9,9 +10,8 @@ import com.devloop.community.dto.response.CommunityDetailResponse;
 import com.devloop.community.dto.response.CommunitySaveResponse;
 import com.devloop.community.dto.response.CommunitySimpleResponse;
 import com.devloop.community.entity.Community;
+import com.devloop.community.entity.ResolveStatus;
 import com.devloop.community.repository.CommunityRepository;
-import com.devloop.communitycomment.dto.CommentResponse;
-import com.devloop.communitycomment.entity.CommunityComment;
 import com.devloop.communitycomment.repository.CommunityCommentRepository;
 import com.devloop.user.entity.User;
 import com.devloop.user.repository.UserRepository;
@@ -35,13 +35,12 @@ public class CommunityService {
 
     //게시글 작성
     @Transactional
-    public CommunitySaveResponse createCommunity(AuthUser authUser, CommunitySaveRequest communitySaveRequest) {
-        System.out.println(communitySaveRequest.getStatus());
+    public CommunitySaveResponse createCommunity(AuthUser authUser, CommunitySaveRequest communitySaveRequest, ResolveStatus resolvedStatus, Category category) {
         //사용자 조회
         User user = userRepository.findById(authUser.getId())
                 .orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_USER));
         //게시글 Community객체 생성
-        Community community = Community.from(communitySaveRequest, user);
+        Community community = Community.from(communitySaveRequest, user, resolvedStatus, category);
         //게시글 저장
         Community savedCommunity = communityRepository.save(community);
         //응답반환
@@ -74,7 +73,7 @@ public class CommunityService {
 
     //게시글 수정
     @Transactional
-    public CommunityDetailResponse updateCommunity(Long communityId, CommunityUpdateRequest communityUpdateRequest) {
+    public CommunityDetailResponse updateCommunity(Long communityId, CommunityUpdateRequest communityUpdateRequest,ResolveStatus resolvedStatus, Category category) {
         //게시글 조회
         Community community = communityRepository.findById(communityId)
                 .orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_COMMUNITY));
@@ -83,8 +82,8 @@ public class CommunityService {
         community.updateCommunity(
                 communityUpdateRequest.getTitle(),
                 communityUpdateRequest.getContent(),
-                communityUpdateRequest.getStatus(),
-                communityUpdateRequest.getCategory()
+                resolvedStatus,
+                category
         );
         //수정된 게시글 저장
         communityRepository.save(community);

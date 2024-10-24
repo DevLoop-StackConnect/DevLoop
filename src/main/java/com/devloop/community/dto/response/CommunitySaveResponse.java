@@ -1,6 +1,5 @@
 package com.devloop.community.dto.response;
 
-import com.devloop.common.Timestamped;
 import com.devloop.common.enums.Category;
 import com.devloop.community.entity.Community;
 import com.devloop.community.entity.ResolveStatus;
@@ -13,12 +12,12 @@ public class CommunitySaveResponse  {
     private final Long communityId;
     private final String title;
     private final String content;
-    private final ResolveStatus status; //게시글 해결 상태 (SOLVED, UNSOLVED)
-    private final Category category;
+    private final String status; //게시글 해결 상태 (SOLVED, UNSOLVED)
+    private final String category;
     private final LocalDateTime createdAt;
 
 
-    private CommunitySaveResponse(Long communityId, String title, String content, ResolveStatus status, Category category, LocalDateTime createdAt) {
+    private CommunitySaveResponse(Long communityId, String title, String content, String status, String category, LocalDateTime createdAt) {
         this.communityId = communityId;
         this.title = title;
         this.content = content;
@@ -32,8 +31,8 @@ public class CommunitySaveResponse  {
                 community.getId(),
                 community.getTitle(),
                 community.getContent(),
-                community.getResolveStatus(),
-                community.getCategory(),
+                community.getResolveStatus().getDescription(),
+                community.getCategory().getDescription(),
                 community.getCreatedAt()
         );
     }
