@@ -4,8 +4,13 @@ import com.amazonaws.AmazonServiceException;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.devloop.attachment.entity.ProfileAttachment;
+import com.devloop.attachment.enums.Domain;
+import com.devloop.attachment.enums.FileFormat;
+import com.devloop.attachment.repository.FARepository;
 import com.devloop.common.apipayload.status.ErrorStatus;
 import com.devloop.common.exception.ApiException;
+import com.devloop.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -23,6 +28,7 @@ public class S3Util {
     private String bucketName;
 
     private final AmazonS3Client amazonS3Client;
+    private final FARepository faRepository;
 
     public String makeFileName(MultipartFile file){
         return UUID.randomUUID() + file.getOriginalFilename();
@@ -42,8 +48,30 @@ public class S3Util {
             throw new RuntimeException(e);
         }
     }
+    // 유저 프로필 변경시 사용
+    public void uploadFile(MultipartFile file, User user) {
+        if(user.getAttachmentId() != null) {
+            // 디폴트 이미지가 아닐때 S3에서 삭제
+            ProfileAttachment currentImg = faRepository.findById(user.getAttachmentId())
+                    .orElseThrow(()->new ApiException(ErrorStatus._ATTACHMENT_NOT_FOUND));
 
-    public void delete(String fileName){
+            URL imageURL = currentImg.getImageURL();
+            String currentImgName = currentImg.getFileName();
+            delete(currentImgName);
+            faRepository.delete(currentImg);
+        }
+        String fileName = uploadFile(file);
+        ProfileAttachment profileAttachment = ProfileAttachment.from(getUrl(file.getOriginalFilename()),
+                FileFormat.PNG,
+                Domain.PROFILE,
+                fileName
+        );
+        faRepository.save(profileAttachment);
+        user.updateProfileImg(profileAttachment.getId());
+
+    }
+
+        public void delete(String fileName){
         if(amazonS3Client.doesObjectExist(bucketName, fileName)) {
             try {
                 amazonS3Client.deleteObject(new DeleteObjectRequest(bucketName,fileName));
