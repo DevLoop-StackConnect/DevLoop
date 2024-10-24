@@ -29,7 +29,7 @@ public class UserResponse {
 
     }
 
-    public static UserResponse from( String userName,
+    public static UserResponse of( String userName,
                                      String userEmail,
                                      UserRole userRole,
                                      URL url,

@@ -35,18 +35,22 @@ public class UserService {
     private final FileValidator fileValidator;
 
     public UserResponse getUser(AuthUser authUser) throws MalformedURLException {
+
         User user = userRepository.findById(authUser.getId())
                         .orElseThrow(()->new ApiException(ErrorStatus._NOT_FOUND_USER));
+
         URL imageURL = new URL("https://devloop-stackconnect1.s3.ap-northeast-2.amazonaws.com/defaultImg.png");
+
         if(user.getAttachmentId() != null) {
             // 디폴트 이미지 아닐때 ->
             ProfileAttachment profileAttachment = faRepository.findById(user.getAttachmentId())
                     .orElseThrow(()->new ApiException(ErrorStatus._ATTACHMENT_NOT_FOUND));
             imageURL = profileAttachment.getImageURL();
         }
+
         Party party = partyRepository.findByUserId(user.getId());
         GetPartyListResponse getPartyListResponse = GetPartyListResponse.from(party);
-        return UserResponse.from(user.getUsername(),user.getEmail(),user.getUserRole(),imageURL,getPartyListResponse);
+        return UserResponse.of(user.getUsername(),user.getEmail(),user.getUserRole(),imageURL,getPartyListResponse);
     }
 
     @Transactional
@@ -61,7 +65,7 @@ public class UserService {
             faRepository.delete(currentImg);
         }
         String fileName = s3Service.uploadFile(file);
-        ProfileAttachment profileAttachment = ProfileAttachment.from(
+        ProfileAttachment profileAttachment = ProfileAttachment.of(
                 user.getId(),
                 s3Service.getUrl(file.getOriginalFilename()),
                 fileValidator.mapStringToFileFormat(Objects.requireNonNull(file.getContentType())),
