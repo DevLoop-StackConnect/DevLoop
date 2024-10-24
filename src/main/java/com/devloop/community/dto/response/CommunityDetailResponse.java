@@ -13,11 +13,11 @@ public class CommunityDetailResponse {
     private final String title;
     private final String content;
     private final String status;
-    private final Category category;
+    private final String category;
     private final LocalDateTime createdAt;
     private final LocalDateTime modifiedAt;
 
-    private CommunityDetailResponse(Long communityId, String title, String content, String status, Category category, LocalDateTime createdAt, LocalDateTime modifiedAt) {
+    private CommunityDetailResponse(Long communityId, String title, String content, String status, String category, LocalDateTime createdAt, LocalDateTime modifiedAt) {
         this.communityId = communityId;
         this.title = title;
         this.content = content;
@@ -34,7 +34,7 @@ public class CommunityDetailResponse {
                 community.getTitle(),
                 community.getContent(),
                 community.getResolveStatus().getDescription(),
-                community.getCategory(),
+                community.getCategory().getDescription(),
                 community.getCreatedAt(),
                 community.getModifiedAt()
         );
