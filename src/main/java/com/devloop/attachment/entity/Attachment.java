@@ -7,6 +7,8 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.net.URL;
+
 @Getter
 @NoArgsConstructor
 @Entity
@@ -19,7 +21,7 @@ public abstract class Attachment {
     private Long id;
 
     @NotNull
-    private String imageURL;
+    private URL imageURL;
 
     @Enumerated(EnumType.STRING)
     @NotNull
@@ -29,10 +31,13 @@ public abstract class Attachment {
     @NotNull
     private Domain domain;
 
-    public Attachment(String imageURL, FileFormat fileFormat, Domain domain) {
+    private String fileName;
+
+    public Attachment(URL imageURL, FileFormat fileFormat, Domain domain,String fileName) {
         this.imageURL = imageURL;
         this.fileFormat = fileFormat;
         this.domain = domain;
+        this.fileName = fileName;
     }
 }
 
