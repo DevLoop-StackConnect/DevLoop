@@ -3,6 +3,8 @@ package com.devloop.search.service;
 import com.devloop.common.apipayload.status.ErrorStatus;
 import com.devloop.common.exception.ApiException;
 import com.devloop.common.utils.SearchSpecificationUtil;
+import com.devloop.community.entity.Community;
+import com.devloop.community.repository.CommunityRepository;
 import com.devloop.party.entity.Party;
 import com.devloop.party.repository.PartyRepository;
 import com.devloop.search.request.IntegrationSearchRequest;
@@ -23,6 +25,7 @@ import java.util.List;
 public class SearchService {
 
     private final PartyRepository partyRepository;
+    private final CommunityRepository communityRepository;
 
     public Page<IntegrationSearchResponse> integrationSearch(IntegrationSearchRequest integrationSearchRequest, int page, int size) {
         PageRequest pageable= PageRequest.of(page-1,size, Sort.by("createdAt").descending());
@@ -32,7 +35,7 @@ public class SearchService {
         }
         return switch(integrationSearchRequest.getBoardType().toLowerCase()){
             case "party" -> searchParty(integrationSearchRequest, pageable);
-//            case "community" -> searchCommunity(integrationSearchRequest, pageable);
+            case "community" -> searchCommunity(integrationSearchRequest, pageable);
 //            case "project"  -> searchProject(integrationSearchRequest, pageable);
             default -> throw new ApiException(ErrorStatus._BAD_SEARCH_KEYWORD);
         };
@@ -40,7 +43,7 @@ public class SearchService {
 
     private Page<IntegrationSearchResponse> searchAllType(IntegrationSearchRequest integrationSearchRequest, PageRequest pageable) {
         Specification<Party> partySpec = SearchSpecificationUtil.buildSpecification(integrationSearchRequest);
-//        Specification<커뮤니티> communitySpec = SearchSpecificationUtil.buildSpecification(integrationSearchRequest);
+        Specification<Community> communitySpec = SearchSpecificationUtil.buildSpecification(integrationSearchRequest);
 //        Specification<프로젝트> projectSpec = SearchSpecificationUtil.buildSpecification(integrationSearchRequest);
 
         List<IntegrationSearchResponse> allResults = new ArrayList<>();
@@ -50,19 +53,19 @@ public class SearchService {
                 .map(party -> IntegrationSearchResponse.from("party",party))
                 .toList();
 
-        List<IntegrationSearchResponse> communityResults = partyRepository.findAll(partySpec)
+        List<IntegrationSearchResponse> communityResults = communityRepository.findAll(communitySpec)
                 .stream()
                 .map(community -> IntegrationSearchResponse.from("community",community))
                 .toList();
-
-        List<IntegrationSearchResponse> projectResults = partyRepository.findAll(partySpec)
-                .stream()
-                .map(project -> IntegrationSearchResponse.from("project",project))
-                .toList();
+//
+//        List<IntegrationSearchResponse> projectResults = partyRepository.findAll(partySpec)
+//                .stream()
+//                .map(project -> IntegrationSearchResponse.from("project",project))
+//                .toList();
 
         allResults.addAll(partyResults);
         allResults.addAll(communityResults);
-        allResults.addAll(projectResults);
+//        allResults.addAll(projectResults);
 
         int start = (int) pageable.getOffset();
         int end = Math.min((start + pageable.getPageSize()), allResults.size());
@@ -81,13 +84,13 @@ public class SearchService {
                 .map(party -> IntegrationSearchResponse.from("party", party));
     }
 
-//    private Page<IntegrationSearchResponse> searchCommunity(IntegrationSearchRequest integrationSearchRequest, PageRequest pageable) {
-//
-//        Specification<Party> spec = SearchSpecificationUtil.buildSpecification(integrationSearchRequest);
-//        return partyRepository.findAll(spec, pageable)
-//                .map(party -> IntegrationSearchResponse.from("community", community));
-//    }
-//
+    private Page<IntegrationSearchResponse> searchCommunity(IntegrationSearchRequest integrationSearchRequest, PageRequest pageable) {
+
+        Specification<Community> spec = SearchSpecificationUtil.buildSpecification(integrationSearchRequest);
+        return communityRepository.findAll(spec, pageable)
+                .map(community -> IntegrationSearchResponse.from("community", community ));
+    }
+
 //    private Page<IntegrationSearchResponse> searchProject(IntegrationSearchRequest integrationSearchRequest, PageRequest pageable) {
 //
 //        Specification<Party> spec = SearchSpecificationUtil.buildSpecification(integrationSearchRequest);
