@@ -19,12 +19,10 @@ public class CommentResponse {
         this.createdAt=createdAt;
     }
 
-    public static CommentResponse from(CommunityComment communityComment) {
-        return new CommentResponse(
-                communityComment.getId(),
-                communityComment.getContent(),
-                communityComment.getUser().getUsername(),
-                communityComment.getCreatedAt()
-        );
+    public static CommentResponse  of(Long commentId, String content, String username, LocalDateTime createdAt) {
+        return new CommentResponse(commentId,
+                content,
+                username,
+                createdAt);
     }
 }

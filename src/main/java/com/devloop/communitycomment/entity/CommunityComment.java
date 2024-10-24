@@ -38,9 +38,9 @@ public class CommunityComment extends Timestamped {
         this.user=user;
     }
 
-    public static CommunityComment from(CommentSaveRequest commentSaveRequest, Community community, User user){
+    public static CommunityComment of(String content, Community community, User user){
         return new CommunityComment(
-                commentSaveRequest.getContent(),
+                content,
                 community,
                 user
         );
