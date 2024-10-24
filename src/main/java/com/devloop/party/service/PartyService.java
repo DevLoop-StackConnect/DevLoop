@@ -15,6 +15,7 @@ import com.devloop.party.response.UpdatePartyResponse;
 import com.devloop.user.entity.User;
 import com.devloop.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -24,6 +25,7 @@ import org.springframework.web.multipart.MultipartFile;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
+@Slf4j
 public class PartyService {
 
     private final PartyRepository partyRepository;
@@ -37,6 +39,7 @@ public class PartyService {
         User user=userRepository.findById(authUser.getId()).orElseThrow(()->
                 new ApiException(ErrorStatus._NOT_FOUND_USER));
 
+        log.info("save={}",savePartyRequest);
         //새로운 파티 생성
         Party newParty=Party.from(savePartyRequest, user);
         partyRepository.save(newParty);
