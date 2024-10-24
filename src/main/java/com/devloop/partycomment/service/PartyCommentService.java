@@ -5,6 +5,7 @@ import com.devloop.common.apipayload.status.ErrorStatus;
 import com.devloop.common.exception.ApiException;
 import com.devloop.party.entity.Party;
 import com.devloop.party.repository.PartyRepository;
+import com.devloop.party.service.PartyService;
 import com.devloop.partycomment.entity.PartyComment;
 import com.devloop.partycomment.repository.PartyCommentRepository;
 import com.devloop.partycomment.request.SavePartyCommentRequest;
@@ -30,7 +31,7 @@ import java.util.stream.Collectors;
 public class PartyCommentService {
     private final PartyCommentRepository partyCommentRepository;
     private final UserRepository userRepository;
-    private final PartyRepository partyRepository;
+    private final PartyService partyService;
 
     //스터디 파티 게시글 댓글 등록
     @Transactional
@@ -40,8 +41,7 @@ public class PartyCommentService {
             new ApiException(ErrorStatus._NOT_FOUND_USER));
 
         //스터디 파티 게시글이 존재하는 지 확인
-        Party party=partyRepository.findById(partyId).orElseThrow(()->
-            new ApiException(ErrorStatus._NOT_FOUND_PARTY));
+        Party party=partyService.findById(partyId);
 
         //새로운 댓글 생성 및 저장
         PartyComment newPartyComment=PartyComment.from(savePartyCommentRequest,user,party);
@@ -54,8 +54,7 @@ public class PartyCommentService {
     @Transactional
     public UpdatePartyCommentResponse updatePartyComment(AuthUser authUser, Long partyId, Long commentId, UpdatePartyCommentRequest updatePartyCommentRequest) {
         //스터디 파티 게시글이 존재하는 지 확인
-        Party party=partyRepository.findById(partyId).orElseThrow(()->
-                new ApiException(ErrorStatus._NOT_FOUND_PARTY));
+        Party party=partyService.findById(partyId);
 
         //댓글이 존재하는 지 확인
         PartyComment partyComment=partyCommentRepository.findById(commentId).orElseThrow(()->
@@ -76,8 +75,7 @@ public class PartyCommentService {
         Pageable pageable= PageRequest.of(page-1,size);
 
         //스터디 파티 게시글이 존재하는 지 확인
-        Party party=partyRepository.findById(partyId).orElseThrow(()->
-                new ApiException(ErrorStatus._NOT_FOUND_PARTY));
+        Party party=partyService.findById(partyId);
 
         Page<PartyComment> partyComments=partyCommentRepository.findByParty(party,pageable);
 
@@ -91,8 +89,7 @@ public class PartyCommentService {
     @Transactional
     public void deletePartyComment(AuthUser authUser, Long partyId, Long commentId) {
         //스터디 파티 게시글이 존재하는 지 확인
-        Party party=partyRepository.findById(partyId).orElseThrow(()->
-                new ApiException(ErrorStatus._NOT_FOUND_PARTY));
+        Party party=partyService.findById(partyId);
 
         //댓글이 존재하는 지 확인
         PartyComment partyComment=partyCommentRepository.findById(commentId).orElseThrow(()->
