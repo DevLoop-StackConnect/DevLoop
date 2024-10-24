@@ -67,7 +67,10 @@ public enum ErrorStatus implements BaseCode {
     _BAD_SEARCH_KEYWORD(HttpStatus.BAD_REQUEST, "400", "검색 오류"),
 
     //Community
-    _NOT_FOUND_COMMUNITY(HttpStatus.NOT_FOUND, "404", "존재하지 않는 게시글입니다");
+    _NOT_FOUND_COMMUNITY(HttpStatus.NOT_FOUND, "404", "존재하지 않는 게시글입니다"),
+
+    //S3
+    _UNSUPPORTED_OBJECT_TYPE(HttpStatus.BAD_REQUEST,"409","지원하지 않는 객체입니다.");
 
     private HttpStatus httpStatus;
     private String statusCode;
