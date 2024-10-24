@@ -9,7 +9,7 @@ import java.net.URL;
 public class UserResponse {
     private final String userName;
     private final String userEmail;
-    private final UserRole userRole;
+    private final String userRole;
     private final URL url;
     private final GetPartyListResponse partyList;
 
@@ -17,7 +17,7 @@ public class UserResponse {
 
     private UserResponse( String userName,
                           String userEmail,
-                          UserRole userRole,
+                          String userRole,
                           URL url,
                           GetPartyListResponse partyList
                           ) {
@@ -31,7 +31,7 @@ public class UserResponse {
 
     public static UserResponse of( String userName,
                                      String userEmail,
-                                     UserRole userRole,
+                                     String userRole,
                                      URL url,
                                      GetPartyListResponse partyList
                                      ) {
