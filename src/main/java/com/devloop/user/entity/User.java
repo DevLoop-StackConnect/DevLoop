@@ -56,7 +56,7 @@ public class User extends Timestamped {
         this.loginType = LoginType.LOCAL;
     }
 
-    public static User from(String username, String email, String password, UserRole userRole) {
+    public static User of(String username, String email, String password, UserRole userRole) {
         return new User(username, email, password, userRole);
     }
 
