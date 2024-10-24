@@ -48,7 +48,7 @@ public class TutorRequest extends Timestamped {
         this.user = userId;
     }
 
-    public static TutorRequest from(String name, String subUrl, String accountNum, Approval status, User userId){
+    public static TutorRequest of(String name, String subUrl, String accountNum, Approval status, User userId){
         return new TutorRequest(
                 name,
                 subUrl,

@@ -42,7 +42,7 @@ public class TutorService {
         }
 
         // 튜터 신청
-        TutorRequest newTutorRequest = TutorRequest.from(
+        TutorRequest newTutorRequest = TutorRequest.of(
                 tutorRequest.getName(),
                 tutorRequest.getSubUrl(),
                 tutorRequest.getAccountNum(),
