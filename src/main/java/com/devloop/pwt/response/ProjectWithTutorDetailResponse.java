@@ -1,15 +1,10 @@
 package com.devloop.pwt.response;
 
-import com.devloop.pwt.enums.Level;
-import com.devloop.pwt.enums.ProjectWithTutorStatus;
-import com.devloop.user.entity.User;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDateTime;
 
 @Getter
-@RequiredArgsConstructor
 public class ProjectWithTutorDetailResponse {
 
     private final String title;
@@ -25,31 +20,31 @@ public class ProjectWithTutorDetailResponse {
             String title,
             String description,
             Integer price,
-            ProjectWithTutorStatus status,
+            String status,
             LocalDateTime deadline,
             Integer maxParticipants,
-            Level level,
-            User user
+            String level,
+            String tutorName
     ) {
         this.title = title;
         this.description = description;
         this.price = price;
-        this.status = status.getStatus();
+        this.status = status;
         this.deadline = deadline;
         this.maxParticipants = maxParticipants;
-        this.level = level.getLevel();
-        this.tutorName = user.getUsername();
+        this.level = level;
+        this.tutorName = tutorName;
     }
 
-    public static ProjectWithTutorDetailResponse from(
+    public static ProjectWithTutorDetailResponse of(
             String title,
             String description,
             Integer price,
-            ProjectWithTutorStatus status,
+            String status,
             LocalDateTime deadline,
             Integer maxParticipants,
-            Level leve,
-            User user
+            String leve,
+            String tutorName
 
     ){
         return new ProjectWithTutorDetailResponse(
@@ -60,7 +55,7 @@ public class ProjectWithTutorDetailResponse {
                 deadline,
                 maxParticipants,
                 leve,
-                user
+                tutorName
         );
     }
 

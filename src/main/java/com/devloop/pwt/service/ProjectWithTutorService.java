@@ -78,15 +78,15 @@ public class ProjectWithTutorService {
             throw new ApiException(ErrorStatus._ACCESS_PERMISSION_DENIED);
         }
 
-        return ProjectWithTutorDetailResponse.from(
+        return ProjectWithTutorDetailResponse.of(
                 projectWithTutor.getTitle(),
                 projectWithTutor.getDescription(),
                 projectWithTutor.getPrice(),
-                projectWithTutor.getStatus(),
+                projectWithTutor.getStatus().getStatus(),
                 projectWithTutor.getDeadline(),
                 projectWithTutor.getMaxParticipants(),
-                projectWithTutor.getLevel(),
-                projectWithTutor.getUser()
+                projectWithTutor.getLevel().getLevel(),
+                projectWithTutor.getUser().getUsername()
         );
     }
 
