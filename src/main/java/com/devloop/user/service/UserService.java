@@ -1,7 +1,7 @@
 package com.devloop.user.service;
 
 import com.devloop.attachment.entity.ProfileAttachment;
-import com.devloop.attachment.enums.Domain;
+import com.devloop.attachment.enums.FileFormat;
 import com.devloop.attachment.repository.ProfileATMRepository;
 import com.devloop.attachment.s3.S3Service;
 import com.devloop.common.AuthUser;
@@ -91,12 +91,15 @@ public class UserService {
             s3Service.delete(currentImgName);
             profileATMRepository.delete(currentImg);
         }
+
+        FileFormat fileType =  fileValidator.mapStringToFileFormat(Objects.requireNonNull(file.getContentType()));
         String fileName = s3Service.uploadFile(file);
+        URL url = s3Service.getUrl(file.getOriginalFilename());
+
         ProfileAttachment profileAttachment = ProfileAttachment.of(
                 user.getId(),
-                s3Service.getUrl(file.getOriginalFilename()),
-                fileValidator.mapStringToFileFormat(Objects.requireNonNull(file.getContentType())),
-                Domain.PROFILE,
+                url,
+                fileType,
                 fileName
         );
         profileATMRepository.save(profileAttachment);
