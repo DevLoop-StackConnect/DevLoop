@@ -40,13 +40,13 @@ public class AuthService {
             throw new ApiException(ErrorStatus._INVALID_REQUEST);
         }
 
-        User user = User.from(signupRequest.getUsername(),
+        User user = User.of(signupRequest.getUsername(),
                 signupRequest.getEmail(),
                 encodedPassword,
                 UserRole.of(signupRequest.getRole()));
         User savedUser = userRepository.save(user);
 
-        return SignupResponse.from(
+        return SignupResponse.of(
                 signupRequest.getEmail(),
                 signupRequest.getUsername(),
                 savedUser.getCreatedAt()

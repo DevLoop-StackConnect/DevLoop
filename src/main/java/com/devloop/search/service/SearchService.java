@@ -1,15 +1,20 @@
 package com.devloop.search.service;
 
 import com.devloop.common.apipayload.status.ErrorStatus;
+import com.devloop.common.enums.BoardType;
 import com.devloop.common.exception.ApiException;
+import com.devloop.common.utils.SearchResponseUtil;
 import com.devloop.common.utils.SearchSpecificationUtil;
 import com.devloop.community.entity.Community;
-import com.devloop.community.repository.CommunityRepository;
+import com.devloop.community.service.CommunityService;
 import com.devloop.party.entity.Party;
-import com.devloop.party.repository.PartyRepository;
+import com.devloop.party.service.PartyService;
+import com.devloop.pwt.entity.ProjectWithTutor;
+import com.devloop.pwt.service.ProjectWithTutorService;
 import com.devloop.search.request.IntegrationSearchRequest;
 import com.devloop.search.response.IntegrationSearchResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -20,81 +25,73 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class SearchService {
 
-    private final PartyRepository partyRepository;
-    private final CommunityRepository communityRepository;
+    private final PartyService partyService;
+    private final CommunityService communityService;
+    private final ProjectWithTutorService projectWithTutorService;
 
     public Page<IntegrationSearchResponse> integrationSearch(IntegrationSearchRequest integrationSearchRequest, int page, int size) {
-        PageRequest pageable= PageRequest.of(page-1,size, Sort.by("createdAt").descending());
+        PageRequest pageable = PageRequest.of(page - 1, size, Sort.by("createdAt").descending());
 
-        if(integrationSearchRequest.getBoardType() == null || integrationSearchRequest.getBoardType().isEmpty()) {
+        if (integrationSearchRequest.getBoardType() == null || integrationSearchRequest.getBoardType().isEmpty()) {
             return searchAllType(integrationSearchRequest, pageable);
         }
-        return switch(integrationSearchRequest.getBoardType().toLowerCase()){
+
+        return switch (integrationSearchRequest.getBoardType().toLowerCase()) {
             case "party" -> searchParty(integrationSearchRequest, pageable);
             case "community" -> searchCommunity(integrationSearchRequest, pageable);
-//            case "project"  -> searchProject(integrationSearchRequest, pageable);
+            case "project" -> searchPwt(integrationSearchRequest, pageable);
             default -> throw new ApiException(ErrorStatus._BAD_SEARCH_KEYWORD);
         };
     }
 
     private Page<IntegrationSearchResponse> searchAllType(IntegrationSearchRequest integrationSearchRequest, PageRequest pageable) {
-        Specification<Party> partySpec = SearchSpecificationUtil.buildSpecification(integrationSearchRequest);
-        Specification<Community> communitySpec = SearchSpecificationUtil.buildSpecification(integrationSearchRequest);
-//        Specification<프로젝트> projectSpec = SearchSpecificationUtil.buildSpecification(integrationSearchRequest);
-
         List<IntegrationSearchResponse> allResults = new ArrayList<>();
 
-        List<IntegrationSearchResponse> partyResults = partyRepository.findAll(partySpec)
-                .stream()
-                .map(party -> IntegrationSearchResponse.from("party",party))
-                .toList();
+        Specification<Party> partySpec = SearchSpecificationUtil.buildSpecification(integrationSearchRequest);
+        Specification<Community> communitySpec = SearchSpecificationUtil.buildSpecification(integrationSearchRequest);
+        Specification<ProjectWithTutor> pwtSpec = SearchSpecificationUtil.buildSpecification(integrationSearchRequest);
 
-        List<IntegrationSearchResponse> communityResults = communityRepository.findAll(communitySpec)
-                .stream()
-                .map(community -> IntegrationSearchResponse.from("community",community))
-                .toList();
-//
-//        List<IntegrationSearchResponse> projectResults = partyRepository.findAll(partySpec)
-//                .stream()
-//                .map(project -> IntegrationSearchResponse.from("project",project))
-//                .toList();
+        List<IntegrationSearchResponse> partyResults = partyService.getParty(partySpec);
+
+        List<IntegrationSearchResponse> communityResults = communityService.getAllCommunity(communitySpec);
+
+        List<IntegrationSearchResponse> pwtResults = projectWithTutorService.getProjectWithTutor(pwtSpec);
 
         allResults.addAll(partyResults);
         allResults.addAll(communityResults);
-//        allResults.addAll(projectResults);
+        allResults.addAll(pwtResults);
 
         int start = (int) pageable.getOffset();
         int end = Math.min((start + pageable.getPageSize()), allResults.size());
 
         return new PageImpl<>(
-                allResults.subList(start,end),
+                allResults.subList(start, end),
                 pageable,
                 allResults.size()
         );
     }
 
     private Page<IntegrationSearchResponse> searchParty(IntegrationSearchRequest integrationSearchRequest, PageRequest pageable) {
-
         Specification<Party> spec = SearchSpecificationUtil.buildSpecification(integrationSearchRequest);
-        return partyRepository.findAll(spec, pageable)
-                .map(party -> IntegrationSearchResponse.from("party", party));
+        Page<IntegrationSearchResponse> result = partyService.getPartyWithPage(spec, pageable);
+        return result;
     }
 
     private Page<IntegrationSearchResponse> searchCommunity(IntegrationSearchRequest integrationSearchRequest, PageRequest pageable) {
-
-        Specification<Community> spec = SearchSpecificationUtil.buildSpecification(integrationSearchRequest);
-        return communityRepository.findAll(spec, pageable)
-                .map(community -> IntegrationSearchResponse.from("community", community ));
+            Specification<Community> spec = SearchSpecificationUtil.buildSpecification(integrationSearchRequest);
+            Page<IntegrationSearchResponse> result = communityService.getCommunityWithPage(spec, pageable);
+            return result;
     }
 
-//    private Page<IntegrationSearchResponse> searchProject(IntegrationSearchRequest integrationSearchRequest, PageRequest pageable) {
-//
-//        Specification<Party> spec = SearchSpecificationUtil.buildSpecification(integrationSearchRequest);
-//        return partyRepository.findAll(spec, pageable)
-//                .map(party -> IntegrationSearchResponse.from("project", project));
-//    }
+    private Page<IntegrationSearchResponse> searchPwt(IntegrationSearchRequest integrationSearchRequest, PageRequest pageable) {
+        Specification<ProjectWithTutor> spec = SearchSpecificationUtil.buildSpecification(integrationSearchRequest);
+        Page<IntegrationSearchResponse> result = projectWithTutorService.getProjectWithTutorPage(spec, pageable);
+        return result;
+        //파샤드 패턴
+    }
 }
