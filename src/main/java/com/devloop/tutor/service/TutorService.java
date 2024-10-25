@@ -4,7 +4,7 @@ import com.devloop.common.AuthUser;
 import com.devloop.common.apipayload.status.ErrorStatus;
 import com.devloop.common.exception.ApiException;
 import com.devloop.tutor.entity.TutorRequest;
-import com.devloop.tutor.enums.TutorRequestStatus;
+import com.devloop.common.enums.Approval;
 import com.devloop.tutor.repository.TutorRequestRepository;
 import com.devloop.tutor.request.TutorRequestSaveRequest;
 import com.devloop.user.entity.User;
@@ -32,7 +32,7 @@ public class TutorService {
         User requestUser = userRepository.findById(authUser.getId()).orElseThrow(()-> new ApiException(ErrorStatus._NOT_FOUND_USER));
 
         // 요청한 사용자의 권한이 USER인지 확인
-        if(!(requestUser.getUserRole().equals(UserRole.ROLE_USER))){
+        if((!requestUser.getUserRole().equals(UserRole.ROLE_USER))){
             throw new ApiException(ErrorStatus._HAS_NOT_ACCESS_PERMISSION);
         }
 
@@ -42,11 +42,10 @@ public class TutorService {
         }
 
         // 튜터 신청
-        TutorRequest newTutorRequest = TutorRequest.from(
+        TutorRequest newTutorRequest = TutorRequest.of(
                 tutorRequest.getName(),
                 tutorRequest.getSubUrl(),
                 tutorRequest.getAccountNum(),
-                TutorRequestStatus.WAITE,
                 requestUser
         );
         requestRepository.save(newTutorRequest);

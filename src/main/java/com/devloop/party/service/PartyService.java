@@ -18,6 +18,7 @@ import com.devloop.search.response.IntegrationSearchResponse;
 import com.devloop.user.entity.User;
 import com.devloop.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -31,11 +32,11 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
+@Slf4j
 public class PartyService {
 
     private final PartyRepository partyRepository;
     private final UserRepository userRepository;
-    private final S3Util s3Util;
 
     //스터디 파티 모집 게시글 등록
     @Transactional
@@ -51,7 +52,13 @@ public class PartyService {
 //        //파일 업로드
 //        s3Util.uploadFile(file);
 
-        return SavePartyResponse.from(newParty);
+        return SavePartyResponse.of(
+                newParty.getId(),
+                newParty.getTitle(),
+                newParty.getContents(),
+                newParty.getStatus().getStatus(),
+                newParty.getCategory().getDescription()
+        );
     }
 
     //스터디 파티 모집 게시글 수정
@@ -66,7 +73,13 @@ public class PartyService {
             throw new ApiException(ErrorStatus._PERMISSION_DENIED);
         }
         party.update(updatePartyRequest);
-        return UpdatePartyResponse.from(party);
+        return UpdatePartyResponse.of(
+                party.getId(),
+                party.getTitle(),
+                party.getContents(),
+                party.getStatus().getStatus(),
+                party.getCategory().getDescription()
+        );
     }
 
     //스터디 파티 모집 게시글 단건 조회
@@ -74,7 +87,15 @@ public class PartyService {
         //게시글이 존재하는 지 확인
         Party party=partyRepository.findById(partyId).orElseThrow(()->
                 new ApiException(ErrorStatus._NOT_FOUND_PARTY));
-        return GetPartyDetailResponse.from(party);
+
+        return GetPartyDetailResponse.of(
+                party.getId(),
+                party.getTitle(),
+                party.getContents(),
+                party.getStatus().getStatus(),
+                party.getCategory().getDescription(),
+                party.getCreatedAt(),
+                party.getModifiedAt());
     }
 
     //스터디 파티 모집 게시글 다건 조회
@@ -88,9 +109,12 @@ public class PartyService {
         }else{
             parties=partyRepository.findByTitleContaining(title,pageable);
         }
-        return parties.map(party->{
-            return GetPartyListResponse.from(party);
-        });
+        return parties.map(party->GetPartyListResponse.of(
+                    party.getId(),
+                    party.getTitle(),
+                    party.getContents(),
+                    party.getStatus().getStatus(),
+                    party.getCategory().getDescription()));
     }
 
     //스터디 파티 모집 게시글 삭제
@@ -123,5 +147,11 @@ public class PartyService {
                 partyPage.getContent()
         );
         return new PageImpl<>(response, pageable, partyPage.getTotalElements());
+    }
+
+    //스터디 파티 id로 조회
+    public Party findById(Long id){
+        return partyRepository.findById(id).orElseThrow(()->
+                new ApiException(ErrorStatus._NOT_FOUND_PARTY));
     }
 }
