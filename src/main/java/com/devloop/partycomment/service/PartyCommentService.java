@@ -82,7 +82,7 @@ public class PartyCommentService {
         //스터디 파티 게시글이 존재하는 지 확인
         Party party=partyService.findById(partyId);
 
-        Page<PartyComment> partyComments=partyCommentRepository.findByParty(party,pageable);
+        Page<PartyComment> partyComments=partyCommentRepository.findByPartyId(party.getId(),pageable);
 
         //댓글 리스트 조회
         return partyComments.map(partyComment->{
