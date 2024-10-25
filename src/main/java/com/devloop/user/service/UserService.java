@@ -1,7 +1,6 @@
 package com.devloop.user.service;
 
 import com.devloop.attachment.entity.ProfileAttachment;
-import com.devloop.attachment.enums.FileFormat;
 import com.devloop.attachment.repository.ProfileATMRepository;
 import com.devloop.attachment.s3.S3Service;
 import com.devloop.common.AuthUser;
@@ -23,7 +22,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
