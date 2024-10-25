@@ -1,6 +1,5 @@
 package com.devloop.common.utils;
 
-import com.devloop.common.BoardType;
 import com.devloop.common.apipayload.status.ErrorStatus;
 import com.devloop.common.exception.ApiException;
 import com.devloop.search.request.IntegrationSearchRequest;
