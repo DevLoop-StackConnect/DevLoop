@@ -30,7 +30,7 @@ public class FileValidator {
         } else if (fileType.equalsIgnoreCase("application/pdf")) {
             return FileFormat.PDF;
         } else if (fileType.contains("gif")) {
-            return FileFormat.TXT;
+            return FileFormat.GIF;
         }
         throw new ApiException(ErrorStatus._UNSUPPORTED_FILE_TYPE);
     }
