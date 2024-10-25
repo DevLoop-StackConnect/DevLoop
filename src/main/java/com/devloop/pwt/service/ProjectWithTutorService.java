@@ -30,6 +30,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class ProjectWithTutorService {
 
     private final ProjectWithTutorRepository projectWithTutorRepository;
+    // todo : UserService 주입받는 방식으로 리팩토링 하기
     private final UserRepository userRepository;
 
     // 튜터랑 함께하는 협업 프로젝트 게시글 생성
