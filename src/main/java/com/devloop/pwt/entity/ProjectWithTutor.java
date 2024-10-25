@@ -35,7 +35,7 @@ public class ProjectWithTutor extends Timestamped {
 
     @NotNull
     @Enumerated(EnumType.STRING)
-    private ProjectWithTutorStatus status;
+    private ProjectWithTutorStatus status = ProjectWithTutorStatus.IN_PROGRESS;
 
     @NotNull
     private LocalDateTime deadline;
@@ -44,10 +44,12 @@ public class ProjectWithTutor extends Timestamped {
     private Integer maxParticipants;
 
     @NotNull
+    @Enumerated(EnumType.STRING)
     private Level level;
 
     @NotNull
-    private Approval approval;
+    @Enumerated(EnumType.STRING)
+    private Approval approval = Approval.WAITE;
 
     @ManyToOne
     @JoinColumn(name="user_id")
@@ -57,21 +59,17 @@ public class ProjectWithTutor extends Timestamped {
             String title,
             String description,
             Integer price,
-            ProjectWithTutorStatus status,
             LocalDateTime deadline,
             Integer maxParticipants,
             Level level,
-            Approval approval,
             User user
     ) {
         this.title = title;
         this.description = description;
         this.price = price;
-        this.status = status;
         this.deadline = deadline;
         this.maxParticipants = maxParticipants;
         this.level = level;
-        this.approval = approval;
         this.user = user;
     }
 
@@ -79,22 +77,18 @@ public class ProjectWithTutor extends Timestamped {
             String title,
             String description,
             Integer price,
-            ProjectWithTutorStatus status,
             LocalDateTime deadline,
             Integer maxParticipants,
             Level level,
-            Approval approval,
             User user
     ){
         return new ProjectWithTutor(
                 title,
                 description,
                 price,
-                status,
                 deadline,
                 maxParticipants,
                 level,
-                approval,
                 user
         );
     }

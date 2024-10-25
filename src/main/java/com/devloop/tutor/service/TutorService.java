@@ -46,7 +46,6 @@ public class TutorService {
                 tutorRequest.getName(),
                 tutorRequest.getSubUrl(),
                 tutorRequest.getAccountNum(),
-                Approval.WAITE,
                 requestUser
         );
         requestRepository.save(newTutorRequest);
