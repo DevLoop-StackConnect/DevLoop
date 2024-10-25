@@ -30,4 +30,7 @@ public class ProjectWithTutorSaveRequest {
 
     @NotBlank(message = "난이도를 선택해 주세요.")
     private String level;
+
+    @NotBlank(message = "카테고리를 입력해 주세요.")
+    private String category;
 }

@@ -1,8 +1,6 @@
 package com.devloop.community.dto.response;
 
-import com.devloop.common.Timestamped;
 import com.devloop.common.enums.Category;
-import com.devloop.community.entity.Community;
 import com.devloop.community.entity.ResolveStatus;
 import lombok.Getter;
 
@@ -10,22 +8,22 @@ import lombok.Getter;
 public class CommunitySimpleResponse {
     private final Long communityId;
     private final String title;
-    private final ResolveStatus status;
-    private final Category category;
+    private final String status;
+    private final String category;
 
-    private CommunitySimpleResponse(Long communityId, String title, ResolveStatus status, Category category) {
+    private CommunitySimpleResponse(Long communityId, String title, ResolveStatus resolveStatus, Category category) {
         this.communityId = communityId;
         this.title = title;
-        this.status = status;
-        this.category = category;
+        this.status = resolveStatus.getDescription();
+        this.category = category.getDescription();
     }
 
-    public static CommunitySimpleResponse from(Community community) {
+    public static CommunitySimpleResponse of(Long communityId, String title, ResolveStatus resolveStatus, Category category) {
         return new CommunitySimpleResponse(
-                community.getId(),
-                community.getTitle(),
-                community.getResolveStatus(),
-                community.getCategory()
+                communityId,
+                title,
+                resolveStatus,
+                category
         );
     }
 }

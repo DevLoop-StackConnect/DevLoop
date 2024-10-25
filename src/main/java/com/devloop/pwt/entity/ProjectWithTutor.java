@@ -3,6 +3,7 @@ package com.devloop.pwt.entity;
 import com.devloop.common.Timestamped;
 import com.devloop.common.enums.Approval;
 import com.devloop.common.enums.BoardType;
+import com.devloop.common.enums.Category;
 import com.devloop.pwt.enums.Level;
 import com.devloop.pwt.enums.ProjectWithTutorStatus;
 import com.devloop.user.entity.User;
@@ -55,6 +56,10 @@ public class ProjectWithTutor extends Timestamped {
     @Enumerated(EnumType.STRING)
     private Approval approval = Approval.WAITE;
 
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    private Category category;
+
     @ManyToOne
     @JoinColumn(name="user_id")
     private User user;
@@ -66,6 +71,7 @@ public class ProjectWithTutor extends Timestamped {
             LocalDateTime deadline,
             Integer maxParticipants,
             Level level,
+            Category category,
             User user
     ) {
         this.title = title;
@@ -74,6 +80,7 @@ public class ProjectWithTutor extends Timestamped {
         this.deadline = deadline;
         this.maxParticipants = maxParticipants;
         this.level = level;
+        this.category = category;
         this.user = user;
     }
 
@@ -84,6 +91,7 @@ public class ProjectWithTutor extends Timestamped {
             LocalDateTime deadline,
             Integer maxParticipants,
             Level level,
+            Category category,
             User user
     ){
         return new ProjectWithTutor(
@@ -93,6 +101,7 @@ public class ProjectWithTutor extends Timestamped {
                 deadline,
                 maxParticipants,
                 level,
+                category,
                 user
         );
     }

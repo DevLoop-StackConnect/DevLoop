@@ -1,5 +1,7 @@
 package com.devloop.common.enums;
 
+import com.devloop.common.apipayload.status.ErrorStatus;
+import com.devloop.common.exception.ApiException;
 import com.devloop.party.enums.PartyStatus;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +21,7 @@ public enum Category {
         return Arrays.stream(Category.values())
                 .filter(c -> c.name().equalsIgnoreCase(category))
                 .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 카테고리 입니다."));
+                .orElseThrow(() -> new ApiException(ErrorStatus._CATEGORY_NOT_EXSIST));
     }
 
 }
