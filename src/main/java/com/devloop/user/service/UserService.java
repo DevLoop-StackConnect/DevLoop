@@ -3,18 +3,15 @@ package com.devloop.user.service;
 import com.devloop.attachment.entity.ProfileAttachment;
 import com.devloop.attachment.enums.Domain;
 import com.devloop.attachment.repository.ProfileATMRepository;
+import com.devloop.attachment.s3.S3Service;
 import com.devloop.common.AuthUser;
 import com.devloop.common.Validator.FileValidator;
 import com.devloop.common.apipayload.status.ErrorStatus;
 import com.devloop.common.exception.ApiException;
-import com.devloop.community.dto.response.CommunitySimpleResponse;
-import com.devloop.community.entity.Community;
 import com.devloop.community.repository.CommunityRepository;
 import com.devloop.party.entity.Party;
 import com.devloop.party.repository.PartyRepository;
 import com.devloop.party.response.GetPartyListResponse;
-import com.devloop.s3.S3Service;
-import com.devloop.tutor.entity.TutorRequest;
 import com.devloop.tutor.repository.TutorRequestRepository;
 import com.devloop.user.dto.response.UserResponse;
 import com.devloop.user.entity.User;
@@ -59,21 +56,22 @@ public class UserService {
                 .orElseThrow(()->new ApiException(ErrorStatus._NOT_FOUND_PARTY));
         GetPartyListResponse getPartyListResponse = GetPartyListResponse.from(party);
 
-        Community community = communityRepository.findByUserId(user.getId())
+        /*Community community = communityRepository.findByUserId(user.getId())
                 .orElseThrow(()->new ApiException(ErrorStatus._NOT_FOUND_COMMUNITY));
         CommunitySimpleResponse communitySimpleResponse = CommunitySimpleResponse.from(community);
 
         TutorRequest tutorRequest = tutorRequestRepository.findByUserId(user.getId())
-                .orElseThrow(()-> new ApiException(ErrorStatus._UNSUPPORTED_OBJECT_TYPE));
+                .orElseThrow(()-> new ApiException(ErrorStatus._UNSUPPORTED_OBJECT_TYPE));*/
 
 
-        return UserResponse.of(user.getUsername(),
+        return UserResponse.of(
+                user.getUsername(),
                 user.getEmail(),
                 user.getUserRole().toString(),
                 imageURL,
-                getPartyListResponse,
+                getPartyListResponse/*,
                 communitySimpleResponse,
-                tutorRequest.getSubUrl());
+                tutorRequest.getSubUrl()*/);
     }
 
     @Transactional
@@ -88,7 +86,7 @@ public class UserService {
             profileATMRepository.delete(currentImg);
         }
         String fileName = s3Service.uploadFile(file);
-        ProfileAttachment profileAttachment = ProfileAttachment.of(
+        ProfileAttachment profileAttachment = ProfileAttachment.from(
                 user.getId(),
                 s3Service.getUrl(file.getOriginalFilename()),
                 fileValidator.mapStringToFileFormat(Objects.requireNonNull(file.getContentType())),

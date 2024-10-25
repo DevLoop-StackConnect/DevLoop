@@ -11,7 +11,7 @@ import com.devloop.party.response.GetPartyDetailResponse;
 import com.devloop.party.response.GetPartyListResponse;
 import com.devloop.party.response.SavePartyResponse;
 import com.devloop.party.response.UpdatePartyResponse;
-import com.devloop.s3.S3Service;
+import com.devloop.attachment.s3.S3Service;
 import com.devloop.user.entity.User;
 import com.devloop.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;

@@ -13,10 +13,10 @@ import java.net.URL;
 @Getter
 @NoArgsConstructor
 @Entity
-@DiscriminatorValue("W")
+@DiscriminatorValue("PWT")
+
 public class PWTAttachment extends Attachment {
 
-    @NotNull
     private Long PWTId;
 
     private PWTAttachment(Long PWTId, URL imageURL, FileFormat fileFormat, Domain domain, String fileName){
