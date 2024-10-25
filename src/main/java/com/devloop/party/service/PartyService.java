@@ -50,7 +50,7 @@ public class PartyService {
 
 //        //파일 업로드
 //        s3Util.uploadFile(file);
-
+        
         return SavePartyResponse.of(
                 newParty.getId(),
                 newParty.getTitle(),
