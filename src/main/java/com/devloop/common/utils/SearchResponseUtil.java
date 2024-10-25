@@ -1,6 +1,6 @@
 package com.devloop.common.utils;
 
-import com.devloop.common.BoardType;
+import com.devloop.common.enums.BoardType;
 import com.devloop.search.response.IntegrationSearchResponse;
 
 import java.util.List;

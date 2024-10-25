@@ -1,6 +1,7 @@
 package com.devloop.community.entity;
 
 import com.devloop.common.Timestamped;
+import com.devloop.common.enums.BoardType;
 import com.devloop.common.enums.Category;
 import com.devloop.community.dto.request.CommunitySaveRequest;
 import com.devloop.communitycomment.entity.CommunityComment;
@@ -21,6 +22,9 @@ public class Community extends Timestamped {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="community_id")
     private Long id;
+
+    @Enumerated(EnumType.STRING)
+    private BoardType boardType = BoardType.COMMUNITY;
 
     @NotNull
     @Column(name="title",length = 100)

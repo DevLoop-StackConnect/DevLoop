@@ -1,8 +1,8 @@
 package com.devloop.community.service;
 
 import com.devloop.common.AuthUser;
-import com.devloop.common.BoardType;
 import com.devloop.common.apipayload.status.ErrorStatus;
+import com.devloop.common.enums.BoardType;
 import com.devloop.common.exception.ApiException;
 import com.devloop.common.utils.SearchResponseUtil;
 import com.devloop.community.dto.request.CommunitySaveRequest;
@@ -108,15 +108,15 @@ public class CommunityService {
     /**
      * Search에서 사용
      */
-    public List<IntegrationSearchResponse> getCommunity(Specification<Community> spec){
+    public List<IntegrationSearchResponse> getAllCommunity(Specification<Community> spec){
         List<Community> communities = communityRepository.findAll(spec);
-        return SearchResponseUtil.wrapResponse(BoardType.COMMUNNITY, communities);
+        return SearchResponseUtil.wrapResponse(BoardType.COMMUNITY, communities);
     }
 
     public Page<IntegrationSearchResponse> getCommunityWithPage(Specification<Community> spec, PageRequest pageable){
         Page<Community> communityPage = communityRepository.findAll(spec, pageable);
         List<IntegrationSearchResponse> response = SearchResponseUtil.wrapResponse(
-                BoardType.COMMUNNITY,
+                BoardType.COMMUNITY,
                 communityPage.getContent()
         );
         return new PageImpl<>(response, pageable, communityPage.getTotalElements());
