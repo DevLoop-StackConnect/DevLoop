@@ -2,6 +2,7 @@ package com.devloop.pwt.entity;
 
 import com.devloop.common.Timestamped;
 import com.devloop.common.enums.Approval;
+import com.devloop.common.enums.BoardType;
 import com.devloop.common.enums.Category;
 import com.devloop.pwt.enums.Level;
 import com.devloop.pwt.enums.ProjectWithTutorStatus;
@@ -22,6 +23,9 @@ public class ProjectWithTutor extends Timestamped {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Enumerated(EnumType.STRING)
+    private BoardType boardType = BoardType.PWT;
 
     @NotNull
     @Column(length = 255)
