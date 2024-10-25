@@ -72,7 +72,7 @@ public class ProjectWithTutorService {
                 .orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_PROJECT_WITH_TUTOR));
 
         // PWT 게시글이 승인 되었는지 확인 하는 예외 처리
-        if (projectWithTutor.getApproval().equals(Approval.APPROVED)) {
+        if (!projectWithTutor.getApproval().equals(Approval.APPROVED)) {
             throw new ApiException(ErrorStatus._ACCESS_PERMISSION_DENIED);
         }
 
