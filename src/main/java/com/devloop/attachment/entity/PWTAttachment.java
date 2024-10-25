@@ -17,6 +17,7 @@ import java.net.URL;
 
 public class PWTAttachment extends Attachment {
 
+    @NotNull
     private Long PWTId;
 
     private PWTAttachment(Long PWTId, URL imageURL, FileFormat fileFormat, Domain domain, String fileName){
@@ -24,7 +25,7 @@ public class PWTAttachment extends Attachment {
         this.PWTId = PWTId;
     }
 
-    public static PWTAttachment from(Long PWTId, URL imageURL, FileFormat fileFormat, Domain domain,String fileName){
+    public static PWTAttachment of(Long PWTId, URL imageURL, FileFormat fileFormat, Domain domain,String fileName){
         return new PWTAttachment(PWTId, imageURL, fileFormat, domain,fileName);
     }
 }

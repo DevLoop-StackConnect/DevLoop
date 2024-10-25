@@ -86,7 +86,7 @@ public class UserService {
             profileATMRepository.delete(currentImg);
         }
         String fileName = s3Service.uploadFile(file);
-        ProfileAttachment profileAttachment = ProfileAttachment.from(
+        ProfileAttachment profileAttachment = ProfileAttachment.of(
                 user.getId(),
                 s3Service.getUrl(file.getOriginalFilename()),
                 fileValidator.mapStringToFileFormat(Objects.requireNonNull(file.getContentType())),

@@ -13,7 +13,8 @@ import java.net.URL;
 @Getter
 @NoArgsConstructor
 @Entity
-@DiscriminatorValue("P")
+@DiscriminatorValue("PARTY")
+
 public class PartyAttachment extends Attachment {
 
     @NotNull
@@ -23,7 +24,7 @@ public class PartyAttachment extends Attachment {
         super(imageURL, fileFormat, domain, fileName);
         this.partyId = partyId;
     }
-    public static PartyAttachment from(Long partyId, URL imageURL, FileFormat fileFormat, Domain domain,String fileName){
+    public static PartyAttachment of(Long partyId, URL imageURL, FileFormat fileFormat, Domain domain,String fileName){
         return new PartyAttachment(partyId, imageURL, fileFormat, domain,fileName);
     }
 }
