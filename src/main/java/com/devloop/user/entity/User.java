@@ -53,7 +53,6 @@ public class User extends Timestamped {
         this.email = email;
         this.password = password;
         this.userRole = userRole;
-        this.loginType = LoginType.LOCAL;
     }
 
     public static User of(String username, String email, String password, UserRole userRole) {
