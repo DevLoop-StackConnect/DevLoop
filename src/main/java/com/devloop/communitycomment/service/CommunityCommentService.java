@@ -4,7 +4,7 @@ import com.devloop.common.AuthUser;
 import com.devloop.common.apipayload.status.ErrorStatus;
 import com.devloop.common.exception.ApiException;
 import com.devloop.community.entity.Community;
-import com.devloop.community.repository.CommunityRepository;
+import com.devloop.community.service.CommunityService;
 import com.devloop.communitycomment.dto.CommentResponse;
 import com.devloop.communitycomment.dto.request.CommentSaveRequest;
 import com.devloop.communitycomment.dto.request.CommentUpdateRequest;
@@ -29,24 +29,24 @@ import java.util.List;
 @Transactional(readOnly = true)
 public class CommunityCommentService {
     private final CommunityCommentRepository communityCommentRepository;
-    private final CommunityRepository communityRepository; //서비스 가져오는거로 바꿔야함
+    private final CommunityService communityService;
     private final UserRepository userRepository; //서비스에서 가져오게 바꿔야함
 
     //댓글 작성
     @Transactional
     public CommentSaveResponse creatComment(AuthUser authUser, CommentSaveRequest commentSaveRequest, Long communityId) {
         //커뮤니티 게시글 조회
-        Community community = communityRepository.findById(communityId)
-                .orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_COMMUNITY));
+        Community community = communityService.getCommunityId(communityId);
+
         //사용자 조회
         User user = userRepository.findById(authUser.getId())
                 .orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_USER));
         //댓글 생성..?생성자가 프라이빗이고..?
-        CommunityComment communityComment = CommunityComment.from(commentSaveRequest, community, user);
+        CommunityComment communityComment = CommunityComment.of(commentSaveRequest.getContent(), community, user);
         //댓글 저장
         CommunityComment savedComment = communityCommentRepository.save(communityComment);
         //응답으로 변환
-        return CommentSaveResponse.from(savedComment);
+        return CommentSaveResponse.of(savedComment.getId(), savedComment.getContent(), savedComment.getCreatedAt());
     }
 
     //댓글 수정
@@ -68,7 +68,7 @@ public class CommunityCommentService {
         //업데이트 내용 저장
         CommunityComment updatedComment = communityCommentRepository.save(communityComment);
         //응답으로 반환
-        return CommentUpdateResponse.from(updatedComment);
+        return CommentUpdateResponse.of(updatedComment.getId(), updatedComment.getContent(), updatedComment.getModifiedAt());
     }
 
     //댓글 삭제
@@ -92,14 +92,14 @@ public class CommunityCommentService {
     //댓글 다건 조회
     public Page<CommentResponse> getComments(Long communityId, Pageable pageable) {
         //페이지네이션된 댓글 조회
-        Page<CommunityComment> comments = communityCommentRepository.findByCommunityId(communityId,pageable);
+        Page<CommunityComment> comments = communityCommentRepository.findByCommunityId(communityId, pageable);
 
         List<CommentResponse> commentResponses = new ArrayList<>();
         //응답반환
-        for(CommunityComment comment : comments.getContent()){
-            CommentResponse commentResponse = CommentResponse.from(comment);
+        for (CommunityComment comment : comments.getContent()) {
+            CommentResponse commentResponse = CommentResponse.of(comment.getId(), comment.getContent(), comment.getUser().getUsername(), comment.getCreatedAt());
             commentResponses.add(commentResponse);
         }
-        return new PageImpl<>(commentResponses,comments.getPageable(),comments.getTotalElements());
+        return new PageImpl<>(commentResponses, comments.getPageable(), comments.getTotalElements());
     }
 }
