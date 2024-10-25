@@ -25,17 +25,14 @@ public class CommunityController {
     //게시글 작성
     @PostMapping("/v1/communities")
     public ApiResponse<CommunitySaveResponse> createCommunity(@AuthenticationPrincipal AuthUser authUser, @Valid @RequestBody CommunitySaveRequest communitySaveRequest) {
-//        ResolveStatus resolvedStatus = communitySaveRequest.getResolvedStatus();
-//        Category category = communitySaveRequest.getCategory();
         CommunitySaveResponse communitySaveResponse = communityService.createCommunity(authUser, communitySaveRequest);
         return ApiResponse.ok(communitySaveResponse);
     }
 
     //게시글 다건 조회
     @GetMapping("/v1/communities")
-    public ApiResponse<Page<CommunitySimpleResponse>> getCommunities(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
-        Pageable pageable = PageRequest.of(page, size);
-        Page<CommunitySimpleResponse> communitySimpleResponse = communityService.getCommunities(pageable);
+    public ApiResponse<Page<CommunitySimpleResponse>> getCommunities(@RequestParam(defaultValue = "1") int page, @RequestParam(defaultValue = "10") int size) {
+        Page<CommunitySimpleResponse> communitySimpleResponse = communityService.getCommunities(page,size);
         return ApiResponse.ok(communitySimpleResponse);
     }
 
@@ -49,8 +46,6 @@ public class CommunityController {
     //게시글 수정
     @PatchMapping("/v1/communities/{communityId}")
     public ApiResponse<CommunityDetailResponse> updateCommunity(@PathVariable Long communityId, @Valid @RequestBody CommunityUpdateRequest communityUpdateRequest) {
-//        ResolveStatus resolvedStatus = communityUpdateRequest.getResolvedStatus();
-//        Category category = communityUpdateRequest.getCategory();
         CommunityDetailResponse communityDetailResponse = communityService.updateCommunity(communityId, communityUpdateRequest);
         return ApiResponse.ok(communityDetailResponse);
     }
