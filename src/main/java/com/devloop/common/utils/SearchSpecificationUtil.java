@@ -21,7 +21,7 @@ public class SearchSpecificationUtil {
                 (request.getCategory() == null || request.getCategory().isEmpty())) {
             return (root, query, criteriaBuilder) -> criteriaBuilder.isNotNull(root.get("id"));
         }
-        //제목 검색 동적 쿼리
+
         if (request.getTitle() != null && !request.getTitle().isEmpty()) {
             specs.add((root, query, criteriaBuilder) ->
                     criteriaBuilder.like(root.get("title"), "%" + request.getTitle() + "%"));
@@ -35,13 +35,10 @@ public class SearchSpecificationUtil {
         if (request.getCategory() != null && !request.getCategory().isEmpty()) {
             try {
                 Category category = Category.of(request.getCategory());
-                log.info("검색할 카테고리: {}", category);
                 specs.add((root, query, criteriaBuilder) -> {
-                    log.info("카테고리 조건 추가");
                     return criteriaBuilder.equal(root.get("category"), category);
                 });
-            } catch (IllegalArgumentException e) {
-                log.error("카테고리 변환 에러: {}", e.getMessage());
+            } catch (Exception e) {
                 throw new ApiException(ErrorStatus._BAD_SEARCH_KEYWORD);
             }
         }
