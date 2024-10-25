@@ -4,6 +4,7 @@ import com.devloop.common.AuthUser;
 import com.devloop.common.apipayload.dto.ProjectWithTutorResponseDto;
 import com.devloop.common.apipayload.status.ErrorStatus;
 import com.devloop.common.enums.Approval;
+import com.devloop.common.enums.Category;
 import com.devloop.common.exception.ApiException;
 import com.devloop.pwt.entity.ProjectWithTutor;
 import com.devloop.pwt.enums.Level;
@@ -57,6 +58,7 @@ public class ProjectWithTutorService {
                 projectWithTutorSaveRequest.getDeadline(),
                 projectWithTutorSaveRequest.getMaxParticipants(),
                 Level.of(projectWithTutorSaveRequest.getLevel()),
+                Category.of(projectWithTutorSaveRequest.getCategory()),
                 user
         );
         projectWithTutorRepository.save(projectWithTutor);
