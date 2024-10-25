@@ -1,6 +1,7 @@
 package com.devloop.community.service;
 
 import com.devloop.common.AuthUser;
+import com.devloop.common.apipayload.dto.CommunitySimpleResponseDto;
 import com.devloop.common.apipayload.status.ErrorStatus;
 import com.devloop.common.enums.Category;
 import com.devloop.common.exception.ApiException;
@@ -57,8 +58,16 @@ public class CommunityService {
     //게시글 다건 조회
     public Page<CommunitySimpleResponse> getCommunities(int page, int size) {
         Pageable pageable = PageRequest.of(page - 1, size);
-        //페이지네이션된 게시글 조회
-        return communityRepository.findAllSimple(pageable);
+        //페이지네이션된 게시글 조회하고 응답
+        Page<CommunitySimpleResponseDto> communityDtos = communityRepository.findAllSimple(pageable)
+                .orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_COMMUNITY));
+
+        return communityDtos.map(dto -> CommunitySimpleResponse.of(
+                dto.getCommunityId(),
+                dto.getTitle(),
+                dto.getStatus().getDescription(),
+                dto.getCategory().getDescription()
+        ));
     }
 
     //게시글 단건(상세조회)
