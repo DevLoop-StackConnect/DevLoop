@@ -1,6 +1,5 @@
 package com.devloop.attachment.entity;
 
-import com.devloop.attachment.enums.Domain;
 import com.devloop.attachment.enums.FileFormat;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
@@ -20,12 +19,12 @@ public class PWTAttachment extends Attachment {
     @NotNull
     private Long PWTId;
 
-    private PWTAttachment(Long PWTId, URL imageURL, FileFormat fileFormat, Domain domain, String fileName){
-        super(imageURL, fileFormat, domain,fileName);
+    private PWTAttachment(Long PWTId, URL imageURL, String fileFormat, String fileName){
+        super(imageURL, fileFormat,fileName);
         this.PWTId = PWTId;
     }
 
-    public static PWTAttachment of(Long PWTId, URL imageURL, FileFormat fileFormat, Domain domain,String fileName){
-        return new PWTAttachment(PWTId, imageURL, fileFormat, domain,fileName);
+    public static PWTAttachment of(Long PWTId, URL imageURL, String fileFormat,String fileName){
+        return new PWTAttachment(PWTId, imageURL, fileFormat,fileName);
     }
 }
