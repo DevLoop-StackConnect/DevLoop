@@ -10,7 +10,8 @@ public enum FileFormat {
     PNG("png"),
     JPEG("jpeg"),
     TXT("txt"),
-    PDF("pdf");
+    PDF("pdf"),
+    GIF("gif");
 
     private final String format;
 }
