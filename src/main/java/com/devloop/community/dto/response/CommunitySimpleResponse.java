@@ -11,18 +11,18 @@ public class CommunitySimpleResponse {
     private final String status;
     private final String category;
 
-    private CommunitySimpleResponse(Long communityId, String title, ResolveStatus resolveStatus, Category category) {
+    private CommunitySimpleResponse(Long communityId, String title, String status, String category) {
         this.communityId = communityId;
         this.title = title;
-        this.status = resolveStatus.getDescription();
-        this.category = category.getDescription();
+        this.status = status;
+        this.category = category;
     }
 
-    public static CommunitySimpleResponse of(Long communityId, String title, ResolveStatus resolveStatus, Category category) {
+    public static CommunitySimpleResponse of(Long communityId, String title, String status, String category) {
         return new CommunitySimpleResponse(
                 communityId,
                 title,
-                resolveStatus,
+                status,
                 category
         );
     }
