@@ -1,7 +1,6 @@
 package com.devloop.user.dto.response;
 
 import com.devloop.party.response.GetPartyListResponse;
-import com.devloop.user.enums.UserRole;
 import lombok.Getter;
 import java.net.URL;
 
