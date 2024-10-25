@@ -19,12 +19,12 @@ public class PWTAttachment extends Attachment {
     @NotNull
     private Long PWTId;
 
-    private PWTAttachment(Long PWTId, URL imageURL, String fileFormat, String fileName){
+    private PWTAttachment(Long PWTId, URL imageURL, FileFormat fileFormat, String fileName){
         super(imageURL, fileFormat,fileName);
         this.PWTId = PWTId;
     }
 
-    public static PWTAttachment of(Long PWTId, URL imageURL, String fileFormat,String fileName){
+    public static PWTAttachment of(Long PWTId, URL imageURL, FileFormat fileFormat,String fileName){
         return new PWTAttachment(PWTId, imageURL, fileFormat,fileName);
     }
 }

@@ -1,6 +1,5 @@
 package com.devloop.attachment.entity;
 
-import com.devloop.attachment.enums.Domain;
 import com.devloop.attachment.enums.FileFormat;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -23,21 +22,15 @@ public abstract class Attachment {
     @NotNull
     private URL imageURL;
 
-    @Enumerated(EnumType.STRING)
     @NotNull
     private FileFormat fileFormat;
-
-    @Enumerated(EnumType.STRING)
-    @NotNull
-    private Domain domain;
 
     @NotNull
     private String fileName;
 
-    public Attachment(URL imageURL, FileFormat fileFormat, Domain domain,String fileName) {
+    public Attachment(URL imageURL, FileFormat fileFormat,String fileName) {
         this.imageURL = imageURL;
         this.fileFormat = fileFormat;
-        this.domain = domain;
         this.fileName = fileName;
     }
 }
