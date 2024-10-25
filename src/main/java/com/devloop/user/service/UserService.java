@@ -2,7 +2,7 @@ package com.devloop.user.service;
 
 import com.devloop.attachment.entity.ProfileAttachment;
 import com.devloop.attachment.enums.Domain;
-import com.devloop.attachment.repository.FARepository;
+import com.devloop.attachment.repository.ProfileATMRepository;
 import com.devloop.common.AuthUser;
 import com.devloop.common.Validator.FileValidator;
 import com.devloop.common.apipayload.status.ErrorStatus;
@@ -29,7 +29,7 @@ import java.util.Objects;
 public class UserService {
 
     private final UserRepository userRepository;
-    private final FARepository faRepository;
+    private final ProfileATMRepository profileATMRepository;
     private final PartyRepository partyRepository;
     private final S3Service s3Service;
     private final FileValidator fileValidator;
@@ -43,7 +43,7 @@ public class UserService {
 
         if(user.getAttachmentId() != null) {
             // 디폴트 이미지 아닐때 ->
-            ProfileAttachment profileAttachment = faRepository.findById(user.getAttachmentId())
+            ProfileAttachment profileAttachment = profileATMRepository.findById(user.getAttachmentId())
                     .orElseThrow(()->new ApiException(ErrorStatus._ATTACHMENT_NOT_FOUND));
             imageURL = profileAttachment.getImageURL();
         }
@@ -58,11 +58,11 @@ public class UserService {
         User user = userRepository.findById(authUser.getId()).orElseThrow(()->new ApiException(ErrorStatus._NOT_FOUND_USER));
         if(user.getAttachmentId() != null) {
             // 디폴트 이미지가 아닐때 S3에서 삭제
-            ProfileAttachment currentImg = faRepository.findById(user.getAttachmentId())
+            ProfileAttachment currentImg = profileATMRepository.findById(user.getAttachmentId())
                     .orElseThrow(()->new ApiException(ErrorStatus._ATTACHMENT_NOT_FOUND));
             String currentImgName = currentImg.getFileName();
             s3Service.delete(currentImgName);
-            faRepository.delete(currentImg);
+            profileATMRepository.delete(currentImg);
         }
         String fileName = s3Service.uploadFile(file);
         ProfileAttachment profileAttachment = ProfileAttachment.of(
@@ -72,7 +72,7 @@ public class UserService {
                 Domain.PROFILE,
                 fileName
         );
-        faRepository.save(profileAttachment);
+        profileATMRepository.save(profileAttachment);
         user.updateProfileImg(profileAttachment.getId());
     }
     //----------------------------------------------------util---------------------------------------------------//
