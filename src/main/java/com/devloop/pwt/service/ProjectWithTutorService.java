@@ -49,7 +49,7 @@ public class ProjectWithTutorService {
         }
 
         // PWT 게시글 객체 생성
-        ProjectWithTutor projectWithTutor = ProjectWithTutor.from(
+        ProjectWithTutor projectWithTutor = ProjectWithTutor.of(
                 projectWithTutorSaveRequest.getTitle(),
                 projectWithTutorSaveRequest.getDescription(),
                 projectWithTutorSaveRequest.getPrice(),

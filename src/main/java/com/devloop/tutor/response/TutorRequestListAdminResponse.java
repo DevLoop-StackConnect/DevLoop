@@ -7,14 +7,14 @@ import lombok.Getter;
 import java.time.LocalDateTime;
 
 @Getter
-public class TutorRequestResponse {
+public class TutorRequestListAdminResponse {
 
     private final String name;
     private final String subUrl;
     private final LocalDateTime applicationDate;
     private final User user;
 
-    private TutorRequestResponse(
+    private TutorRequestListAdminResponse(
             String name,
             String subUrl,
             LocalDateTime applicationDate,
@@ -25,8 +25,8 @@ public class TutorRequestResponse {
         this.user = user;
     }
 
-    public static TutorRequestResponse from(TutorRequest tutorRequest) {
-        return new TutorRequestResponse(
+    public static TutorRequestListAdminResponse from(TutorRequest tutorRequest) {
+        return new TutorRequestListAdminResponse(
                 tutorRequest.getName(),
                 tutorRequest.getSubUrl(),
                 tutorRequest.getCreatedAt(),
