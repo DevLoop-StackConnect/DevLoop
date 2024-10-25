@@ -69,8 +69,6 @@ public class S3Service {
         FileFormat fileType =  fileValidator.mapStringToFileFormat(Objects.requireNonNull(file.getContentType()));
 
         String fileName = makeFileName(file);
-        URL url = getUrl(file.getOriginalFilename());
-
         ObjectMetadata metadata = new ObjectMetadata();
         metadata.setContentType(file.getContentType());
         metadata.setContentLength(file.getSize());
@@ -78,9 +76,12 @@ public class S3Service {
 
         try {
             amazonS3Client.putObject(bucketName, fileName, file.getInputStream(), metadata);
+
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+
+        URL url = amazonS3Client.getUrl(bucketName,file.getOriginalFilename());
 
         if (object instanceof Party) {
             PartyAttachment partyAttachment = PartyAttachment.of(
