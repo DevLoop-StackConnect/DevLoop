@@ -13,7 +13,8 @@ import java.net.URL;
 @Getter
 @NoArgsConstructor
 @Entity
-@DiscriminatorValue("F")
+@DiscriminatorValue("PROFILE")
+
 public class ProfileAttachment extends Attachment {
 
     @NotNull
@@ -25,6 +26,6 @@ public class ProfileAttachment extends Attachment {
     }
 
     public static ProfileAttachment of(Long userId, URL imageURL, FileFormat fileFormat, Domain domain,String fileName){
-        return new ProfileAttachment(userId, imageURL, fileFormat, domain, fileName);
+        return new ProfileAttachment(userId, imageURL, fileFormat, domain,fileName);
     }
 }
