@@ -13,7 +13,7 @@ public class IntegrationSearchResponse {
         this.data = data;
     }
 
-    public static IntegrationSearchResponse from(String boardType, Object data){
+    public static IntegrationSearchResponse of(String boardType, Object data){
         return new IntegrationSearchResponse(boardType, data);
     }
 }

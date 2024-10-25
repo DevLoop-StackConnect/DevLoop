@@ -46,7 +46,7 @@ public class AuthService {
                 UserRole.of(signupRequest.getRole()));
         User savedUser = userRepository.save(user);
 
-        return SignupResponse.from(
+        return SignupResponse.of(
                 signupRequest.getEmail(),
                 signupRequest.getUsername(),
                 savedUser.getCreatedAt()

@@ -1,9 +1,11 @@
 package com.devloop.party.service;
 
 import com.devloop.common.AuthUser;
+import com.devloop.common.BoardType;
 import com.devloop.common.apipayload.status.ErrorStatus;
 import com.devloop.common.exception.ApiException;
 import com.devloop.common.utils.S3Util;
+import com.devloop.common.utils.SearchResponseUtil;
 import com.devloop.party.entity.Party;
 import com.devloop.party.repository.PartyRepository;
 import com.devloop.party.request.SavePartyRequest;
@@ -12,14 +14,19 @@ import com.devloop.party.response.GetPartyDetailResponse;
 import com.devloop.party.response.GetPartyListResponse;
 import com.devloop.party.response.SavePartyResponse;
 import com.devloop.party.response.UpdatePartyResponse;
+import com.devloop.search.response.IntegrationSearchResponse;
 import com.devloop.user.entity.User;
 import com.devloop.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -98,5 +105,23 @@ public class PartyService {
             throw new ApiException(ErrorStatus._PERMISSION_DENIED);
         }
         partyRepository.delete(party);
+    }
+
+
+    /**
+     * Search에서 사용
+     */
+    public List<IntegrationSearchResponse> getParty(Specification<Party> spec) {
+        List<Party> parties = partyRepository.findAll(spec);
+        return SearchResponseUtil.wrapResponse(BoardType.PARTY, parties);
+    }
+
+    public Page<IntegrationSearchResponse> getPartyWithPage(Specification<Party> spec, PageRequest pageable) {
+        Page<Party> partyPage = partyRepository.findAll(spec, pageable);
+        List<IntegrationSearchResponse> response = SearchResponseUtil.wrapResponse(
+                BoardType.PARTY,
+                partyPage.getContent()
+        );
+        return new PageImpl<>(response, pageable, partyPage.getTotalElements());
     }
 }
