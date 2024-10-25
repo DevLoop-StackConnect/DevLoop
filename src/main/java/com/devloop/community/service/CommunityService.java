@@ -31,14 +31,15 @@ public class CommunityService {
     //게시글 작성
     @Transactional
     public CommunitySaveResponse createCommunity(AuthUser authUser, CommunitySaveRequest communitySaveRequest) {
-        Category category = communitySaveRequest.getCategory();
+        Category category = Category.of(communitySaveRequest.getCategory());
         //사용자 조회
         User user = userRepository.findById(authUser.getId())
                 .orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_USER));
         //게시글 Community객체 생성
-        Community community = Community.of(communitySaveRequest.getTitle(),
+        Community community = Community.of(
+                communitySaveRequest.getTitle(),
                 communitySaveRequest.getContent(),
-                communitySaveRequest.getCategory(),
+                category,
                 user);
         //게시글 저장
         Community savedCommunity = communityRepository.save(community);
@@ -81,8 +82,8 @@ public class CommunityService {
     //게시글 수정
     @Transactional
     public CommunityDetailResponse updateCommunity(Long communityId, CommunityUpdateRequest communityUpdateRequest) {
-        ResolveStatus resolvedStatus = communityUpdateRequest.getResolvedStatus();
-        Category category = communityUpdateRequest.getCategory();
+        ResolveStatus resolvedStatus = ResolveStatus.of(communityUpdateRequest.getStatus());
+        Category category = Category.of(communityUpdateRequest.getCategory());
         //게시글 조회
         Community community = communityRepository.findById(communityId)
                 .orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_COMMUNITY));

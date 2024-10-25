@@ -17,8 +17,4 @@ public class CommunitySaveRequest {
     private String content;
     @NotNull(message = "카테고리를 작성해 주세요")
     private String category;
-
-    public Category getCategory() {
-        return Category.fromString(category);
-    }
 }

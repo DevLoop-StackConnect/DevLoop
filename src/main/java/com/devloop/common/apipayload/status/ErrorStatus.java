@@ -44,8 +44,8 @@ public enum ErrorStatus implements BaseCode {
 
     // comment
     _NOT_FOUND_COMMENT(HttpStatus.NOT_FOUND, "404", "존재하지 않은 댓글입니다."),
-    _NOT_INCLUDE_COMMENT(HttpStatus.NOT_FOUND,"404","해당 댓글은 이 게시글에 속해있지 않습니다."),
-    _INVALID_COMMENTUSER(HttpStatus.BAD_REQUEST,"400","본인 댓글만 수정 및 삭제가 가능합니다."),
+    _NOT_INCLUDE_COMMENT(HttpStatus.NOT_FOUND, "404", "해당 댓글은 이 게시글에 속해있지 않습니다."),
+    _INVALID_COMMENTUSER(HttpStatus.BAD_REQUEST, "400", "본인 댓글만 수정 및 삭제가 가능합니다."),
     // 동시성 제어
     _CONCURRENT_UPDATE(HttpStatus.CONFLICT, "409", "동시성 업데이트 충돌이 발생했습니다."),
 
@@ -67,7 +67,10 @@ public enum ErrorStatus implements BaseCode {
     _BAD_SEARCH_KEYWORD(HttpStatus.BAD_REQUEST, "400", "검색 오류"),
 
     //Community
-    _NOT_FOUND_COMMUNITY(HttpStatus.NOT_FOUND, "404", "존재하지 않는 게시글입니다");
+    _NOT_FOUND_COMMUNITY(HttpStatus.NOT_FOUND, "404", "존재하지 않는 게시글입니다"),
+    _STATUS_NOT_EXSIST(HttpStatus.BAD_REQUEST, "400", "잘못된 해결 상태 입력값입니다. 오타 및 해결상태 종류를 확인하세요"),
+    _CATEGORY_NOT_EXSIST(HttpStatus.BAD_REQUEST, "400", "잘못된 카테고리 입력값입니다. 오타 및 카테고리 종류를 확인하세요");
+
 
     private HttpStatus httpStatus;
     private String statusCode;

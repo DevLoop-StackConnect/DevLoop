@@ -1,5 +1,7 @@
 package com.devloop.common.enums;
 
+import com.devloop.common.apipayload.status.ErrorStatus;
+import com.devloop.common.exception.ApiException;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -14,15 +16,11 @@ public enum Category {
 
     private final String description;
 
-    public String getDescription() {
-        return this.description;
-    }
-
-    public static Category fromString(String category) {
+    public static Category of(String category) {
         return Arrays.stream(Category.values())
                 .filter(c -> c.name().equalsIgnoreCase(category))
                 .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("잘못된 카테고리 입력값입니다. 오타를 확인하세요 -> " + category));
+                .orElseThrow(() -> new ApiException(ErrorStatus._CATEGORY_NOT_EXSIST));
     }
 
 }
