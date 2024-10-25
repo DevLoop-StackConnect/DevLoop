@@ -21,8 +21,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
-
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -31,11 +29,8 @@ public class CommunityService {
     private final UserRepository userRepository; //서비스로 받아오게
 
     public Community getCommunityId(Long communityId){
-        Optional<Community> optionalCommunity = communityRepository.findById(communityId);
-        if (optionalCommunity.isEmpty()){ //optional이 비어있는지 확인..
-            throw new ApiException(ErrorStatus._NOT_FOUND_COMMUNITY); //비어있으면 예외
-        }
-        return optionalCommunity.get();//그러면
+        return communityRepository.findById(communityId)
+                .orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_COMMUNITY));
     }
 
     //게시글 작성

@@ -4,7 +4,6 @@ import com.devloop.common.AuthUser;
 import com.devloop.common.apipayload.status.ErrorStatus;
 import com.devloop.common.exception.ApiException;
 import com.devloop.community.entity.Community;
-import com.devloop.community.repository.CommunityRepository;
 import com.devloop.community.service.CommunityService;
 import com.devloop.communitycomment.dto.CommentResponse;
 import com.devloop.communitycomment.dto.request.CommentSaveRequest;
@@ -31,7 +30,6 @@ import java.util.List;
 public class CommunityCommentService {
     private final CommunityCommentRepository communityCommentRepository;
     private final CommunityService communityService;
-//    private final CommunityRepository communityRepository; //서비스 가져오는거로 바꿔야함
     private final UserRepository userRepository; //서비스에서 가져오게 바꿔야함
 
     //댓글 작성
@@ -39,8 +37,7 @@ public class CommunityCommentService {
     public CommentSaveResponse creatComment(AuthUser authUser, CommentSaveRequest commentSaveRequest, Long communityId) {
         //커뮤니티 게시글 조회
         Community community = communityService.getCommunityId(communityId);
-//        Community community = communityRepository.findById(communityId)
-//                .orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_COMMUNITY));
+
         //사용자 조회
         User user = userRepository.findById(authUser.getId())
                 .orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_USER));
