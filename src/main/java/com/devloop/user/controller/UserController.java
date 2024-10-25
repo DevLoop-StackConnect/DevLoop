@@ -2,13 +2,14 @@ package com.devloop.user.controller;
 
 import com.devloop.common.AuthUser;
 import com.devloop.common.apipayload.ApiResponse;
-import com.devloop.common.utils.S3Util;
+import com.devloop.s3.S3Service;
 import com.devloop.user.dto.response.UserResponse;
 import com.devloop.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import java.net.MalformedURLException;
 
 @RestController
 @RequiredArgsConstructor
@@ -16,17 +17,17 @@ import org.springframework.web.multipart.MultipartFile;
 public class UserController {
 
     private final UserService userService;
-    private final S3Util s3Util;
+    private final S3Service s3Service;
 
     @PostMapping("/s3test")
     public String s3test(@RequestParam("file") MultipartFile file ) {
         System.out.println("들어옴");
-        s3Util.uploadFile(file);
+        s3Service.uploadFile(file);
         return "성공";
     }
 
     @GetMapping("/v1/users/profiles")
-    public ApiResponse<UserResponse> getUser(@AuthenticationPrincipal AuthUser authUser){
+    public ApiResponse<UserResponse> getUser(@AuthenticationPrincipal AuthUser authUser) throws MalformedURLException {
         return ApiResponse.ok(userService.getUser(authUser));
     }
 

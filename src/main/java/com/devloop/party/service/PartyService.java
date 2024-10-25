@@ -3,7 +3,6 @@ package com.devloop.party.service;
 import com.devloop.common.AuthUser;
 import com.devloop.common.apipayload.status.ErrorStatus;
 import com.devloop.common.exception.ApiException;
-import com.devloop.common.utils.S3Util;
 import com.devloop.party.entity.Party;
 import com.devloop.party.repository.PartyRepository;
 import com.devloop.party.request.SavePartyRequest;
@@ -12,6 +11,7 @@ import com.devloop.party.response.GetPartyDetailResponse;
 import com.devloop.party.response.GetPartyListResponse;
 import com.devloop.party.response.SavePartyResponse;
 import com.devloop.party.response.UpdatePartyResponse;
+import com.devloop.s3.S3Service;
 import com.devloop.user.entity.User;
 import com.devloop.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -30,7 +30,7 @@ public class PartyService {
 
     private final PartyRepository partyRepository;
     private final UserRepository userRepository;
-    private final S3Util s3Util;
+    private final S3Service s3Service;
 
     //스터디 파티 모집 게시글 등록
     @Transactional
@@ -45,7 +45,7 @@ public class PartyService {
         partyRepository.save(newParty);
 
 //        //파일 업로드
-//        s3Util.uploadFile(file);
+//        s3Service.uploadFile(file);
 
         return SavePartyResponse.from(newParty);
     }
