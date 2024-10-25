@@ -28,11 +28,6 @@ public class CommunityService {
     private final CommunityRepository communityRepository;
     private final UserRepository userRepository; //서비스로 받아오게
 
-    public Community getCommunityId(Long communityId){
-        return communityRepository.findById(communityId)
-                .orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_COMMUNITY));
-    }
-
     //게시글 작성
     @Transactional
     public CommunitySaveResponse createCommunity(AuthUser authUser, CommunitySaveRequest communitySaveRequest) {
@@ -122,5 +117,11 @@ public class CommunityService {
                 .orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_COMMUNITY));
         //삭제
         communityRepository.delete(community);
+    }
+
+    //Util
+    public Community getCommunityId(Long communityId){
+        return communityRepository.findById(communityId)
+                .orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_COMMUNITY));
     }
 }
