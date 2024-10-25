@@ -43,7 +43,7 @@ public class ProjectWithTutorDetailResponse {
             String status,
             LocalDateTime deadline,
             Integer maxParticipants,
-            String leve,
+            String level,
             String tutorName
 
     ){
@@ -54,7 +54,7 @@ public class ProjectWithTutorDetailResponse {
                 status,
                 deadline,
                 maxParticipants,
-                leve,
+                level,
                 tutorName
         );
     }
