@@ -41,10 +41,18 @@ public class WebSecurityConfig {
                                 "/api/v1/auth/signup",
                                 "/api/v1/auth/login",
                                 "/api/v1/auth/kakao/login",
-                                "/api/v1/search/**"
-                                )
+                                "/api/v1/search/**",
+                                "api/v1/pwts/**"
+                        )
                         .permitAll()
-                        .requestMatchers("/api/v1/admin/**").hasAuthority(UserRole.authority.ADMIN)
+                        .requestMatchers(
+                                "/api/v1/tutor/**"
+                        )
+                        .hasAnyAuthority(UserRole.authority.TUTOR, UserRole.authority.ADMIN)
+                        .requestMatchers(
+                                "/api/v1/admin/**"
+                        )
+                        .hasAuthority(UserRole.authority.ADMIN)
                         .anyRequest().authenticated()
                 )
                 .build();

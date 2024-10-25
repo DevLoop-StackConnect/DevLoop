@@ -1,12 +1,10 @@
 package com.devloop.tutor.controller;
 
-import com.devloop.common.AuthUser;
 import com.devloop.common.apipayload.ApiResponse;
-import com.devloop.tutor.response.TutorRequestResponse;
+import com.devloop.tutor.response.TutorRequestListAdminResponse;
 import com.devloop.tutor.service.TutorAdminService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -18,7 +16,7 @@ public class TutorAdminController {
 
     // 튜터 신청 요청 조회 (ADMIN : 승인되지 않은 튜터 신청 요청 다건 조회)
     @GetMapping("/v1/admin/tutor-request")
-    public ApiResponse<Page<TutorRequestResponse>> getAllTutorRequest(
+    public ApiResponse<Page<TutorRequestListAdminResponse>> getAllTutorRequest(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
