@@ -32,7 +32,6 @@ public class CommunityService {
     //게시글 작성
     @Transactional
     public CommunitySaveResponse createCommunity(AuthUser authUser, CommunitySaveRequest communitySaveRequest) {
-        ResolveStatus resolvedStatus = communitySaveRequest.getResolvedStatus();
         Category category = communitySaveRequest.getCategory();
         //사용자 조회
         User user = userRepository.findById(authUser.getId())
@@ -40,7 +39,6 @@ public class CommunityService {
         //게시글 Community객체 생성
         Community community = Community.of(communitySaveRequest.getTitle(),
                 communitySaveRequest.getContent(),
-                communitySaveRequest.getResolvedStatus(),
                 communitySaveRequest.getCategory(),
                 user);
         //게시글 저장
