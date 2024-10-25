@@ -16,14 +16,8 @@ public class CommunitySaveRequest {
     private String title;
     @NotBlank(message = "내용을 작성해 주세요")
     private String content;
-    @NotNull(message = "해결 상태를 작성해 주세요")
-    private String status; //게시글 해결 상태 (SOLVED, UNSOLVED)
     @NotNull(message = "카테고리를 작성해 주세요")
     private String category;
-
-    public ResolveStatus getResolvedStatus() {
-        return ResolveStatus.fromString(status);
-    }
 
     public Category getCategory() {
         return Category.fromString(category);

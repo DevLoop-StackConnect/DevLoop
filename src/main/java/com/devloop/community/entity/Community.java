@@ -50,19 +50,18 @@ public class Community extends Timestamped {
     private User user;
 
     //커뮤니티 글 생성자
-    private Community(String title, String content, ResolveStatus resolveStatus, Category category, User user) {
+    private Community(String title, String content, Category category, User user) {
         this.title = title;
         this.content = content;
-        this.resolveStatus = resolveStatus;
         this.category = category;
         this.user = user;
+        this.resolveStatus = ResolveStatus.UNSOLVED;  // 기본값 설정
     }
 
-    public static Community of(String title,String content, ResolveStatus resolvedStatus, Category category,User user) {
+    public static Community of(String title,String content, Category category,User user) {
         return new Community(
                 title,
                 content,
-                resolvedStatus,
                 category,
                 user
         );
