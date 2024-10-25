@@ -54,7 +54,13 @@ public class UserService {
 
         Party party = partyRepository.findByUserId(user.getId())
                 .orElseThrow(()->new ApiException(ErrorStatus._NOT_FOUND_PARTY));
-        GetPartyListResponse getPartyListResponse = GetPartyListResponse.from(party);
+        GetPartyListResponse getPartyListResponse = GetPartyListResponse.of(
+                party.getId(),
+                party.getTitle(),
+                party.getContents(),
+                party.getStatus().getStatus(),
+                party.getCategory().getDescription()
+        );
 
         /*Community community = communityRepository.findByUserId(user.getId())
                 .orElseThrow(()->new ApiException(ErrorStatus._NOT_FOUND_COMMUNITY));
