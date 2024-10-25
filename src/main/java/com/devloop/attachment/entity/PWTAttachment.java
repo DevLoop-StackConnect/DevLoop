@@ -13,7 +13,7 @@ import java.net.URL;
 @Getter
 @NoArgsConstructor
 @Entity
-@DiscriminatorValue("S")
+@DiscriminatorValue("W")
 public class PWTAttachment extends Attachment {
 
     @NotNull
