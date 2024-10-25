@@ -41,7 +41,7 @@ public class WebSecurityConfig {
                                 "/api/v1/auth/signup",
                                 "/api/v1/auth/login",
                                 "/api/v1/auth/kakao/login",
-                                "/api/v1/search/**",
+                                "/api/v1/main/search/**",
                                 "api/v1/pwts/**"
                         )
                         .permitAll()
