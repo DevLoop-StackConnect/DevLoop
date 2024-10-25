@@ -3,8 +3,10 @@ package com.devloop.community.service;
 import com.devloop.common.AuthUser;
 import com.devloop.common.apipayload.dto.CommunitySimpleResponseDto;
 import com.devloop.common.apipayload.status.ErrorStatus;
+import com.devloop.common.enums.BoardType;
 import com.devloop.common.enums.Category;
 import com.devloop.common.exception.ApiException;
+import com.devloop.common.utils.SearchResponseUtil;
 import com.devloop.community.dto.request.CommunitySaveRequest;
 import com.devloop.community.dto.request.CommunityUpdateRequest;
 import com.devloop.community.dto.response.CommunityDetailResponse;
@@ -13,14 +15,22 @@ import com.devloop.community.dto.response.CommunitySimpleResponse;
 import com.devloop.community.entity.Community;
 import com.devloop.community.entity.ResolveStatus;
 import com.devloop.community.repository.CommunityRepository;
+import com.devloop.communitycomment.repository.CommunityCommentRepository;
+import com.devloop.search.response.IntegrationSearchResponse;
 import com.devloop.user.entity.User;
 import com.devloop.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -132,5 +142,22 @@ public class CommunityService {
     public Community getCommunityId(Long communityId){
         return communityRepository.findById(communityId)
                 .orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_COMMUNITY));
+    }
+
+    /**
+     * Search에서 사용
+     */
+    public List<IntegrationSearchResponse> getAllCommunity(Specification<Community> spec){
+        List<Community> communities = communityRepository.findAll(spec);
+        return SearchResponseUtil.wrapResponse(BoardType.COMMUNITY, communities);
+    }
+
+    public Page<IntegrationSearchResponse> getCommunityWithPage(Specification<Community> spec, PageRequest pageable){
+        Page<Community> communityPage = communityRepository.findAll(spec, pageable);
+        List<IntegrationSearchResponse> response = SearchResponseUtil.wrapResponse(
+                BoardType.COMMUNITY,
+                communityPage.getContent()
+        );
+        return new PageImpl<>(response, pageable, communityPage.getTotalElements());
     }
 }

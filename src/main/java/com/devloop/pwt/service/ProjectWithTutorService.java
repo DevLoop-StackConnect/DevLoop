@@ -5,25 +5,31 @@ import com.devloop.common.apipayload.dto.ProjectWithTutorResponseDto;
 import com.devloop.common.apipayload.status.ErrorStatus;
 import com.devloop.common.enums.Approval;
 import com.devloop.common.enums.Category;
+import com.devloop.common.enums.BoardType;
 import com.devloop.common.exception.ApiException;
+import com.devloop.common.utils.SearchResponseUtil;
 import com.devloop.pwt.entity.ProjectWithTutor;
 import com.devloop.pwt.enums.Level;
-import com.devloop.pwt.enums.ProjectWithTutorStatus;
 import com.devloop.pwt.repository.ProjectWithTutorRepository;
 import com.devloop.pwt.request.ProjectWithTutorSaveRequest;
 import com.devloop.pwt.request.ProjectWithTutorUpdateRequest;
 import com.devloop.pwt.response.ProjectWithTutorDetailResponse;
 import com.devloop.pwt.response.ProjectWithTutorListResponse;
+import com.devloop.search.response.IntegrationSearchResponse;
 import com.devloop.user.entity.User;
 import com.devloop.user.enums.UserRole;
 import com.devloop.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -170,4 +176,19 @@ public class ProjectWithTutorService {
         return String.format("%s 게시글을 삭제하였습니다.", projectWithTutor.getTitle());
     }
 
+    /**
+     * Search에서 사용
+     */
+    public List<IntegrationSearchResponse> getProjectWithTutor(Specification<ProjectWithTutor> spec){
+        List<ProjectWithTutor> pwts = projectWithTutorRepository.findAll(spec);
+        return SearchResponseUtil.wrapResponse(BoardType.PWT, pwts);
+    }
+
+    public Page<IntegrationSearchResponse> getProjectWithTutorPage(Specification<ProjectWithTutor> spec, PageRequest pageable){
+        Page<ProjectWithTutor> pwtPage = projectWithTutorRepository.findAll(spec,pageable);
+        List<IntegrationSearchResponse> response = SearchResponseUtil.wrapResponse(
+                BoardType.PWT, pwtPage.getContent()
+        );
+        return new PageImpl<>(response, pageable, pwtPage.getTotalElements());
+    }
 }
