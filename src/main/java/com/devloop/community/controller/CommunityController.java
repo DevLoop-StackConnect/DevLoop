@@ -23,29 +23,25 @@ public class CommunityController {
     //게시글 작성
     @PostMapping("/v1/communities")
     public ApiResponse<CommunitySaveResponse> createCommunity(@AuthenticationPrincipal AuthUser authUser, @Valid @RequestBody CommunitySaveRequest communitySaveRequest) {
-        CommunitySaveResponse communitySaveResponse = communityService.createCommunity(authUser, communitySaveRequest);
-        return ApiResponse.ok(communitySaveResponse);
+        return ApiResponse.ok(communityService.createCommunity(authUser, communitySaveRequest));
     }
 
     //게시글 다건 조회
     @GetMapping("/v1/communities")
     public ApiResponse<Page<CommunitySimpleResponse>> getCommunities(@RequestParam(defaultValue = "1") int page, @RequestParam(defaultValue = "10") int size) {
-        Page<CommunitySimpleResponse> communitySimpleResponse = communityService.getCommunities(page, size);
-        return ApiResponse.ok(communitySimpleResponse);
+        return ApiResponse.ok(communityService.getCommunities(page, size));
     }
 
     //게시글 단건 조회
     @GetMapping("/v1/communities/{communityId}")
     public ApiResponse<CommunityDetailResponse> getCommunity(@PathVariable Long communityId) {
-        CommunityDetailResponse communityDetailResponse = communityService.getCommunity(communityId);
-        return ApiResponse.ok(communityDetailResponse);
+        return ApiResponse.ok(communityService.getCommunity(communityId));
     }
 
     //게시글 수정
     @PatchMapping("/v1/communities/{communityId}")
     public ApiResponse<CommunityDetailResponse> updateCommunity(@PathVariable Long communityId, @Valid @RequestBody CommunityUpdateRequest communityUpdateRequest) {
-        CommunityDetailResponse communityDetailResponse = communityService.updateCommunity(communityId, communityUpdateRequest);
-        return ApiResponse.ok(communityDetailResponse);
+        return ApiResponse.ok(communityService.updateCommunity(communityId, communityUpdateRequest));
     }
 
     //게시글 삭제

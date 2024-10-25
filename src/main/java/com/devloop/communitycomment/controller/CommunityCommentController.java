@@ -25,15 +25,13 @@ public class CommunityCommentController {
     //댓글 작성
     @PostMapping("/v1/communities/{communityId}/comments")
     public ApiResponse<CommentSaveResponse> createComment(@AuthenticationPrincipal AuthUser authUser, @Valid @RequestBody CommentSaveRequest commentSaveRequest, @PathVariable Long communityId) {
-        CommentSaveResponse commentSaveResponse = communityCommentService.creatComment(authUser, commentSaveRequest, communityId);
-        return ApiResponse.ok(commentSaveResponse);
+        return ApiResponse.ok(communityCommentService.creatComment(authUser, commentSaveRequest, communityId));
     }
 
     //댓글 수정
     @PatchMapping("/v1/communities/{communityId}/comments/{commentId}")
     public ApiResponse<CommentUpdateResponse> updateComment(@AuthenticationPrincipal AuthUser authUser, @Valid @RequestBody CommentUpdateRequest commentUpdateRequest, @PathVariable Long communityId, @PathVariable Long commentId) {
-        CommentUpdateResponse commentUpdateResponse = communityCommentService.updateComment(authUser, commentUpdateRequest, communityId, commentId);
-        return ApiResponse.ok(commentUpdateResponse);
+        return ApiResponse.ok(communityCommentService.updateComment(authUser, commentUpdateRequest, communityId, commentId));
     }
 
     //댓글 삭제
@@ -47,7 +45,6 @@ public class CommunityCommentController {
     @GetMapping("/v1/communities/{communityId}/comments")
     public ApiResponse<Page<CommentResponse>> getComments(@PathVariable Long communityId, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<CommentResponse> commentResponses = communityCommentService.getComments(communityId, pageable);
-        return ApiResponse.ok(commentResponses);
+        return ApiResponse.ok(communityCommentService.getComments(communityId, pageable));
     }
 }
