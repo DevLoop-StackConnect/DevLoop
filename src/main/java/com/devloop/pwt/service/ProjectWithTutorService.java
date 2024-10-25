@@ -99,7 +99,16 @@ public class ProjectWithTutorService {
                 .filter(p->!p.isEmpty())
                 .orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_PROJECT_WITH_TUTOR));
 
-        return projectWithTutors.map(ProjectWithTutorListResponse::from);
+        return projectWithTutors.map(p->ProjectWithTutorListResponse.of(
+                p.getId(),
+                p.getTitle(),
+                p.getPrice(),
+                p.getStatus().getStatus(),
+                p.getDeadline(),
+                p.getMaxParticipants(),
+                p.getLevel().getLevel(),
+                p.getUser().getUsername()
+        ));
     }
 
     // 튜터랑 함께하는 협업 프로젝트 게시글 수정
