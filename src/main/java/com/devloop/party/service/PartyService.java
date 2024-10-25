@@ -1,10 +1,9 @@
 package com.devloop.party.service;
 
 import com.devloop.common.AuthUser;
-import com.devloop.common.BoardType;
 import com.devloop.common.apipayload.status.ErrorStatus;
+import com.devloop.common.enums.BoardType;
 import com.devloop.common.exception.ApiException;
-import com.devloop.common.utils.S3Util;
 import com.devloop.common.utils.SearchResponseUtil;
 import com.devloop.party.entity.Party;
 import com.devloop.party.repository.PartyRepository;
