@@ -38,37 +38,15 @@ public class SearchService {
         PageRequest pageable = PageRequest.of(page - 1, size, Sort.by("createdAt").descending());
 
         if (integrationSearchRequest.getBoardType() == null || integrationSearchRequest.getBoardType().isEmpty()) {
-            log.info("boardType이 null이거나 비어있음");
             return searchAllType(integrationSearchRequest, pageable);
         }
-        log.info("boardType: {}",integrationSearchRequest.getBoardType());  // 로그 추가
-        log.info("toLowerCase: {}", integrationSearchRequest.getBoardType().toLowerCase());
 
-        log.info("boardType 값: '{}'", integrationSearchRequest.getBoardType());
-        String type = integrationSearchRequest.getBoardType().toLowerCase();
-        log.info("변환된 boardType 값: '{}'", type);
-        log.info("문자열 길이: {}", type.length());
-        log.info("각 문자의 ASCII 값: ");
-        try {
-            return switch(type) {
-                case "party" -> {yield searchParty(integrationSearchRequest, pageable);}
-
-                case "community" -> {
-                    log.info("community 검색 시작");
-                    yield searchCommunity(integrationSearchRequest, pageable);}
-                case "project" -> {yield searchPwt(integrationSearchRequest, pageable);}
-
-                default -> {log.error("일치하는 boardType이 없음: '{}'", type);
-                    throw new ApiException(ErrorStatus._BAD_SEARCH_KEYWORD);
-                }
-            };
-
-            }catch (Exception e){
-            log.error(" 검색 중 에러 발생");
-            log.error("에러 메시지: {}", e.getMessage());
-            log.error("에러 원인: {}", e.getCause());
-            throw new ApiException(ErrorStatus._BAD_SEARCH_KEYWORD);
-        }
+        return switch (integrationSearchRequest.getBoardType().toLowerCase()) {
+            case "party" -> searchParty(integrationSearchRequest, pageable);
+            case "community" -> searchCommunity(integrationSearchRequest, pageable);
+            case "project" -> searchPwt(integrationSearchRequest, pageable);
+            default -> throw new ApiException(ErrorStatus._BAD_SEARCH_KEYWORD);
+        };
     }
 
     private Page<IntegrationSearchResponse> searchAllType(IntegrationSearchRequest integrationSearchRequest, PageRequest pageable) {
