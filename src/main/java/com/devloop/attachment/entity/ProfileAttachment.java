@@ -19,12 +19,12 @@ public class ProfileAttachment extends Attachment {
     @NotNull
     private Long userId;
 
-    private ProfileAttachment(Long userId, URL imageURL, String fileFormat ,  String fileName){
+    private ProfileAttachment(Long userId, URL imageURL, FileFormat fileFormat ,  String fileName){
         super(imageURL, fileFormat,fileName);
         this.userId = userId;
     }
 
-    public static ProfileAttachment of(Long userId, URL imageURL, String fileFormat ,String fileName){
+    public static ProfileAttachment of(Long userId, URL imageURL, FileFormat fileFormat ,String fileName){
         return new ProfileAttachment(userId, imageURL, fileFormat,fileName);
     }
 }
