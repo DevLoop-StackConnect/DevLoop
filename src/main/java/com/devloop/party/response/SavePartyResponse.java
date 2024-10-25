@@ -1,6 +1,5 @@
 package com.devloop.party.response;
 
-import com.devloop.party.entity.Party;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -10,18 +9,24 @@ public class SavePartyResponse {
     private Long partyId;
     private String title;
     private String contents;
+    private String status;
+    private String category;
 
-    private SavePartyResponse(Long partyId,String title,String contents){
+    private SavePartyResponse(Long partyId,String title,String contents,String status,String category){
         this.partyId=partyId;
         this.title=title;
         this.contents=contents;
+        this.status=status;
+        this.category=category;
     }
 
-    public static SavePartyResponse from(Party party){
+    public static SavePartyResponse of(Long partyId,String title,String contents,String status,String category){
         return new SavePartyResponse(
-                party.getId(),
-                party.getTitle(),
-                party.getContents()
+                partyId,
+                title,
+                contents,
+                status,
+                category
         );
     }
 }
