@@ -22,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class TutorAdminService {
 
     private final TutorRequestRepository requestRepository;
+    // todo : UserService 주입받는 방식으로 리팩토링 하기
     private final UserRepository userRepository;
 
     // 튜터 신청 요청 조회 (ADMIN : 승인되지 않은 튜터 신청 요청 다건 조회)

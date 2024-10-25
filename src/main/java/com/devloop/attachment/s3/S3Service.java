@@ -72,7 +72,7 @@ public class S3Service {
 
         if (object instanceof Party) {
             PartyAttachment partyAttachment = PartyAttachment.of(
-                    user.getId(),
+                    ((Party) object).getId(),
                     url,
                     fileType,
                     fileName
@@ -80,7 +80,7 @@ public class S3Service {
             partyAMTRepository.save(partyAttachment);
         } else if (object instanceof Community) {
             CommunityAttachment communityAttachment = CommunityAttachment.of(
-                    user.getId(),
+                    ((Community) object).getId(),
                     url,
                     fileType,
                     fileName
@@ -88,7 +88,7 @@ public class S3Service {
             communityATMRepository.save(communityAttachment);
         } else if (object instanceof User) {
             ProfileAttachment profileAttachment = ProfileAttachment.of(
-                    user.getId(),
+                    ((User) object).getId(),
                     url,
                     fileType,
                     fileName
@@ -98,7 +98,7 @@ public class S3Service {
         }
         else if (object instanceof ProjectWithTutor) {
             PWTAttachment pwtAttachment = PWTAttachment.of(
-                    user.getId(),
+                    ((ProjectWithTutor) object).getId(),
                     url,
                     fileType,
                     fileName

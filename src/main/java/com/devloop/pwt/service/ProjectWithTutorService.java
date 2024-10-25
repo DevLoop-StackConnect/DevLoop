@@ -4,6 +4,7 @@ import com.devloop.common.AuthUser;
 import com.devloop.common.apipayload.dto.ProjectWithTutorResponseDto;
 import com.devloop.common.apipayload.status.ErrorStatus;
 import com.devloop.common.enums.Approval;
+import com.devloop.common.enums.Category;
 import com.devloop.common.exception.ApiException;
 import com.devloop.pwt.entity.ProjectWithTutor;
 import com.devloop.pwt.enums.Level;
@@ -30,6 +31,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class ProjectWithTutorService {
 
     private final ProjectWithTutorRepository projectWithTutorRepository;
+    // todo : UserService 주입받는 방식으로 리팩토링 하기
     private final UserRepository userRepository;
 
     // 튜터랑 함께하는 협업 프로젝트 게시글 생성
@@ -56,6 +58,7 @@ public class ProjectWithTutorService {
                 projectWithTutorSaveRequest.getDeadline(),
                 projectWithTutorSaveRequest.getMaxParticipants(),
                 Level.of(projectWithTutorSaveRequest.getLevel()),
+                Category.of(projectWithTutorSaveRequest.getCategory()),
                 user
         );
         projectWithTutorRepository.save(projectWithTutor);
