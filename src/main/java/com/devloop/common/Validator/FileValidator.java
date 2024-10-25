@@ -5,6 +5,7 @@ import com.devloop.common.apipayload.status.ErrorStatus;
 import com.devloop.common.exception.ApiException;
 import com.devloop.community.entity.Community;
 import com.devloop.party.entity.Party;
+import com.devloop.pwt.entity.ProjectWithTutor;
 import com.devloop.user.entity.User;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -28,6 +29,8 @@ public class FileValidator {
             return FileFormat.TXT;
         } else if (fileType.equalsIgnoreCase("application/pdf")) {
             return FileFormat.PDF;
+        } else if (fileType.contains("gif")) {
+            return FileFormat.TXT;
         }
         throw new ApiException(ErrorStatus._UNSUPPORTED_FILE_TYPE);
     }
@@ -41,8 +44,9 @@ public class FileValidator {
             acceptedTypes = Arrays.asList("jpg", "png","pdf","jpeg");
         } else if (object instanceof User) {
             acceptedTypes = Arrays.asList("jpg", "png","jpeg");
-        } /*else if (object instanceof PWT) {
-        }*/
+        } else if (object instanceof ProjectWithTutor) {
+            acceptedTypes = Arrays.asList("jpg", "png","jpeg","gif","pdf");
+        }
 
         String fileName = file.getOriginalFilename();
 
