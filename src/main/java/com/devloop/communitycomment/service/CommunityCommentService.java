@@ -92,14 +92,14 @@ public class CommunityCommentService {
     //댓글 다건 조회
     public Page<CommentResponse> getComments(Long communityId, Pageable pageable) {
         //페이지네이션된 댓글 조회
-        Page<CommunityComment> comments = communityCommentRepository.findByCommunityId(communityId,pageable);
+        Page<CommunityComment> comments = communityCommentRepository.findByCommunityId(communityId, pageable);
 
         List<CommentResponse> commentResponses = new ArrayList<>();
         //응답반환
-        for(CommunityComment comment : comments.getContent()){
+        for (CommunityComment comment : comments.getContent()) {
             CommentResponse commentResponse = CommentResponse.of(comment.getId(), comment.getContent(), comment.getUser().getUsername(), comment.getCreatedAt());
             commentResponses.add(commentResponse);
         }
-        return new PageImpl<>(commentResponses,comments.getPageable(),comments.getTotalElements());
+        return new PageImpl<>(commentResponses, comments.getPageable(), comments.getTotalElements());
     }
 }

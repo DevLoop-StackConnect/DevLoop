@@ -13,7 +13,7 @@ public enum ResolveStatus {
 
     private final String description;
 
-    public String getDescription(){
+    public String getDescription() {
         return this.description;
     }
 

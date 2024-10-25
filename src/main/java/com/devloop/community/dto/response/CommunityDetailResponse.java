@@ -20,8 +20,8 @@ public class CommunityDetailResponse {
         this.content = content;
         this.status = status;
         this.category = category;
-        this.createdAt=createdAt;
-        this.modifiedAt=modifiedAt;
+        this.createdAt = createdAt;
+        this.modifiedAt = modifiedAt;
     }
 
     //코드컨벤션에 맞춰서 정적 팩토리 메서드 추가
