@@ -21,5 +21,5 @@ public interface TutorRequestRepository extends JpaRepository<TutorRequest, Long
             Pageable pageable,
             @Param("status") TutorRequestStatus tutorRequestStatus);
 
-    Optional<TutorRequest> findByUserId(Long userId);
+    Optional<TutorRequest> findByUserId(@Param("userId") Long userId);
 }
