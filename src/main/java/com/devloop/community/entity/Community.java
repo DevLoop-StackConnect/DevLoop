@@ -37,7 +37,7 @@ public class Community extends Timestamped {
     @NotNull
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
-    private ResolveStatus resolveStatus;
+    private ResolveStatus resolveStatus = ResolveStatus.UNSOLVED; //기본값 필드로 설정
 
     @OneToMany(mappedBy = "community", fetch = FetchType.LAZY)
     private List<CommunityComment> communityComments = new ArrayList<>();
@@ -54,7 +54,6 @@ public class Community extends Timestamped {
         this.content = content;
         this.category = category;
         this.user = user;
-        this.resolveStatus = ResolveStatus.UNSOLVED;  // 기본값 설정
     }
 
     public static Community of(String title, String content, Category category, User user) {
