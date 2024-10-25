@@ -63,6 +63,15 @@ public class ProjectWithTutorAdminService {
                 .filter(p->!p.isEmpty())
                 .orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_PROJECT_WITH_TUTOR));
 
-        return projectWithTutors.map(ProjectWithTutorListAdminResponse::from);
+        return projectWithTutors.map(p-> ProjectWithTutorListAdminResponse.of(
+                p.getId(),
+                p.getTitle(),
+                p.getPrice(),
+                p.getStatus().getStatus(),
+                p.getDeadline(),
+                p.getMaxParticipants(),
+                p.getLevel().getLevel(),
+                p.getUser().getUsername()
+        ));
     }
 }
