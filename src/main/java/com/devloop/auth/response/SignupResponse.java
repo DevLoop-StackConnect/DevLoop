@@ -17,7 +17,7 @@ public class SignupResponse {
         this.createdAt = createdAt;
     }
 
-    public static SignupResponse from(String email, String name, LocalDateTime createdAt) {
+    public static SignupResponse of(String email, String name, LocalDateTime createdAt) {
         return new SignupResponse(email, name, createdAt);
     }
 }
