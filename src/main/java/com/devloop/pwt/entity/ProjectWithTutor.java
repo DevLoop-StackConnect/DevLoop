@@ -75,7 +75,7 @@ public class ProjectWithTutor extends Timestamped {
         this.user = user;
     }
 
-    public static ProjectWithTutor from(
+    public static ProjectWithTutor of(
             String title,
             String description,
             Integer price,

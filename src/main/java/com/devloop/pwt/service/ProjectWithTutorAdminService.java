@@ -8,7 +8,6 @@ import com.devloop.pwt.entity.ProjectWithTutor;
 import com.devloop.pwt.repository.ProjectWithTutorRepository;
 import com.devloop.pwt.response.ProjectWithTutorDetailAdminResponse;
 import com.devloop.pwt.response.ProjectWithTutorListAdminResponse;
-import com.devloop.pwt.response.ProjectWithTutorListResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -43,7 +42,16 @@ public class ProjectWithTutorAdminService {
         ProjectWithTutor projectWithTutor = projectWithTutorRepository.findById(projectId)
                 .orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_PROJECT_WITH_TUTOR));
 
-        return ProjectWithTutorDetailAdminResponse.from(projectWithTutor);
+        return ProjectWithTutorDetailAdminResponse.of(
+                projectWithTutor.getTitle(),
+                projectWithTutor.getDescription(),
+                projectWithTutor.getPrice(),
+                projectWithTutor.getStatus().getStatus(),
+                projectWithTutor.getDeadline(),
+                projectWithTutor.getMaxParticipants(),
+                projectWithTutor.getLevel().getLevel(),
+                projectWithTutor.getUser()
+        );
     }
 
     // 튜터랑 함께하는 협업 프로젝트 승인되지 않은 게시글 다건 조회 (ADMIN : TEXT 타입 데이터 제외 다건 조회)

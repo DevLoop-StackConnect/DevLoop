@@ -1,8 +1,5 @@
 package com.devloop.pwt.response;
 
-import com.devloop.pwt.entity.ProjectWithTutor;
-import com.devloop.pwt.enums.Level;
-import com.devloop.pwt.enums.ProjectWithTutorStatus;
 import com.devloop.user.entity.User;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -10,7 +7,6 @@ import lombok.RequiredArgsConstructor;
 import java.time.LocalDateTime;
 
 @Getter
-@RequiredArgsConstructor
 public class ProjectWithTutorDetailAdminResponse {
 
     private final String title;
@@ -27,33 +23,41 @@ public class ProjectWithTutorDetailAdminResponse {
             String title,
             String description,
             Integer price,
-            ProjectWithTutorStatus status,
+            String status,
             LocalDateTime deadline,
             Integer maxParticipants,
-            Level level,
-            User user) {
+            String level,
+            User user
+    ) {
         this.title = title;
         this.description = description;
         this.price = price;
-        this.status = status.getStatus();
+        this.status = status;
         this.deadline = deadline;
         this.maxParticipants = maxParticipants;
-        this.level = level.getLevel();
+        this.level = level;
         this.user = user;
     }
 
-    public static ProjectWithTutorDetailAdminResponse from(
-            ProjectWithTutor project
+    public static ProjectWithTutorDetailAdminResponse of(
+            String title,
+            String description,
+            Integer price,
+            String status,
+            LocalDateTime deadline,
+            Integer maxParticipants,
+            String level,
+            User user
     ){
         return new ProjectWithTutorDetailAdminResponse(
-                project.getTitle(),
-                project.getDescription(),
-                project.getPrice(),
-                project.getStatus(),
-                project.getDeadline(),
-                project.getMaxParticipants(),
-                project.getLevel(),
-                project.getUser()
+                title,
+                description,
+                price,
+                status,
+                deadline,
+                maxParticipants,
+                level,
+                user
         );
     }
 
