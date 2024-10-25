@@ -1,5 +1,7 @@
 package com.devloop.community.entity;
 
+import com.devloop.common.apipayload.status.ErrorStatus;
+import com.devloop.common.exception.ApiException;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -13,15 +15,11 @@ public enum ResolveStatus {
 
     private final String description;
 
-    public String getDescription() {
-        return this.description;
-    }
-
-    public static ResolveStatus fromString(String status) {
+    public static ResolveStatus of(String status) {
         return Arrays.stream(ResolveStatus.values())
                 .filter(s -> s.name().equalsIgnoreCase(status))
                 .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("잘못된 해결 상태 입력값입니다. 오타를 확인하세요 ->  " + status));
+                .orElseThrow(() -> new ApiException(ErrorStatus._STATUS_NOT_EXSIST));
     }
 }
 
