@@ -1,7 +1,7 @@
 package com.devloop.party.entity;
 
-import com.devloop.common.BoardType;
 import com.devloop.common.Timestamped;
+import com.devloop.common.enums.BoardType;
 import com.devloop.common.enums.Category;
 import com.devloop.party.enums.PartyStatus;
 import com.devloop.party.request.SavePartyRequest;
