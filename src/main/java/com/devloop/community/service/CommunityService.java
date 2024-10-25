@@ -17,6 +17,7 @@ import com.devloop.user.entity.User;
 import com.devloop.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -55,24 +56,10 @@ public class CommunityService {
     }
 
     //게시글 다건 조회
-    public Page<CommunitySimpleResponse> getCommunities(Pageable pageable) {
+    public Page<CommunitySimpleResponse> getCommunities(int page, int size) {
+        Pageable pageable = PageRequest.of(page-1,size);
         //페이지네이션된 게시글 조회
-        Page<Community> communities = communityRepository.findAll(pageable);
-
-        //List<CommunitySimpleResponse> responseList = new ArrayList<>();
-        //응답반환
-//        for (Community community : communities) {
-//            CommunitySimpleResponse response = CommunitySimpleResponse.from(community);
-//            responseList.add(response);
-//        }
-        return communities.map(community ->
-                CommunitySimpleResponse.of(
-                        community.getId(),
-                        community.getTitle(),
-                        community.getResolveStatus().getDescription(),
-                        community.getCategory().getDescription()
-                )
-        );
+        return communityRepository.findAllSimple(pageable);
     }
 
     //게시글 단건(상세조회)
