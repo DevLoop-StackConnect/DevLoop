@@ -48,10 +48,9 @@ public class WebSecurityConfig {
                         .requestMatchers(
                                 "/api/v1/tutor/**"
                         )
-                        .hasAuthority(UserRole.authority.TUTOR)
+                        .hasAnyAuthority(UserRole.authority.TUTOR, UserRole.authority.ADMIN)
                         .requestMatchers(
-                                "/api/v1/admin/**",
-                                "/api/v1/tutor/**"
+                                "/api/v1/admin/**"
                         )
                         .hasAuthority(UserRole.authority.ADMIN)
                         .anyRequest().authenticated()
