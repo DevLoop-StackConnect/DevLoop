@@ -5,19 +5,20 @@ import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.devloop.attachment.entity.CommunityAttachment;
+import com.devloop.attachment.entity.PWTAttachment;
 import com.devloop.attachment.entity.PartyAttachment;
 import com.devloop.attachment.entity.ProfileAttachment;
 import com.devloop.attachment.enums.FileFormat;
 import com.devloop.attachment.repository.CommunityATMRepository;
+import com.devloop.attachment.repository.PWTATMRepository;
 import com.devloop.attachment.repository.PartyAMTRepository;
 import com.devloop.attachment.repository.ProfileATMRepository;
 import com.devloop.common.Validator.FileValidator;
 import com.devloop.common.apipayload.status.ErrorStatus;
 import com.devloop.common.exception.ApiException;
 import com.devloop.community.entity.Community;
-import com.devloop.community.repository.CommunityRepository;
 import com.devloop.party.entity.Party;
-import com.devloop.party.repository.PartyRepository;
+import com.devloop.pwt.entity.ProjectWithTutor;
 import com.devloop.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -38,11 +39,11 @@ public class S3Service {
     @Value("${cloud.aws.s3.bucketName}")
     private String bucketName;
     private final AmazonS3Client amazonS3Client;
-    private final CommunityRepository communityRepository;
     private final PartyAMTRepository partyAMTRepository;
     private final CommunityATMRepository communityATMRepository;
     private final FileValidator fileValidator;
     private final ProfileATMRepository profileATMRepository;
+    private final PWTATMRepository pwtATMRepository;
 
     public String makeFileName(MultipartFile file){
         return UUID.randomUUID() + file.getOriginalFilename();
@@ -66,6 +67,7 @@ public class S3Service {
 
         fileValidator.fileTypeValidator(file,object);
         FileFormat fileType =  fileValidator.mapStringToFileFormat(Objects.requireNonNull(file.getContentType()));
+
         String fileName = makeFileName(file);
         URL url = getUrl(file.getOriginalFilename());
 
@@ -106,9 +108,15 @@ public class S3Service {
             profileATMRepository.save(profileAttachment);
             user.updateProfileImg(profileAttachment.getId());
         }
-        /*else if (object instanceof PWT) {
-            return 3;
-        } */
+        else if (object instanceof ProjectWithTutor) {
+            PWTAttachment pwtAttachment = PWTAttachment.of(
+                    user.getId(),
+                    url,
+                    fileType,
+                    fileName
+            );
+            pwtATMRepository.save(pwtAttachment);
+        }
         else {
             throw new ApiException(ErrorStatus._UNSUPPORTED_OBJECT_TYPE);
         }
