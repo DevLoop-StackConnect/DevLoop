@@ -1,7 +1,7 @@
 package com.devloop.tutor.repository;
 
 import com.devloop.tutor.entity.TutorRequest;
-import com.devloop.tutor.enums.TutorRequestStatus;
+import com.devloop.common.enums.Approval;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -19,7 +19,7 @@ public interface TutorRequestRepository extends JpaRepository<TutorRequest, Long
             "ORDER BY tr.createdAt DESC")
     Optional<Page<TutorRequest>> findAllByStatus(
             Pageable pageable,
-            @Param("status") TutorRequestStatus tutorRequestStatus);
+            @Param("status") Approval approval);
 
     Optional<TutorRequest> findByUserId(@Param("userId") Long userId);
 }

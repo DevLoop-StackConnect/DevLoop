@@ -2,7 +2,6 @@ package com.devloop.tutor.controller;
 
 import com.devloop.common.AuthUser;
 import com.devloop.common.apipayload.ApiResponse;
-import com.devloop.tutor.entity.TutorRequest;
 import com.devloop.tutor.request.TutorRequestSaveRequest;
 import com.devloop.tutor.service.TutorService;
 import jakarta.validation.Valid;
