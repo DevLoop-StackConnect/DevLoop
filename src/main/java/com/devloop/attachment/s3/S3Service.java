@@ -4,12 +4,21 @@ import com.amazonaws.AmazonServiceException;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.devloop.attachment.entity.CommunityAttachment;
+import com.devloop.attachment.entity.PartyAttachment;
+import com.devloop.attachment.entity.ProfileAttachment;
+import com.devloop.attachment.enums.FileFormat;
+import com.devloop.attachment.repository.CommunityATMRepository;
+import com.devloop.attachment.repository.PartyAMTRepository;
+import com.devloop.attachment.repository.ProfileATMRepository;
+import com.devloop.common.Validator.FileValidator;
 import com.devloop.common.apipayload.status.ErrorStatus;
 import com.devloop.common.exception.ApiException;
 import com.devloop.community.entity.Community;
 import com.devloop.community.repository.CommunityRepository;
 import com.devloop.party.entity.Party;
 import com.devloop.party.repository.PartyRepository;
+import com.devloop.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -18,6 +27,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.Objects;
 import java.util.UUID;
 
 @Service
@@ -29,7 +39,10 @@ public class S3Service {
     private String bucketName;
     private final AmazonS3Client amazonS3Client;
     private final CommunityRepository communityRepository;
-    private final PartyRepository partyRepository;
+    private final PartyAMTRepository partyAMTRepository;
+    private final CommunityATMRepository communityATMRepository;
+    private final FileValidator fileValidator;
+    private final ProfileATMRepository profileATMRepository;
 
     public String makeFileName(MultipartFile file){
         return UUID.randomUUID() + file.getOriginalFilename();
@@ -49,22 +62,51 @@ public class S3Service {
         }
     }
 
-    public <T> void uploadFile(MultipartFile file, T object){
+    public <T> void uploadFile(MultipartFile file, User user, T object){
+
+        fileValidator.fileTypeValidator(file,object);
+        FileFormat fileType =  fileValidator.mapStringToFileFormat(Objects.requireNonNull(file.getContentType()));
         String fileName = makeFileName(file);
+        URL url = getUrl(file.getOriginalFilename());
+
         ObjectMetadata metadata = new ObjectMetadata();
         metadata.setContentType(file.getContentType());
         metadata.setContentLength(file.getSize());
+
 
         try {
             amazonS3Client.putObject(bucketName, fileName, file.getInputStream(), metadata);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+
         if (object instanceof Party) {
-            partyRepository.save((Party) object);
+            PartyAttachment partyAttachment = PartyAttachment.of(
+                    user.getId(),
+                    url,
+                    fileType,
+                    fileName
+            );
+            partyAMTRepository.save(partyAttachment);
         } else if (object instanceof Community) {
-            communityRepository.save((Community) object);
-        } /*else if (object instanceof PWT) {
+            CommunityAttachment communityAttachment = CommunityAttachment.of(
+                    user.getId(),
+                    url,
+                    fileType,
+                    fileName
+            );
+            communityATMRepository.save(communityAttachment);
+        } else if (object instanceof User) {
+            ProfileAttachment profileAttachment = ProfileAttachment.of(
+                    user.getId(),
+                    url,
+                    fileType,
+                    fileName
+            );
+            profileATMRepository.save(profileAttachment);
+            user.updateProfileImg(profileAttachment.getId());
+        }
+        /*else if (object instanceof PWT) {
             return 3;
         } */
         else {

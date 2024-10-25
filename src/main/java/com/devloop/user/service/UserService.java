@@ -83,6 +83,7 @@ public class UserService {
     @Transactional
     public void updateProfileImg(MultipartFile file, AuthUser authUser) {
         User user = userRepository.findById(authUser.getId()).orElseThrow(()->new ApiException(ErrorStatus._NOT_FOUND_USER));
+
         if(user.getAttachmentId() != null) {
             // 디폴트 이미지가 아닐때 S3에서 삭제
             ProfileAttachment currentImg = profileATMRepository.findById(user.getAttachmentId())
@@ -91,19 +92,8 @@ public class UserService {
             s3Service.delete(currentImgName);
             profileATMRepository.delete(currentImg);
         }
+        s3Service.uploadFile(file,user,user);
 
-        FileFormat fileType =  fileValidator.mapStringToFileFormat(Objects.requireNonNull(file.getContentType()));
-        String fileName = s3Service.uploadFile(file);
-        URL url = s3Service.getUrl(file.getOriginalFilename());
-
-        ProfileAttachment profileAttachment = ProfileAttachment.of(
-                user.getId(),
-                url,
-                fileType,
-                fileName
-        );
-        profileATMRepository.save(profileAttachment);
-        user.updateProfileImg(profileAttachment.getId());
     }
     //----------------------------------------------------util---------------------------------------------------//
     public User findByUserId(Long userId) {
