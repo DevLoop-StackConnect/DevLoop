@@ -1,5 +1,7 @@
 package com.devloop.pwt.enums;
 
+import com.devloop.common.apipayload.status.ErrorStatus;
+import com.devloop.common.exception.ApiException;
 import com.devloop.user.enums.UserRole;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +21,6 @@ public enum Level {
         return Arrays.stream(Level.values())
                 .filter(l -> l.name().equalsIgnoreCase(level))
                 .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 난이도 입니다."));
+                .orElseThrow(() -> new ApiException(ErrorStatus._LEVEL_NOT_EXIST));
     }
 }
