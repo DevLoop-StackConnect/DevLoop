@@ -2,13 +2,13 @@ package com.devloop.user.controller;
 
 import com.devloop.common.AuthUser;
 import com.devloop.common.apipayload.ApiResponse;
-import com.devloop.attachment.s3.S3Service;
 import com.devloop.user.dto.response.UserResponse;
 import com.devloop.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
 import java.net.MalformedURLException;
 
 @RestController

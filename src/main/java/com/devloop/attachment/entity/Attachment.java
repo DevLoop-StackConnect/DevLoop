@@ -23,6 +23,7 @@ public abstract class Attachment {
     private URL imageURL;
 
     @NotNull
+    @Enumerated(EnumType.STRING)
     private FileFormat fileFormat;
 
     @NotNull

@@ -8,7 +8,9 @@ import lombok.RequiredArgsConstructor;
 public enum FileFormat {
     JPG("jpg"),
     PNG("png"),
-    JPEG("jpeg");
+    JPEG("jpeg"),
+    TXT("txt"),
+    PDF("pdf");
 
     private final String format;
 }
