@@ -12,8 +12,6 @@ import com.devloop.community.dto.response.CommunitySaveResponse;
 import com.devloop.community.dto.response.CommunitySimpleResponse;
 import com.devloop.community.entity.Community;
 import com.devloop.community.repository.CommunityRepository;
-import com.devloop.communitycomment.dto.CommentResponse;
-import com.devloop.communitycomment.entity.CommunityComment;
 import com.devloop.communitycomment.repository.CommunityCommentRepository;
 import com.devloop.search.response.IntegrationSearchResponse;
 import com.devloop.user.entity.User;
