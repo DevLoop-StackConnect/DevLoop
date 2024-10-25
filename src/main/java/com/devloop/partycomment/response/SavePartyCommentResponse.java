@@ -1,6 +1,5 @@
 package com.devloop.partycomment.response;
 
-import com.devloop.partycomment.entity.PartyComment;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -17,11 +16,11 @@ public class SavePartyCommentResponse {
         this.comment=comment;
     }
 
-    public static SavePartyCommentResponse from(Long partyId,PartyComment partyComment){
+    public static SavePartyCommentResponse of(Long partyId,Long commentId,String comment){
         return new SavePartyCommentResponse(
                 partyId,
-                partyComment.getId(),
-                partyComment.getComment()
+                commentId,
+                comment
         );
     }
 }

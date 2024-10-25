@@ -53,26 +53,20 @@ public class Party extends Timestamped {
     }
 
     public static Party from(SavePartyRequest request,User user){
-        PartyStatus partyStatus=PartyStatus.valueOf(request.getStatus().toUpperCase());
-        Category category=Category.valueOf(request.getCategory().toUpperCase());
-
         return new Party(
                 request.getTitle(),
                 request.getContents(),
-                partyStatus,
-                category,
+                PartyStatus.of(request.getStatus()),
+                Category.of(request.getCategory()),
                 user
         );
     }
 
     public void update(UpdatePartyRequest request){
-        PartyStatus partyStatus=PartyStatus.valueOf(request.getStatus().toUpperCase());
-        Category category=Category.valueOf(request.getCategory().toUpperCase());
-
         this.title=request.getTitle();
         this.contents=request.getContents();
-        this.status=partyStatus;
-        this.category=category;
+        this.status=PartyStatus.of(request.getStatus());
+        this.category=Category.of(request.getCategory());
     }
 
 }
