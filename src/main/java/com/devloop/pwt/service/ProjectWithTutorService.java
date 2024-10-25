@@ -53,11 +53,9 @@ public class ProjectWithTutorService {
                 projectWithTutorSaveRequest.getTitle(),
                 projectWithTutorSaveRequest.getDescription(),
                 projectWithTutorSaveRequest.getPrice(),
-                ProjectWithTutorStatus.IN_PROGRESS,
                 projectWithTutorSaveRequest.getDeadline(),
                 projectWithTutorSaveRequest.getMaxParticipants(),
                 Level.of(projectWithTutorSaveRequest.getLevel()),
-                Approval.WAITE,
                 user
         );
         projectWithTutorRepository.save(projectWithTutor);
