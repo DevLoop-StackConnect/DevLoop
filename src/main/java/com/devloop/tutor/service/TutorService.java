@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class TutorService {
 
     private final TutorRequestRepository requestRepository;
+    // todo : UserService 주입받는 방식으로 리팩토링 하기
     private final UserRepository userRepository;
 
     // 튜터 신청
