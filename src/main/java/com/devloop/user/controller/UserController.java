@@ -17,14 +17,6 @@ import java.net.MalformedURLException;
 public class UserController {
 
     private final UserService userService;
-    private final S3Service s3Service;
-
-    @PostMapping("/s3test")
-    public String s3test(@RequestParam("file") MultipartFile file ) {
-        System.out.println("들어옴");
-        s3Service.uploadFile(file);
-        return "성공";
-    }
 
     @GetMapping("/v1/users/profiles")
     public ApiResponse<UserResponse> getUser(@AuthenticationPrincipal AuthUser authUser) throws MalformedURLException {
