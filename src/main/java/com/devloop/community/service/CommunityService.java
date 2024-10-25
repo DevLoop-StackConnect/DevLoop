@@ -1,8 +1,10 @@
 package com.devloop.community.service;
 
 import com.devloop.common.AuthUser;
+import com.devloop.common.BoardType;
 import com.devloop.common.apipayload.status.ErrorStatus;
 import com.devloop.common.exception.ApiException;
+import com.devloop.common.utils.SearchResponseUtil;
 import com.devloop.community.dto.request.CommunitySaveRequest;
 import com.devloop.community.dto.request.CommunityUpdateRequest;
 import com.devloop.community.dto.response.CommunityDetailResponse;
@@ -13,12 +15,15 @@ import com.devloop.community.repository.CommunityRepository;
 import com.devloop.communitycomment.dto.CommentResponse;
 import com.devloop.communitycomment.entity.CommunityComment;
 import com.devloop.communitycomment.repository.CommunityCommentRepository;
+import com.devloop.search.response.IntegrationSearchResponse;
 import com.devloop.user.entity.User;
 import com.devloop.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -100,5 +105,22 @@ public class CommunityService {
                 .orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_COMMUNITY));
         //삭제
         communityRepository.delete(community);
+    }
+
+    /**
+     * Search에서 사용
+     */
+    public List<IntegrationSearchResponse> getCommunity(Specification<Community> spec){
+        List<Community> communities = communityRepository.findAll(spec);
+        return SearchResponseUtil.wrapResponse(BoardType.COMMUNNITY, communities);
+    }
+
+    public Page<IntegrationSearchResponse> getCommunityWithPage(Specification<Community> spec, PageRequest pageable){
+        Page<Community> communityPage = communityRepository.findAll(spec, pageable);
+        List<IntegrationSearchResponse> response = SearchResponseUtil.wrapResponse(
+                BoardType.COMMUNNITY,
+                communityPage.getContent()
+        );
+        return new PageImpl<>(response, pageable, communityPage.getTotalElements());
     }
 }
