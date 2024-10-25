@@ -21,6 +21,7 @@ import com.devloop.party.entity.Party;
 import com.devloop.pwt.entity.ProjectWithTutor;
 import com.devloop.user.entity.User;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,6 +35,7 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 @Transactional
+@Slf4j
 public class S3Service {
 
     @Value("${cloud.aws.s3.bucketName}")
@@ -49,24 +51,10 @@ public class S3Service {
         return UUID.randomUUID() + file.getOriginalFilename();
     }
 
-    //유저 프로필에서 사용하는 업로드 메서드
-    public String uploadFile(MultipartFile file){
-        String fileName = makeFileName(file);
-        ObjectMetadata metadata = new ObjectMetadata();
-        metadata.setContentType(file.getContentType());
-        metadata.setContentLength(file.getSize());
-        try {
-            amazonS3Client.putObject(bucketName, fileName, file.getInputStream(), metadata);
-            return fileName;
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     public <T> void uploadFile(MultipartFile file, User user, T object){
 
         fileValidator.fileTypeValidator(file,object);
-        FileFormat fileType =  fileValidator.mapStringToFileFormat(Objects.requireNonNull(file.getContentType()));
+        FileFormat fileType = fileValidator.mapStringToFileFormat(Objects.requireNonNull(file.getContentType()));
 
         String fileName = makeFileName(file);
         ObjectMetadata metadata = new ObjectMetadata();
@@ -76,12 +64,11 @@ public class S3Service {
 
         try {
             amazonS3Client.putObject(bucketName, fileName, file.getInputStream(), metadata);
-
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
 
-        URL url = amazonS3Client.getUrl(bucketName,file.getOriginalFilename());
+        URL url = amazonS3Client.getUrl(bucketName,fileName);
 
         if (object instanceof Party) {
             PartyAttachment partyAttachment = PartyAttachment.of(
@@ -123,7 +110,6 @@ public class S3Service {
         }
     }
 
-
     public void delete(String fileName){
         if(amazonS3Client.doesObjectExist(bucketName, fileName)) {
             try {
@@ -134,16 +120,5 @@ public class S3Service {
         } else {
             throw new ApiException(ErrorStatus._ATTACHMENT_NOT_FOUND);
         }
-    }
-
-    // 버킷 이름과 오리지널 파일이름으로 URL 반환하는 메서드
-    public URL getUrl(String originalFileName) {
-        return amazonS3Client.getUrl(bucketName, originalFileName);
-    }
-
-    public String extractFileNameFromS3Url(URL s3Url) {
-        String path = s3Url.getPath();
-        String[] parts = path.split("/");
-        return parts[parts.length - 1];
     }
 }
