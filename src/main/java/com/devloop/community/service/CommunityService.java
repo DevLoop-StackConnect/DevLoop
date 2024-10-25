@@ -12,7 +12,6 @@ import com.devloop.community.dto.response.CommunitySimpleResponse;
 import com.devloop.community.entity.Community;
 import com.devloop.community.entity.ResolveStatus;
 import com.devloop.community.repository.CommunityRepository;
-import com.devloop.communitycomment.repository.CommunityCommentRepository;
 import com.devloop.user.entity.User;
 import com.devloop.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -28,7 +27,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class CommunityService {
     private final CommunityRepository communityRepository;
     private final UserRepository userRepository;
-    private final CommunityCommentRepository communityCommentRepository;
 
     //게시글 작성
     @Transactional
@@ -57,7 +55,7 @@ public class CommunityService {
 
     //게시글 다건 조회
     public Page<CommunitySimpleResponse> getCommunities(int page, int size) {
-        Pageable pageable = PageRequest.of(page-1,size);
+        Pageable pageable = PageRequest.of(page - 1, size);
         //페이지네이션된 게시글 조회
         return communityRepository.findAllSimple(pageable);
     }

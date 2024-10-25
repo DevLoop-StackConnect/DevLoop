@@ -11,8 +11,6 @@ import com.devloop.community.service.CommunityService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,7 +30,7 @@ public class CommunityController {
     //게시글 다건 조회
     @GetMapping("/v1/communities")
     public ApiResponse<Page<CommunitySimpleResponse>> getCommunities(@RequestParam(defaultValue = "1") int page, @RequestParam(defaultValue = "10") int size) {
-        Page<CommunitySimpleResponse> communitySimpleResponse = communityService.getCommunities(page,size);
+        Page<CommunitySimpleResponse> communitySimpleResponse = communityService.getCommunities(page, size);
         return ApiResponse.ok(communitySimpleResponse);
     }
 

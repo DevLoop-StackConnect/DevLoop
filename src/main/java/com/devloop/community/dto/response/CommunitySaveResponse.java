@@ -1,14 +1,11 @@
 package com.devloop.community.dto.response;
 
-import com.devloop.common.enums.Category;
-import com.devloop.community.entity.Community;
-import com.devloop.community.entity.ResolveStatus;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
 
 @Getter
-public class CommunitySaveResponse  {
+public class CommunitySaveResponse {
     private final Long communityId;
     private final String title;
     private final String content;
@@ -23,7 +20,7 @@ public class CommunitySaveResponse  {
         this.content = content;
         this.status = status;
         this.category = category;
-        this.createdAt=createdAt;
+        this.createdAt = createdAt;
     }
 
     public static CommunitySaveResponse of(Long communityId, String title, String content, String status, String category, LocalDateTime createdAt) {

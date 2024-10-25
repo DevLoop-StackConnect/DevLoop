@@ -2,7 +2,6 @@ package com.devloop.community.entity;
 
 import com.devloop.common.Timestamped;
 import com.devloop.common.enums.Category;
-import com.devloop.community.dto.request.CommunitySaveRequest;
 import com.devloop.communitycomment.entity.CommunityComment;
 import com.devloop.user.entity.User;
 import jakarta.persistence.*;
@@ -58,7 +57,7 @@ public class Community extends Timestamped {
         this.resolveStatus = ResolveStatus.UNSOLVED;  // 기본값 설정
     }
 
-    public static Community of(String title,String content, Category category,User user) {
+    public static Community of(String title, String content, Category category, User user) {
         return new Community(
                 title,
                 content,

@@ -1,7 +1,6 @@
 package com.devloop.community.dto.request;
 
 import com.devloop.common.enums.Category;
-import com.devloop.community.entity.ResolveStatus;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
