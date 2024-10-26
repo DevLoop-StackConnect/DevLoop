@@ -7,15 +7,19 @@ import com.devloop.common.AuthUser;
 import com.devloop.common.Validator.FileValidator;
 import com.devloop.common.apipayload.status.ErrorStatus;
 import com.devloop.common.exception.ApiException;
+import com.devloop.community.dto.response.CommunitySimpleResponse;
+import com.devloop.community.entity.Community;
 import com.devloop.community.repository.CommunityRepository;
 import com.devloop.party.entity.Party;
 import com.devloop.party.repository.PartyRepository;
 import com.devloop.party.response.GetPartyListResponse;
+import com.devloop.tutor.entity.TutorRequest;
 import com.devloop.tutor.repository.TutorRequestRepository;
 import com.devloop.user.dto.response.UserResponse;
 import com.devloop.user.entity.User;
 import com.devloop.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -28,6 +32,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
+@Slf4j
 public class UserService {
 
     private final UserRepository userRepository;
@@ -51,9 +56,12 @@ public class UserService {
                     .orElseThrow(()->new ApiException(ErrorStatus._ATTACHMENT_NOT_FOUND));
             imageURL = profileAttachment.getImageURL();
         }
+        /*
+        * 유저 개인 프로필에 보여줄 참여중인 스터디 리스트
+        * */
 
         List<Party> partys = partyRepository.findAllByUserId(user.getId())
-                .orElseThrow(()->new ApiException(ErrorStatus._NOT_FOUND_PARTY));
+                .orElseThrow(()->new ApiException(ErrorStatus._INVALID_REQUEST));
         List<GetPartyListResponse> GetPartyListResponses = new ArrayList<>();
         for (Party party : partys) {
             GetPartyListResponse getPartyListResponses = GetPartyListResponse.of(
@@ -65,22 +73,37 @@ public class UserService {
             );
             GetPartyListResponses.add(getPartyListResponses);
         }
+        log.info(partys.toString());
+        /*
+        * 유저 개인 프로필에 보여줄 작성한 커뮤니티 게시글 리스트
+        * */
 
-        /*Community community = communityRepository.findByUserId(user.getId())
-                .orElseThrow(()->new ApiException(ErrorStatus._NOT_FOUND_COMMUNITY));
-        CommunitySimpleResponse communitySimpleResponse = CommunitySimpleResponse.from(community);
+        List<Community> communities = communityRepository.findAllByUserId(user.getId())
+                .orElseThrow(()->new ApiException(ErrorStatus._INVALID_REQUEST));
+        log.info(communities.toString());
+        List<CommunitySimpleResponse> communitySimpleResponses = new ArrayList<>();
+        for (Community community : communities) {
+            CommunitySimpleResponse communitySimpleResponse = CommunitySimpleResponse.of(
+                    community.getId(),
+                    community.getTitle(),
+                    community.getResolveStatus(),
+                    community.getCategory()
+            );
+            communitySimpleResponses.add(communitySimpleResponse);
+        }
+        log.info(communities.toString());
 
-        TutorRequest tutorRequest = tutorRequestRepository.findByUserId(user.getId())
-                .orElseThrow(()-> new ApiException(ErrorStatus._UNSUPPORTED_OBJECT_TYPE));*/
-
+        /*TutorRequest tutorRequest = tutorRequestRepository.findByUserId(user.getId())
+                .orElseThrow(()-> new ApiException(ErrorStatus._UNSUPPORTED_OBJECT_TYPE));
+*/
 
         return UserResponse.of(
                 user.getUsername(),
                 user.getEmail(),
                 user.getUserRole().toString(),
                 imageURL,
-                GetPartyListResponses/*,
-                communitySimpleResponse,
+                GetPartyListResponses,
+                communitySimpleResponses/*,
                 tutorRequest.getSubUrl()*/);
     }
 

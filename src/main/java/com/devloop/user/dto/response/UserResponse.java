@@ -1,5 +1,6 @@
 package com.devloop.user.dto.response;
 
+import com.devloop.community.dto.response.CommunitySimpleResponse;
 import com.devloop.party.response.GetPartyListResponse;
 import lombok.Getter;
 import java.net.URL;
@@ -11,9 +12,9 @@ public class UserResponse {
     private final String userEmail;
     private final String userRole;
     private final URL url;
-    private final List<GetPartyListResponse> partyList;/*
-    private final CommunitySimpleResponse community;
-    private final String tutorRequestSubUrl;*/
+    private final List<GetPartyListResponse> partyList;
+    private final List<CommunitySimpleResponse> communityList;
+    //private final String tutorRequestSubUrl;
 
 
 
@@ -21,8 +22,8 @@ public class UserResponse {
                           String userEmail,
                           String userRole,
                           URL url,
-                          List<GetPartyListResponse> partyList/*,
-                          CommunitySimpleResponse community,
+                          List<GetPartyListResponse> partyList,
+                          List<CommunitySimpleResponse> communityList/*,
                           String tutorRequestSubUrl*/
                           ) {
         this.userName = userName;
@@ -30,18 +31,18 @@ public class UserResponse {
         this.userRole = userRole;
         this.url = url;
         this.partyList = partyList;
-        /*this.community = community;
-        this.tutorRequestSubUrl = tutorRequestSubUrl;*/
+        this.communityList = communityList;
+        //this.tutorRequestSubUrl = tutorRequestSubUrl;
     }
 
     public static UserResponse of( String userName,
                                      String userEmail,
                                      String userRole,
                                      URL url,
-                                     List<GetPartyListResponse> partyList/*,
-                                     CommunitySimpleResponse community,
+                                     List<GetPartyListResponse> partyList,
+                                     List<CommunitySimpleResponse> communityList/*,
                                      String tutorRequestSubUrl*/
                                      ) {
-        return new UserResponse(userName, userEmail, userRole, url, partyList/*, community, tutorRequestSubUrl*/);
+        return new UserResponse(userName, userEmail, userRole, url, partyList, communityList/*, tutorRequestSubUrl*/);
     }
 }
