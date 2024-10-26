@@ -93,9 +93,11 @@ public class UserService {
         }
         log.info(communities.toString());
 
-        /*TutorRequest tutorRequest = tutorRequestRepository.findByUserId(user.getId())
+        /*
+         * 유저 개인 프로필에 보여줄 튜터 신청서 url
+         * */
+        TutorRequest tutorRequest = tutorRequestRepository.findByUserId(user.getId())
                 .orElseThrow(()-> new ApiException(ErrorStatus._UNSUPPORTED_OBJECT_TYPE));
-*/
 
         return UserResponse.of(
                 user.getUsername(),
@@ -103,8 +105,8 @@ public class UserService {
                 user.getUserRole().toString(),
                 imageURL,
                 GetPartyListResponses,
-                communitySimpleResponses/*,
-                tutorRequest.getSubUrl()*/);
+                communitySimpleResponses,
+                tutorRequest.getSubUrl());
     }
 
     @Transactional
