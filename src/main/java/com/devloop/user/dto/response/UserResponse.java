@@ -3,6 +3,7 @@ package com.devloop.user.dto.response;
 import com.devloop.party.response.GetPartyListResponse;
 import lombok.Getter;
 import java.net.URL;
+import java.util.List;
 
 @Getter
 public class UserResponse {
@@ -10,7 +11,7 @@ public class UserResponse {
     private final String userEmail;
     private final String userRole;
     private final URL url;
-    private final GetPartyListResponse partyList;/*
+    private final List<GetPartyListResponse> partyList;/*
     private final CommunitySimpleResponse community;
     private final String tutorRequestSubUrl;*/
 
@@ -20,7 +21,7 @@ public class UserResponse {
                           String userEmail,
                           String userRole,
                           URL url,
-                          GetPartyListResponse partyList/*,
+                          List<GetPartyListResponse> partyList/*,
                           CommunitySimpleResponse community,
                           String tutorRequestSubUrl*/
                           ) {
@@ -37,7 +38,7 @@ public class UserResponse {
                                      String userEmail,
                                      String userRole,
                                      URL url,
-                                     GetPartyListResponse partyList/*,
+                                     List<GetPartyListResponse> partyList/*,
                                      CommunitySimpleResponse community,
                                      String tutorRequestSubUrl*/
                                      ) {
