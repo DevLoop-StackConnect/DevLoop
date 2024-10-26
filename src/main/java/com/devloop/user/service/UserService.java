@@ -79,7 +79,12 @@ public class UserService {
     }
 
     @Transactional
-    public void updateProfileImg(MultipartFile file, AuthUser authUser) {
+    public void updateProfileImg(MultipartFile[] files, AuthUser authUser) {
+
+        if(files.length != 1){
+            throw new ApiException(ErrorStatus._FILE_ISNOT_ONE);
+        }
+        MultipartFile file = files[0];
         User user = userRepository.findById(authUser.getId()).orElseThrow(()->new ApiException(ErrorStatus._NOT_FOUND_USER));
 
         if(user.getAttachmentId() != null) {
