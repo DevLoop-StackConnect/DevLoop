@@ -1,5 +1,6 @@
 package com.devloop.party.service;
 
+import com.devloop.attachment.s3.S3Service;
 import com.devloop.common.AuthUser;
 import com.devloop.common.apipayload.status.ErrorStatus;
 import com.devloop.common.enums.BoardType;
@@ -36,7 +37,7 @@ public class PartyService {
 
     private final PartyRepository partyRepository;
     private final UserRepository userRepository;
-
+    private final S3Service s3Service;
 
     //스터디 파티 모집 게시글 등록
     @Transactional
@@ -49,7 +50,9 @@ public class PartyService {
         Party newParty=Party.from(savePartyRequest, user);
         partyRepository.save(newParty);
 
-//        //파일 업로드
+        //파일 업로드
+        s3Service.uploadFile(file,user,newParty);
+
         return SavePartyResponse.of(
                 newParty.getId(),
                 newParty.getTitle(),
