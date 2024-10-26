@@ -117,6 +117,12 @@ public class PartyService {
         Party party=partyRepository.findById(partyId).orElseThrow(()->
                 new ApiException(ErrorStatus._NOT_FOUND_PARTY));
 
+        //기존 파일이 있는 지 확인
+        Optional<PartyAttachment> partyAttachment=partyAMTRepository.findByPartyId(partyId);
+
+        //파일이 없으면 null로 전달
+        String imageURL= String.valueOf(partyAttachment.map(attachment -> attachment.getImageURL()).orElse(null));
+
         return GetPartyDetailResponse.of(
                 party.getId(),
                 party.getTitle(),
@@ -124,7 +130,9 @@ public class PartyService {
                 party.getStatus().getStatus(),
                 party.getCategory().getDescription(),
                 party.getCreatedAt(),
-                party.getModifiedAt());
+                party.getModifiedAt(),
+                imageURL
+        );
     }
 
     //스터디 파티 모집 게시글 다건 조회
