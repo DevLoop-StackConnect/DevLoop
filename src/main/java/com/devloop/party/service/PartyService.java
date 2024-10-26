@@ -37,6 +37,7 @@ public class PartyService {
     private final PartyRepository partyRepository;
     private final UserRepository userRepository;
 
+
     //스터디 파티 모집 게시글 등록
     @Transactional
     public SavePartyResponse saveParty(AuthUser authUser, MultipartFile file,SavePartyRequest savePartyRequest) {
@@ -49,8 +50,6 @@ public class PartyService {
         partyRepository.save(newParty);
 
 //        //파일 업로드
-//        s3Util.uploadFile(file);
-        
         return SavePartyResponse.of(
                 newParty.getId(),
                 newParty.getTitle(),
