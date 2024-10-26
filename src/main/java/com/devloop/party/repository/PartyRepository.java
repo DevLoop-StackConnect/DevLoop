@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface PartyRepository extends JpaRepository<Party,Long>, JpaSpecificationExecutor<Party> {
@@ -16,4 +17,7 @@ public interface PartyRepository extends JpaRepository<Party,Long>, JpaSpecifica
 
     @Query("SELECT p FROM Party p WHERE p.user.id =:userId")
     Optional<Party> findByUserId(@Param("userId") Long userId);
+
+    @Query("SELECT p FROM Party p WHERE p.user.id =:userId")
+    Optional<List<Party>> findAllByUserId(@Param("userId")Long id);
 }

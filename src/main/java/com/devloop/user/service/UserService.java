@@ -22,6 +22,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -50,15 +52,19 @@ public class UserService {
             imageURL = profileAttachment.getImageURL();
         }
 
-        Party party = partyRepository.findByUserId(user.getId())
+        List<Party> partys = partyRepository.findAllByUserId(user.getId())
                 .orElseThrow(()->new ApiException(ErrorStatus._NOT_FOUND_PARTY));
-        GetPartyListResponse getPartyListResponse = GetPartyListResponse.of(
-                party.getId(),
-                party.getTitle(),
-                party.getContents(),
-                party.getStatus().getStatus(),
-                party.getCategory().getDescription()
-        );
+        List<GetPartyListResponse> GetPartyListResponses = new ArrayList<>();
+        for (Party party : partys) {
+            GetPartyListResponse getPartyListResponses = GetPartyListResponse.of(
+                    party.getId(),
+                    party.getTitle(),
+                    party.getContents(),
+                    party.getStatus().getStatus(),
+                    party.getCategory().getDescription()
+            );
+            GetPartyListResponses.add(getPartyListResponses);
+        }
 
         /*Community community = communityRepository.findByUserId(user.getId())
                 .orElseThrow(()->new ApiException(ErrorStatus._NOT_FOUND_COMMUNITY));
@@ -73,7 +79,7 @@ public class UserService {
                 user.getEmail(),
                 user.getUserRole().toString(),
                 imageURL,
-                getPartyListResponse/*,
+                GetPartyListResponses/*,
                 communitySimpleResponse,
                 tutorRequest.getSubUrl()*/);
     }
