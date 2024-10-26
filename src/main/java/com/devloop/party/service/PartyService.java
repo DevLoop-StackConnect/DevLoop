@@ -157,7 +157,16 @@ public class PartyService {
         if(!authUser.getId().equals(party.getUser().getId())){
             throw new ApiException(ErrorStatus._PERMISSION_DENIED);
         }
+
+        Optional<PartyAttachment> partyAttachment=partyAMTRepository.findByPartyId(partyId);
+        //파일이 있는지 확인
+        if(partyAttachment.isPresent()){
+            //파일 삭제 (S3, 로컬)
+            s3Service.delete(partyAttachment.get().getFileName());
+            partyAMTRepository.delete(partyAttachment.get());
+        }
         partyRepository.delete(party);
+
     }
 
 
