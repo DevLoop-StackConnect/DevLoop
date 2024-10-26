@@ -1,5 +1,7 @@
 package com.devloop.party.service;
 
+import com.devloop.attachment.entity.PartyAttachment;
+import com.devloop.attachment.repository.PartyAMTRepository;
 import com.devloop.attachment.s3.S3Service;
 import com.devloop.common.AuthUser;
 import com.devloop.common.apipayload.status.ErrorStatus;
@@ -28,6 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -38,6 +41,7 @@ public class PartyService {
     private final PartyRepository partyRepository;
     private final UserRepository userRepository;
     private final S3Service s3Service;
+    private final PartyAMTRepository partyAMTRepository;
 
     //스터디 파티 모집 게시글 등록
     @Transactional
@@ -50,8 +54,10 @@ public class PartyService {
         Party newParty=Party.from(savePartyRequest, user);
         partyRepository.save(newParty);
 
-        //파일 업로드
-        s3Service.uploadFile(file,user,newParty);
+        //파일이 있을 때만 업로드
+        if(file!=null && !file.isEmpty()){
+            s3Service.uploadFile(file,user,newParty);
+        }
 
         return SavePartyResponse.of(
                 newParty.getId(),
@@ -64,7 +70,11 @@ public class PartyService {
 
     //스터디 파티 모집 게시글 수정
     @Transactional
-    public UpdatePartyResponse updateParty(AuthUser authUser, Long partyId, UpdatePartyRequest updatePartyRequest) {
+    public UpdatePartyResponse updateParty(AuthUser authUser, Long partyId, MultipartFile file,UpdatePartyRequest updatePartyRequest) {
+        //유저가 존재하는 지 확인
+        User user=userRepository.findById(authUser.getId()).orElseThrow(()->
+                new ApiException(ErrorStatus._NOT_FOUND_USER));
+
         //게시글이 존재하는 지 확인
         Party party=partyRepository.findById(partyId).orElseThrow(()->
                 new ApiException(ErrorStatus._NOT_FOUND_PARTY));
@@ -73,7 +83,25 @@ public class PartyService {
         if(!authUser.getId().equals(party.getUser().getId())){
             throw new ApiException(ErrorStatus._PERMISSION_DENIED);
         }
+
         party.update(updatePartyRequest);
+        /**
+         * 추가된 파일 이 있는 지 확인
+         * -> 기존 파일이 있는 지 확인
+         * 파일이 있으면 삭제 후 업로드 , 없으면 바로 업로드
+         */
+        //추가된 파일이 있는지 확인
+        if(file!=null && !file.isEmpty()){
+            Optional<PartyAttachment> partyAttachment=partyAMTRepository.findByPartyId(partyId);
+            //기존 파일이 있는지 확인
+            if(partyAttachment.isPresent()){
+                //기존 파일 삭제 (S3, 로컬)
+                s3Service.delete(partyAttachment.get().getFileName());
+                partyAMTRepository.delete(partyAttachment.get());
+            }
+            s3Service.uploadFile(file,user,party);
+        }
+
         return UpdatePartyResponse.of(
                 party.getId(),
                 party.getTitle(),

@@ -29,7 +29,7 @@ public class PartyController {
     @PostMapping("/v1/parties")
     public ApiResponse<SavePartyResponse> saveParty(
             @AuthenticationPrincipal AuthUser authUser,
-            @RequestParam("file") MultipartFile file,
+            @RequestParam(value = "file", required = false) MultipartFile file,
             @Valid @ModelAttribute SavePartyRequest savePartyRequest
     ){
         return ApiResponse.ok(partyService.saveParty(authUser,file,savePartyRequest));
@@ -40,9 +40,10 @@ public class PartyController {
     public ApiResponse<UpdatePartyResponse> updateParty(
             @AuthenticationPrincipal AuthUser authUser,
             @PathVariable Long partyId,
+            @RequestParam(value = "file", required = false) MultipartFile file,
             @Valid @ModelAttribute UpdatePartyRequest updatePartyRequest
     ){
-        return ApiResponse.ok(partyService.updateParty(authUser,partyId,updatePartyRequest));
+        return ApiResponse.ok(partyService.updateParty(authUser,partyId,file,updatePartyRequest));
     }
 
     //스터디 파티 모집 다건 조회
