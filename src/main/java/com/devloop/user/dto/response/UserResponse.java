@@ -14,7 +14,7 @@ public class UserResponse {
     private final URL url;
     private final List<GetPartyListResponse> partyList;
     private final List<CommunitySimpleResponse> communityList;
-    //private final String tutorRequestSubUrl;
+    private final String tutorRequestSubUrl;
 
 
 
@@ -23,8 +23,8 @@ public class UserResponse {
                           String userRole,
                           URL url,
                           List<GetPartyListResponse> partyList,
-                          List<CommunitySimpleResponse> communityList/*,
-                          String tutorRequestSubUrl*/
+                          List<CommunitySimpleResponse> communityList,
+                          String tutorRequestSubUrl
                           ) {
         this.userName = userName;
         this.userEmail = userEmail;
@@ -32,7 +32,7 @@ public class UserResponse {
         this.url = url;
         this.partyList = partyList;
         this.communityList = communityList;
-        //this.tutorRequestSubUrl = tutorRequestSubUrl;
+        this.tutorRequestSubUrl = tutorRequestSubUrl;
     }
 
     public static UserResponse of( String userName,
@@ -40,9 +40,9 @@ public class UserResponse {
                                      String userRole,
                                      URL url,
                                      List<GetPartyListResponse> partyList,
-                                     List<CommunitySimpleResponse> communityList/*,
-                                     String tutorRequestSubUrl*/
+                                     List<CommunitySimpleResponse> communityList,
+                                     String tutorRequestSubUrl
                                      ) {
-        return new UserResponse(userName, userEmail, userRole, url, partyList, communityList/*, tutorRequestSubUrl*/);
+        return new UserResponse(userName, userEmail, userRole, url, partyList, communityList, tutorRequestSubUrl);
     }
 }
