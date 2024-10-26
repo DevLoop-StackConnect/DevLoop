@@ -18,7 +18,7 @@ import com.devloop.party.response.SavePartyResponse;
 import com.devloop.party.response.UpdatePartyResponse;
 import com.devloop.search.response.IntegrationSearchResponse;
 import com.devloop.user.entity.User;
-import com.devloop.user.repository.UserRepository;
+import com.devloop.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -39,7 +39,7 @@ import java.util.Optional;
 public class PartyService {
 
     private final PartyRepository partyRepository;
-    private final UserRepository userRepository;
+    private final UserService userService;
     private final S3Service s3Service;
     private final PartyAMTRepository partyAMTRepository;
 
@@ -47,8 +47,7 @@ public class PartyService {
     @Transactional
     public SavePartyResponse saveParty(AuthUser authUser, MultipartFile file,SavePartyRequest savePartyRequest) {
         //유저가 존재하는 지 확인
-        User user=userRepository.findById(authUser.getId()).orElseThrow(()->
-                new ApiException(ErrorStatus._NOT_FOUND_USER));
+        User user=userService.findByUserId(authUser.getId());
 
         //새로운 파티 생성
         Party newParty=Party.from(savePartyRequest, user);
@@ -72,8 +71,7 @@ public class PartyService {
     @Transactional
     public UpdatePartyResponse updateParty(AuthUser authUser, Long partyId, MultipartFile file,UpdatePartyRequest updatePartyRequest) {
         //유저가 존재하는 지 확인
-        User user=userRepository.findById(authUser.getId()).orElseThrow(()->
-                new ApiException(ErrorStatus._NOT_FOUND_USER));
+        User user=userService.findByUserId(authUser.getId());
 
         //게시글이 존재하는 지 확인
         Party party=partyRepository.findById(partyId).orElseThrow(()->
