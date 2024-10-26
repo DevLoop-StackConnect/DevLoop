@@ -35,6 +35,7 @@ public enum ErrorStatus implements BaseCode {
     _FILE_SIZE_EXCEEDED(HttpStatus.BAD_REQUEST, "400", "파일 크기가 5MB를 초과합니다"),
     _UNSUPPORTED_FILE_TYPE(HttpStatus.BAD_REQUEST, "400", "지원되지 않는 파일 형식입니다"),
     _ATTACHMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "404", "첨부 파일을 찾을 수 없습니다"),
+    _FILE_ISNOT_ONE(HttpStatus.BAD_REQUEST,"400", "파일 업로드는 하나만 가능합니다"),
 
     // board
     _NOT_FOUND_BOARD(HttpStatus.NOT_FOUND, "404", "존재하지 않은 보드입니다"),
@@ -76,9 +77,10 @@ public enum ErrorStatus implements BaseCode {
     _NOT_FOUND_COMMUNITY(HttpStatus.NOT_FOUND, "404", "존재하지 않는 게시글입니다"),
 
     //S3
-    _UNSUPPORTED_OBJECT_TYPE(HttpStatus.BAD_REQUEST,"409","지원하지 않는 객체입니다."),
+    _UNSUPPORTED_OBJECT_TYPE(HttpStatus.BAD_REQUEST,"400","지원하지 않는 객체입니다."),
     _STATUS_NOT_EXSIST(HttpStatus.BAD_REQUEST, "400", "잘못된 해결 상태 입력값입니다. 오타 및 해결상태 종류를 확인하세요"),
     _CATEGORY_NOT_EXSIST(HttpStatus.BAD_REQUEST, "400", "잘못된 카테고리 입력값입니다. 오타 및 카테고리 종류를 확인하세요");
+
 
 
     private HttpStatus httpStatus;
