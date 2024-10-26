@@ -6,12 +6,16 @@ import com.devloop.user.enums.UserRole;
 import com.devloop.user.enums.UserStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @NoArgsConstructor
+@AllArgsConstructor
 @Getter
+@Builder
 @Table
 public class User extends Timestamped {
 

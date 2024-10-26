@@ -9,7 +9,7 @@ public class SearchResponseUtil {
 
     public static <T>List<IntegrationSearchResponse> wrapResponse(BoardType boardType, List<T> posts){
         return posts.stream()
-                .map(post -> IntegrationSearchResponse.of(boardType.name().toLowerCase(), post))
+                .map(post -> IntegrationSearchResponse.of(post, boardType.name().toLowerCase()))
                 .toList();
     }
 }
