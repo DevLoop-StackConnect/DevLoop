@@ -6,10 +6,15 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface PartyRepository extends JpaRepository<Party,Long>, JpaSpecificationExecutor<Party> {
 
     Page<Party> findByTitleContaining(String title, PageRequest pageable);
+
+    @Query("SELECT p FROM Party p WHERE p.user.id =:userId")
+    Optional<List<Party>> findAllByUserId(@Param("userId")Long id);
 }

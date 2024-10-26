@@ -1,3 +1,4 @@
+
 package com.devloop.user.entity;
 
 import com.devloop.common.Timestamped;
@@ -52,15 +53,13 @@ public class User extends Timestamped {
     private String loginId;
 
     private User(String username, String email, String password, UserRole userRole) {
-        this.attachmentId = 1L;
         this.username = username;
         this.email = email;
         this.password = password;
         this.userRole = userRole;
-        this.loginType = LoginType.LOCAL;
     }
 
-    public static User from(String username, String email, String password, UserRole userRole) {
+    public static User of(String username, String email, String password, UserRole userRole) {
         return new User(username, email, password, userRole);
     }
 
