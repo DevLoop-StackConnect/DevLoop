@@ -19,7 +19,17 @@ public class IntegrationSearchResponse {
     private String username;
     private LocalDateTime createdAt;
 
-    public static IntegrationSearchResponse of(String boardType, Object data) {
+    private IntegrationSearchResponse(Long id, String boardType, String title, String content, String category, String username, LocalDateTime createdAt){
+        this.id = id;
+        this.boardType = boardType;
+        this.title = title;
+        this.content = content;
+        this.category = category;
+        this.username = username;
+        this.createdAt = LocalDateTime.now();
+    }
+
+    public static IntegrationSearchResponse of(Object data, String boardType) {
         if (data instanceof Community community) {
             return IntegrationSearchResponse.builder()
                     .id(community.getId())

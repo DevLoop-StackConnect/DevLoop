@@ -7,14 +7,19 @@ import com.devloop.communitycomment.entity.CommunityComment;
 import com.devloop.user.entity.User;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Getter
+@Builder
+@AllArgsConstructor
 @NoArgsConstructor
 public class Community extends Timestamped {
     @Id
@@ -59,6 +64,8 @@ public class Community extends Timestamped {
         this.category = category;
         this.user = user;
     }
+
+
 
     public static Community of(String title, String content, Category category, User user) {
         return new Community(
