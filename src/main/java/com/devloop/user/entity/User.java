@@ -85,4 +85,8 @@ public class User extends Timestamped {
         this.kakaoId = kakaoId;
         return this;
     }
+
+    public void setId(long id){
+        this.id = id;
+    }
 }
