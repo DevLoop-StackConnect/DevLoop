@@ -9,15 +9,19 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface CommunityRepository extends JpaRepository<Community,Long>, JpaSpecificationExecutor<Community> {
-    @Query("select Community from Community c where c.user.id =:userId")
-    Optional<Community> findByUserId(@Param("userId") Long userId);
+
     @Query("SELECT new com.devloop.community.dto.response.CommunitySimpleResponse(c.id, c.title, c.resolveStatus, c.category) " +
             "FROM Community c " +
             "ORDER BY c.createdAt DESC")
     Page<CommunitySimpleResponse> findAllSimple(Pageable pageable);
 
     Optional<Community> findById(Long communityId);
+
+    @Query("select c from Community c where c.user.id = :userId")
+    Optional<List<Community>> findAllByUserId(@Param("userId") Long id);
+
 }
