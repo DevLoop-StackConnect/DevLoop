@@ -1,5 +1,6 @@
 package com.devloop.pwt.service;
 
+import com.devloop.attachment.s3.S3Service;
 import com.devloop.common.AuthUser;
 import com.devloop.common.apipayload.dto.ProjectWithTutorResponseDto;
 import com.devloop.common.apipayload.status.ErrorStatus;
@@ -19,6 +20,7 @@ import com.devloop.search.response.IntegrationSearchResponse;
 import com.devloop.user.entity.User;
 import com.devloop.user.enums.UserRole;
 import com.devloop.user.repository.UserRepository;
+import com.devloop.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -37,8 +39,8 @@ import java.util.List;
 public class ProjectWithTutorService {
 
     private final ProjectWithTutorRepository projectWithTutorRepository;
-    // todo : UserService 주입받는 방식으로 리팩토링 하기
-    private final UserRepository userRepository;
+    private final UserService userService;
+    private final S3Service s3Service;
 
     // 튜터랑 함께하는 협업 프로젝트 게시글 생성
     @Transactional
@@ -48,8 +50,7 @@ public class ProjectWithTutorService {
             ProjectWithTutorSaveRequest projectWithTutorSaveRequest
     ) {
         // 사용자 객체 가져오기
-        User user = userRepository.findById(authUser.getId())
-                .orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_USER));
+        User user = userService.findByUserId(authUser.getId());
 
         // 요청한 사용자의 권한이 USER일 경우 예외 처리
         if (user.getUserRole().equals(UserRole.ROLE_USER)) {
@@ -69,7 +70,8 @@ public class ProjectWithTutorService {
         );
         projectWithTutorRepository.save(projectWithTutor);
 
-        // todo : 첨부파일 저장
+        // 첨부파일 저장
+        s3Service.uploadFile(file, user, projectWithTutor);
 
         return String.format("%s 님의 튜터랑 함께하는 협업 프로젝트 게시글이 작성 완료되었습니다. 승인까지 3~5일 정도 소요될 수 있습니다.", user.getUsername());
     }
@@ -127,8 +129,7 @@ public class ProjectWithTutorService {
             ProjectWithTutorUpdateRequest projectWithTutorUpdateRequest
     ) {
         // 사용자 객체 가져오기
-        User user = userRepository.findById(authUser.getId())
-                .orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_USER));
+        User user = userService.findByUserId(authUser.getId());
 
         // PWT 게시글 객체 가져오기
         ProjectWithTutor projectWithTutor = projectWithTutorRepository.findById(projectId)
@@ -158,8 +159,7 @@ public class ProjectWithTutorService {
     public String deleteProjectWithTutor(AuthUser authUser, Long projectId) {
 
         // 사용자 객체 가져오기
-        User user = userRepository.findById(authUser.getId())
-                .orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_USER));
+        User user = userService.findByUserId(authUser.getId());
 
         // PWT 게시글 객체 가져오기
         ProjectWithTutor projectWithTutor = projectWithTutorRepository.findById(projectId)
