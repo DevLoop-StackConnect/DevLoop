@@ -44,6 +44,8 @@ public class Party extends Timestamped {
     @JoinColumn(name="user_id")
     private User user;
 
+
+
     private Party(String title,String contents, PartyStatus status, Category category,User user){
         this.title=title;
         this.contents=contents;
