@@ -2,6 +2,7 @@ package com.devloop.user.dto.response;
 
 import com.devloop.community.dto.response.CommunitySimpleResponse;
 import com.devloop.party.response.GetPartyListResponse;
+import jakarta.annotation.Nullable;
 import lombok.Getter;
 import java.net.URL;
 import java.util.List;
@@ -14,6 +15,8 @@ public class UserResponse {
     private final URL url;
     private final List<GetPartyListResponse> partyList;
     private final List<CommunitySimpleResponse> communityList;
+
+    @Nullable
     private final String tutorRequestSubUrl;
 
 
