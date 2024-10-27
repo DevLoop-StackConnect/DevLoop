@@ -1,6 +1,8 @@
 package com.devloop.pwt.service;
 
+import com.devloop.attachment.entity.PWTAttachment;
 import com.devloop.attachment.s3.S3Service;
+import com.devloop.attachment.service.PWTAttachmentService;
 import com.devloop.common.AuthUser;
 import com.devloop.common.apipayload.dto.ProjectWithTutorResponseDto;
 import com.devloop.common.apipayload.status.ErrorStatus;
@@ -41,6 +43,7 @@ public class ProjectWithTutorService {
     private final ProjectWithTutorRepository projectWithTutorRepository;
     private final UserService userService;
     private final S3Service s3Service;
+    private final PWTAttachmentService pwtAttachmentService;
 
     // 튜터랑 함께하는 협업 프로젝트 게시글 생성
     @Transactional
@@ -165,6 +168,9 @@ public class ProjectWithTutorService {
         ProjectWithTutor projectWithTutor = projectWithTutorRepository.findById(projectId)
                 .orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_PROJECT_WITH_TUTOR));
 
+        // PWT 첨부파일 객체 가져오기
+        PWTAttachment pwtAttachment = pwtAttachmentService.findPwtAttachmentByPwtId(projectWithTutor.getId());
+
         // 게시글 작성자와 현재 로그인된 사용자 일치 여부 예외 처리
         if (!user.getId().equals(projectWithTutor.getUser().getId())) {
             throw new ApiException(ErrorStatus._HAS_NOT_ACCESS_PERMISSION);
@@ -172,6 +178,13 @@ public class ProjectWithTutorService {
 
         // PWT 게시글 삭제
         projectWithTutorRepository.delete(projectWithTutor);
+
+        // S3에 첨부파일 삭제
+        s3Service.delete(pwtAttachment.getFileName());
+
+        // PWT 첨부파일 삭제
+        pwtAttachmentService.deletePwtAttachment(pwtAttachment);
+
 
         return String.format("%s 게시글을 삭제하였습니다.", projectWithTutor.getTitle());
     }

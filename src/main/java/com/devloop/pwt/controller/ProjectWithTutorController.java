@@ -1,5 +1,6 @@
 package com.devloop.pwt.controller;
 
+import com.devloop.attachment.service.PWTAttachmentService;
 import com.devloop.common.AuthUser;
 import com.devloop.common.apipayload.ApiResponse;
 import com.devloop.pwt.entity.ProjectWithTutor;
@@ -22,8 +23,6 @@ import org.springframework.web.multipart.MultipartFile;
 public class ProjectWithTutorController {
 
     private final ProjectWithTutorService projectWithTutorService;
-
-    // todo : CRUD API 완성후 WebSecurityConfig에 접근 권한 ADMIN, TUTOR로 설정하기
 
     // 튜터랑 함께하는 협업 프로젝트 게시글 생성 (일반 사용자 접근 불가)
     @PostMapping("/v1/tutor/pwts")
