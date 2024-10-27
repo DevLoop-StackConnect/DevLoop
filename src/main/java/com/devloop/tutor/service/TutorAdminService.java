@@ -1,5 +1,6 @@
 package com.devloop.tutor.service;
 
+import com.devloop.common.apipayload.dto.UserResponseDto;
 import com.devloop.common.apipayload.status.ErrorStatus;
 import com.devloop.common.exception.ApiException;
 import com.devloop.tutor.entity.TutorRequest;
@@ -8,7 +9,6 @@ import com.devloop.tutor.repository.TutorRequestRepository;
 import com.devloop.tutor.response.TutorRequestListAdminResponse;
 import com.devloop.user.entity.User;
 import com.devloop.user.enums.UserRole;
-import com.devloop.user.repository.UserRepository;
 import com.devloop.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -34,7 +34,15 @@ public class TutorAdminService {
                 .filter(r -> !r.isEmpty())
                 .orElseThrow(() -> new ApiException(ErrorStatus._TUTOR_REQUEST_NOT_EXIST));
 
-        return requests.map(TutorRequestListAdminResponse::from);
+        return requests.map(r -> TutorRequestListAdminResponse.of(
+                r.getName(),
+                r.getSubUrl(),
+                r.getModifiedAt(),
+                UserResponseDto.of(
+                        r.getUser().getUsername(),
+                        r.getUser().getEmail()
+                )
+        ));
     }
 
     // 튜터 신청 승인 (ADMIN : 튜터로 사용자 권한 변경)
