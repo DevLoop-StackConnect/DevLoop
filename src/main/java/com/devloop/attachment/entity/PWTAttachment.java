@@ -28,4 +28,6 @@ public class PWTAttachment extends Attachment {
     public static PWTAttachment of(Long PWTId, URL imageURL, FileFormat fileFormat,String fileName){
         return new PWTAttachment(PWTId, imageURL, fileFormat,fileName);
     }
+
+
 }
