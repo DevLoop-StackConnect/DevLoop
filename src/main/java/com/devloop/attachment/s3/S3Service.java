@@ -51,7 +51,7 @@ public class S3Service {
         return UUID.randomUUID() + file.getOriginalFilename();
     }
 
-    public <T,U> U uploadFile(MultipartFile file, User user, T object){
+    public <T> void uploadFile(MultipartFile file, User user, T object){
 
         fileValidator.fileTypeValidator(file,object);
         FileFormat fileType = fileValidator.mapStringToFileFormat(Objects.requireNonNull(file.getContentType()));
@@ -78,7 +78,6 @@ public class S3Service {
                     fileName
             );
             partyAMTRepository.save(partyAttachment);
-            return (U) partyAttachment;
         } else if (object instanceof Community) {
             CommunityAttachment communityAttachment = CommunityAttachment.of(
                     ((Community) object).getId(),
@@ -87,7 +86,6 @@ public class S3Service {
                     fileName
             );
             communityATMRepository.save(communityAttachment);
-            return (U) communityAttachment;
         } else if (object instanceof User) {
             ProfileAttachment profileAttachment = ProfileAttachment.of(
                     ((User) object).getId(),
@@ -97,7 +95,6 @@ public class S3Service {
             );
             profileATMRepository.save(profileAttachment);
             user.updateProfileImg(profileAttachment.getId());
-            return (U) profileAttachment;
         }
         else if (object instanceof ProjectWithTutor) {
             PWTAttachment pwtAttachment = PWTAttachment.of(
@@ -107,16 +104,15 @@ public class S3Service {
                     fileName
             );
             pwtATMRepository.save(pwtAttachment);
-            return (U) pwtAttachment;
         }
         else {
             throw new ApiException(ErrorStatus._UNSUPPORTED_OBJECT_TYPE);
         }
     }
 
-    public <T> void updateUploadFile(MultipartFile file, T object) {
+    public void updateUploadFile(MultipartFile file, PWTAttachment pwtAttachment, ProjectWithTutor projectWithTutor) {
 
-        fileValidator.fileTypeValidator(file, object);
+        fileValidator.fileTypeValidator(file, projectWithTutor);
         FileFormat fileType = fileValidator.mapStringToFileFormat(Objects.requireNonNull(file.getContentType()));
 
         String fileName = makeFileName(file);
@@ -132,6 +128,8 @@ public class S3Service {
         }
 
         URL url = amazonS3Client.getUrl(bucketName, fileName);
+
+        pwtAttachment.updateAttachment(url, fileType, fileName);
     }
 
     public void delete(String fileName){
