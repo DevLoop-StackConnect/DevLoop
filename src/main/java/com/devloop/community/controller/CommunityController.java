@@ -23,7 +23,7 @@ public class CommunityController {
 
     //게시글 작성
     @PostMapping("/v1/communities")
-    public ApiResponse<CommunitySaveResponse> createCommunity(@AuthenticationPrincipal AuthUser authUser, @Valid @RequestBody CommunitySaveRequest communitySaveRequest, @RequestParam(value = "file", required = false) MultipartFile file) {
+    public ApiResponse<CommunitySaveResponse> createCommunity(@AuthenticationPrincipal AuthUser authUser, @Valid @ModelAttribute CommunitySaveRequest communitySaveRequest, @RequestParam(value = "file", required = false) MultipartFile file) {
         return ApiResponse.ok(communityService.createCommunity(authUser,file, communitySaveRequest));
     }
 
@@ -41,7 +41,7 @@ public class CommunityController {
 
     //게시글 수정
     @PatchMapping("/v1/communities/{communityId}")
-    public ApiResponse<CommunityDetailResponse> updateCommunity(@AuthenticationPrincipal AuthUser authUser,@PathVariable Long communityId, @Valid @RequestBody CommunityUpdateRequest communityUpdateRequest,@RequestParam(value = "file", required = false) MultipartFile file) {
+    public ApiResponse<CommunityDetailResponse> updateCommunity(@AuthenticationPrincipal AuthUser authUser,@PathVariable Long communityId, @Valid @ModelAttribute CommunityUpdateRequest communityUpdateRequest,@RequestParam(value = "file", required = false) MultipartFile file) {
         return ApiResponse.ok(communityService.updateCommunity(authUser,communityId, communityUpdateRequest,file));
     }
 

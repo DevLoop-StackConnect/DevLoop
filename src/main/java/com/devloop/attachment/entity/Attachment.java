@@ -1,6 +1,7 @@
 package com.devloop.attachment.entity;
 
 import com.devloop.attachment.enums.FileFormat;
+import com.devloop.common.Timestamped;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
@@ -13,7 +14,7 @@ import java.net.URL;
 @Entity
 @DiscriminatorColumn
 @Inheritance(strategy = InheritanceType.JOINED)
-public abstract class Attachment {
+public abstract class Attachment extends Timestamped {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

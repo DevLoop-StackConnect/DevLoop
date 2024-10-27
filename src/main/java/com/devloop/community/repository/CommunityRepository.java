@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface CommunityRepository extends JpaRepository<Community, Long>, JpaSpecificationExecutor<Community> {
@@ -21,4 +22,8 @@ public interface CommunityRepository extends JpaRepository<Community, Long>, Jpa
     Optional<Page<CommunitySimpleResponseDto>>findAllSimple(Pageable pageable);
 
     Optional<Community> findById(Long communityId);
+
+    @Query("select c from Community c where c.user.id = :userId")
+    Optional<List<Community>> findAllByUserId(@Param("userId") Long id);
+
 }
