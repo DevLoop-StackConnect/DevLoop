@@ -3,6 +3,7 @@ package com.devloop.community.dto.response;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 public class CommunityDetailResponse {
@@ -13,8 +14,9 @@ public class CommunityDetailResponse {
     private final String category;
     private final LocalDateTime createdAt;
     private final LocalDateTime modifiedAt;
+    private final String imageUrl;
 
-    private CommunityDetailResponse(Long communityId, String title, String content, String status, String category, LocalDateTime createdAt, LocalDateTime modifiedAt) {
+    private CommunityDetailResponse(Long communityId, String title, String content, String status, String category, LocalDateTime createdAt, LocalDateTime modifiedAt,String imageUrl) {
         this.communityId = communityId;
         this.title = title;
         this.content = content;
@@ -22,10 +24,26 @@ public class CommunityDetailResponse {
         this.category = category;
         this.createdAt = createdAt;
         this.modifiedAt = modifiedAt;
+        this.imageUrl= imageUrl;
     }
 
-    //코드컨벤션에 맞춰서 정적 팩토리 메서드 추가
-    public static CommunityDetailResponse of(Long communityId, String title, String content, String status, String category, LocalDateTime createdAt, LocalDateTime modifiedAt) {
+//    //코드컨벤션에 맞춰서 정적 팩토리 메서드 추가
+//    public static CommunityDetailResponse of(Long communityId, String title, String content, String status, String category, LocalDateTime createdAt, LocalDateTime modifiedAt,String imageUrl) {
+//        return new CommunityDetailResponse(
+//                communityId,
+//                title,
+//                content,
+//                status,
+//                category,
+//                createdAt,
+//                modifiedAt,
+//                imageUrl
+//        );
+//    }
+
+    // 첨부파일 URL 포함한 메서드 (단건 조회용)
+    public static CommunityDetailResponse withAttachment(Long communityId, String title, String content, String status, String category,
+                                                         LocalDateTime createdAt, LocalDateTime modifiedAt, String imageUrl) {
         return new CommunityDetailResponse(
                 communityId,
                 title,
@@ -33,7 +51,23 @@ public class CommunityDetailResponse {
                 status,
                 category,
                 createdAt,
-                modifiedAt
+                modifiedAt,
+                imageUrl
+        );
+    }
+
+    // 첨부파일 URL 미포함 메서드 (업데이트 응답용)
+    public static CommunityDetailResponse withoutAttachment(Long communityId, String title, String content, String status, String category,
+                                                            LocalDateTime createdAt, LocalDateTime modifiedAt) {
+        return new CommunityDetailResponse(
+                communityId,
+                title,
+                content,
+                status,
+                category,
+                createdAt,
+                modifiedAt,
+                null
         );
     }
 }

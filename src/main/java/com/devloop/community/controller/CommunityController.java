@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequiredArgsConstructor
@@ -22,8 +23,8 @@ public class CommunityController {
 
     //게시글 작성
     @PostMapping("/v1/communities")
-    public ApiResponse<CommunitySaveResponse> createCommunity(@AuthenticationPrincipal AuthUser authUser, @Valid @RequestBody CommunitySaveRequest communitySaveRequest) {
-        return ApiResponse.ok(communityService.createCommunity(authUser, communitySaveRequest));
+    public ApiResponse<CommunitySaveResponse> createCommunity(@AuthenticationPrincipal AuthUser authUser, @Valid @RequestBody CommunitySaveRequest communitySaveRequest, @RequestParam(value = "file", required = false) MultipartFile file) {
+        return ApiResponse.ok(communityService.createCommunity(authUser,file, communitySaveRequest));
     }
 
     //게시글 다건 조회
@@ -40,14 +41,14 @@ public class CommunityController {
 
     //게시글 수정
     @PatchMapping("/v1/communities/{communityId}")
-    public ApiResponse<CommunityDetailResponse> updateCommunity(@PathVariable Long communityId, @Valid @RequestBody CommunityUpdateRequest communityUpdateRequest) {
-        return ApiResponse.ok(communityService.updateCommunity(communityId, communityUpdateRequest));
+    public ApiResponse<CommunityDetailResponse> updateCommunity(@AuthenticationPrincipal AuthUser authUser,@PathVariable Long communityId, @Valid @RequestBody CommunityUpdateRequest communityUpdateRequest,@RequestParam(value = "file", required = false) MultipartFile file) {
+        return ApiResponse.ok(communityService.updateCommunity(authUser,communityId, communityUpdateRequest,file));
     }
 
     //게시글 삭제
     @DeleteMapping("/v1/communities/{communityId}")
-    public ApiResponse<Void> deleteCommunity(@PathVariable Long communityId) {
-        communityService.deleteCommunity(communityId);
+    public ApiResponse<Void> deleteCommunity(@AuthenticationPrincipal AuthUser authUser,@PathVariable Long communityId) {
+        communityService.deleteCommunity(authUser,communityId);
         return ApiResponse.ok(null);
     }
 }

@@ -1,5 +1,8 @@
 package com.devloop.community.service;
 
+import com.devloop.attachment.entity.CommunityAttachment;
+import com.devloop.attachment.repository.CommunityATMRepository;
+import com.devloop.attachment.s3.S3Service;
 import com.devloop.common.AuthUser;
 import com.devloop.common.apipayload.dto.CommunitySimpleResponseDto;
 import com.devloop.common.apipayload.status.ErrorStatus;
@@ -28,9 +31,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -38,10 +44,12 @@ import java.util.List;
 public class CommunityService {
     private final CommunityRepository communityRepository;
     private final UserRepository userRepository; //서비스로 받아오게
+    private final S3Service s3Service;
+    private final CommunityATMRepository communityATMRepository;
 
     //게시글 작성
     @Transactional
-    public CommunitySaveResponse createCommunity(AuthUser authUser, CommunitySaveRequest communitySaveRequest) {
+    public CommunitySaveResponse createCommunity(AuthUser authUser, MultipartFile file, CommunitySaveRequest communitySaveRequest) {
         Category category = Category.of(communitySaveRequest.getCategory());
         //사용자 조회
         User user = userRepository.findById(authUser.getId())
@@ -54,6 +62,10 @@ public class CommunityService {
                 user);
         //게시글 저장
         Community savedCommunity = communityRepository.save(community);
+        //첨부파일 저장
+        if (file!=null && !file.isEmpty()){
+            s3Service.uploadFile(file,user,community); //s3에 파일 올리고 communityattachment에 저장하는 것
+        }
         //응답반환
         return CommunitySaveResponse.of(
                 savedCommunity.getId(),
@@ -85,27 +97,42 @@ public class CommunityService {
         //게시글 조회
         Community community = communityRepository.findById(communityId)
                 .orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_COMMUNITY));
-
+        //첨부파일 url이 있는지 확인
+        String imageUrl = communityATMRepository.findByCommunityId(communityId)
+                .map(CommunityAttachment::getImageURL)
+                .map(URL ::toString)
+                .orElse(null);
         //응답반환
-        return CommunityDetailResponse.of(
+        return CommunityDetailResponse.withAttachment(
                 community.getId(),
                 community.getTitle(),
                 community.getContent(),
                 community.getResolveStatus().getDescription(),
                 community.getCategory().getDescription(),
                 community.getCreatedAt(),
-                community.getModifiedAt()
+                community.getModifiedAt(),
+                imageUrl
         );
     }
 
     //게시글 수정
     @Transactional
-    public CommunityDetailResponse updateCommunity(Long communityId, CommunityUpdateRequest communityUpdateRequest) {
+    public CommunityDetailResponse updateCommunity(AuthUser authUser,Long communityId, CommunityUpdateRequest communityUpdateRequest, MultipartFile file) {
         ResolveStatus resolvedStatus = ResolveStatus.of(communityUpdateRequest.getStatus());
         Category category = Category.of(communityUpdateRequest.getCategory());
+
+        //사용자 조회
+        User user = userRepository.findById(authUser.getId())
+                .orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_USER));
+
         //게시글 조회
         Community community = communityRepository.findById(communityId)
                 .orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_COMMUNITY));
+
+        //작성자 확인
+        if (!community.getUser().getId().equals(authUser.getId())) {
+            throw new ApiException(ErrorStatus._PERMISSION_DENIED);
+        }
 
         //수정 요청에서 값이 있는 필드만 업데이트시키기
         community.updateCommunity(
@@ -116,8 +143,22 @@ public class CommunityService {
         );
         //수정된 게시글 저장
         communityRepository.save(community);
+        //첨부파일 수정
+        if (file != null && !file.isEmpty()) {
+            // 기존 파일이 있는지 확인
+            communityATMRepository.findByCommunityId(communityId).ifPresentOrElse(
+                    existingAttachment -> {
+                        // 기존 파일이 있으면 삭제 후 새 파일 업로드
+                        s3Service.delete(existingAttachment.getFileName());
+                        communityATMRepository.delete(existingAttachment);
+                        s3Service.uploadFile(file, community.getUser(), community);
+                    },
+                    // 기존 파일이 없으면 바로 업로드
+                    () -> s3Service.uploadFile(file, community.getUser(), community)
+            );
+        }
         //응답반환
-        return CommunityDetailResponse.of(
+        return CommunityDetailResponse.withoutAttachment(
                 community.getId(),
                 community.getTitle(),
                 community.getContent(),
@@ -130,10 +171,19 @@ public class CommunityService {
 
     //게시글 삭제
     @Transactional
-    public void deleteCommunity(Long communityId) {
+    public void deleteCommunity(AuthUser authUser,Long communityId) {
         //게시글 존재하는지 확인
         Community community = communityRepository.findById(communityId)
                 .orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_COMMUNITY));
+        //작성자 확인
+        if (!community.getUser().getId().equals(authUser.getId())) {
+            throw new ApiException(ErrorStatus._PERMISSION_DENIED);
+        }
+        // 첨부파일 확인 및 삭제
+        communityATMRepository.findByCommunityId(communityId).ifPresent(attachment -> {
+            s3Service.delete(attachment.getFileName());
+            communityATMRepository.delete(attachment);
+        });
         //삭제
         communityRepository.delete(community);
     }
