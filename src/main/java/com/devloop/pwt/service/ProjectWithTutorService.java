@@ -154,13 +154,9 @@ public class ProjectWithTutorService {
 
         // S3 사진 삭제 후 업로드
         s3Service.delete(pwtAttachment.getFileName());
-        PWTAttachment newPwtAttachment = s3Service.uploadFile(file, user, projectWithTutor);
         // PWT 첨부파일 수정
-        pwtAttachment.updateAttachment(
-                newPwtAttachment.getImageURL(),
-                newPwtAttachment.getFileFormat(),
-                newPwtAttachment.getFileName()
-        );
+        s3Service.updateUploadFile(file, pwtAttachment, projectWithTutor);
+
 
         // 변경사항 업데이트
         projectWithTutor.update(
