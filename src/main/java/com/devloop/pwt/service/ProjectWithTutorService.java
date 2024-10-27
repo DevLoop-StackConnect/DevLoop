@@ -24,6 +24,7 @@ import com.devloop.user.enums.UserRole;
 import com.devloop.user.repository.UserRepository;
 import com.devloop.user.service.UserService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -35,6 +36,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -142,10 +144,23 @@ public class ProjectWithTutorService {
         ProjectWithTutor projectWithTutor = projectWithTutorRepository.findById(projectId)
                 .orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_PROJECT_WITH_TUTOR));
 
+        // PWT 첨부파일 객체 가져오기
+        PWTAttachment pwtAttachment = pwtAttachmentService.findPwtAttachmentByPwtId(projectWithTutor.getId());
+
         // 게시글 작성자와 현재 로그인된 사용자 일치 여부 예외 처리
         if (!user.getId().equals(projectWithTutor.getUser().getId())) {
             throw new ApiException(ErrorStatus._HAS_NOT_ACCESS_PERMISSION);
         }
+
+        // S3 사진 삭제 후 업로드
+        s3Service.delete(pwtAttachment.getFileName());
+        PWTAttachment newPwtAttachment = s3Service.uploadFile(file, user, projectWithTutor);
+        // PWT 첨부파일 수정
+        pwtAttachment.updateAttachment(
+                newPwtAttachment.getImageURL(),
+                newPwtAttachment.getFileFormat(),
+                newPwtAttachment.getFileName()
+        );
 
         // 변경사항 업데이트
         projectWithTutor.update(
@@ -155,7 +170,8 @@ public class ProjectWithTutorService {
                 projectWithTutorUpdateRequest.getDeadline(),
                 projectWithTutorUpdateRequest.getMaxParticipants(),
                 Level.of(projectWithTutorUpdateRequest.getLevel()),
-                user
+                user,
+                Category.of(projectWithTutorUpdateRequest.getCategory())
         );
 
         return String.format("%s 게시글이 수정되었습니다.", projectWithTutor.getTitle());
