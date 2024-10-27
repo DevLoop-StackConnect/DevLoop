@@ -85,6 +85,9 @@ public class ProjectWithTutorService {
         ProjectWithTutor projectWithTutor = projectWithTutorRepository.findById(projectId)
                 .orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_PROJECT_WITH_TUTOR));
 
+        // PWT 게시글 첨부파일 객체 가져오기
+        PWTAttachment pwtAttachment = pwtAttachmentService.findPwtAttachmentByPwtId(projectWithTutor.getId());
+
         // PWT 게시글이 승인 되었는지 확인 하는 예외 처리
         if (!projectWithTutor.getApproval().equals(Approval.APPROVED)) {
             throw new ApiException(ErrorStatus._ACCESS_PERMISSION_DENIED);
@@ -98,7 +101,8 @@ public class ProjectWithTutorService {
                 projectWithTutor.getDeadline(),
                 projectWithTutor.getMaxParticipants(),
                 projectWithTutor.getLevel().getLevel(),
-                projectWithTutor.getUser().getUsername()
+                projectWithTutor.getUser().getUsername(),
+                pwtAttachment.getImageURL()
         );
     }
 
@@ -176,15 +180,14 @@ public class ProjectWithTutorService {
             throw new ApiException(ErrorStatus._HAS_NOT_ACCESS_PERMISSION);
         }
 
-        // PWT 게시글 삭제
-        projectWithTutorRepository.delete(projectWithTutor);
-
         // S3에 첨부파일 삭제
         s3Service.delete(pwtAttachment.getFileName());
 
         // PWT 첨부파일 삭제
         pwtAttachmentService.deletePwtAttachment(pwtAttachment);
 
+        // PWT 게시글 삭제
+        projectWithTutorRepository.delete(projectWithTutor);
 
         return String.format("%s 게시글을 삭제하였습니다.", projectWithTutor.getTitle());
     }
