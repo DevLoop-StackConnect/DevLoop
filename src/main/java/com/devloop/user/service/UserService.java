@@ -86,8 +86,8 @@ public class UserService {
             CommunitySimpleResponse communitySimpleResponse = CommunitySimpleResponse.of(
                     community.getId(),
                     community.getTitle(),
-                    community.getResolveStatus(),
-                    community.getCategory()
+                    community.getResolveStatus().getDescription(), //String으로 받아야해서 수정
+                    community.getCategory().getDescription() //String으로 받아야해서 수정
             );
             communitySimpleResponses.add(communitySimpleResponse);
         }
