@@ -1,5 +1,8 @@
 package com.devloop.pwt.service;
 
+import com.devloop.attachment.entity.PWTAttachment;
+import com.devloop.attachment.s3.S3Service;
+import com.devloop.attachment.service.PWTAttachmentService;
 import com.devloop.common.AuthUser;
 import com.devloop.common.apipayload.dto.ProjectWithTutorResponseDto;
 import com.devloop.common.apipayload.status.ErrorStatus;
@@ -19,7 +22,9 @@ import com.devloop.search.response.IntegrationSearchResponse;
 import com.devloop.user.entity.User;
 import com.devloop.user.enums.UserRole;
 import com.devloop.user.repository.UserRepository;
+import com.devloop.user.service.UserService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -31,14 +36,16 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class ProjectWithTutorService {
 
     private final ProjectWithTutorRepository projectWithTutorRepository;
-    // todo : UserService 주입받는 방식으로 리팩토링 하기
-    private final UserRepository userRepository;
+    private final UserService userService;
+    private final S3Service s3Service;
+    private final PWTAttachmentService pwtAttachmentService;
 
     // 튜터랑 함께하는 협업 프로젝트 게시글 생성
     @Transactional
@@ -48,8 +55,7 @@ public class ProjectWithTutorService {
             ProjectWithTutorSaveRequest projectWithTutorSaveRequest
     ) {
         // 사용자 객체 가져오기
-        User user = userRepository.findById(authUser.getId())
-                .orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_USER));
+        User user = userService.findByUserId(authUser.getId());
 
         // 요청한 사용자의 권한이 USER일 경우 예외 처리
         if (user.getUserRole().equals(UserRole.ROLE_USER)) {
@@ -69,7 +75,8 @@ public class ProjectWithTutorService {
         );
         projectWithTutorRepository.save(projectWithTutor);
 
-        // todo : 첨부파일 저장
+        // 첨부파일 저장
+        s3Service.uploadFile(file, user, projectWithTutor);
 
         return String.format("%s 님의 튜터랑 함께하는 협업 프로젝트 게시글이 작성 완료되었습니다. 승인까지 3~5일 정도 소요될 수 있습니다.", user.getUsername());
     }
@@ -79,6 +86,9 @@ public class ProjectWithTutorService {
         // PWT 게시글 객체 가져오기
         ProjectWithTutor projectWithTutor = projectWithTutorRepository.findById(projectId)
                 .orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_PROJECT_WITH_TUTOR));
+
+        // PWT 게시글 첨부파일 객체 가져오기
+        PWTAttachment pwtAttachment = pwtAttachmentService.findPwtAttachmentByPwtId(projectWithTutor.getId());
 
         // PWT 게시글이 승인 되었는지 확인 하는 예외 처리
         if (!projectWithTutor.getApproval().equals(Approval.APPROVED)) {
@@ -93,7 +103,8 @@ public class ProjectWithTutorService {
                 projectWithTutor.getDeadline(),
                 projectWithTutor.getMaxParticipants(),
                 projectWithTutor.getLevel().getLevel(),
-                projectWithTutor.getUser().getUsername()
+                projectWithTutor.getUser().getUsername(),
+                pwtAttachment.getImageURL()
         );
     }
 
@@ -127,8 +138,7 @@ public class ProjectWithTutorService {
             ProjectWithTutorUpdateRequest projectWithTutorUpdateRequest
     ) {
         // 사용자 객체 가져오기
-        User user = userRepository.findById(authUser.getId())
-                .orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_USER));
+        User user = userService.findByUserId(authUser.getId());
 
         // PWT 게시글 객체 가져오기
         ProjectWithTutor projectWithTutor = projectWithTutorRepository.findById(projectId)
@@ -139,6 +149,22 @@ public class ProjectWithTutorService {
             throw new ApiException(ErrorStatus._HAS_NOT_ACCESS_PERMISSION);
         }
 
+        // 추가된 파일이 있는지 확인
+        if(file != null && !file.isEmpty()) {
+            // PWT 첨부파일 객체 가져오기
+            PWTAttachment pwtAttachment = pwtAttachmentService.findPwtAttachmentByPwtId(projectWithTutor.getId());
+
+            if(pwtAttachment == null){
+                s3Service.uploadFile(file, user, projectWithTutor);
+            }else{
+                // PWT 첨부파일 수정
+                s3Service.updateUploadFile(file, pwtAttachment, projectWithTutor);
+            }
+
+        }
+
+
+
         // 변경사항 업데이트
         projectWithTutor.update(
                 projectWithTutorUpdateRequest.getTitle(),
@@ -147,7 +173,8 @@ public class ProjectWithTutorService {
                 projectWithTutorUpdateRequest.getDeadline(),
                 projectWithTutorUpdateRequest.getMaxParticipants(),
                 Level.of(projectWithTutorUpdateRequest.getLevel()),
-                user
+                user,
+                Category.of(projectWithTutorUpdateRequest.getCategory())
         );
 
         return String.format("%s 게시글이 수정되었습니다.", projectWithTutor.getTitle());
@@ -158,17 +185,25 @@ public class ProjectWithTutorService {
     public String deleteProjectWithTutor(AuthUser authUser, Long projectId) {
 
         // 사용자 객체 가져오기
-        User user = userRepository.findById(authUser.getId())
-                .orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_USER));
+        User user = userService.findByUserId(authUser.getId());
 
         // PWT 게시글 객체 가져오기
         ProjectWithTutor projectWithTutor = projectWithTutorRepository.findById(projectId)
                 .orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_PROJECT_WITH_TUTOR));
 
+        // PWT 첨부파일 객체 가져오기
+        PWTAttachment pwtAttachment = pwtAttachmentService.findPwtAttachmentByPwtId(projectWithTutor.getId());
+
         // 게시글 작성자와 현재 로그인된 사용자 일치 여부 예외 처리
         if (!user.getId().equals(projectWithTutor.getUser().getId())) {
             throw new ApiException(ErrorStatus._HAS_NOT_ACCESS_PERMISSION);
         }
+
+        // S3에 첨부파일 삭제
+        s3Service.delete(pwtAttachment.getFileName());
+
+        // PWT 첨부파일 삭제
+        pwtAttachmentService.deletePwtAttachment(pwtAttachment);
 
         // PWT 게시글 삭제
         projectWithTutorRepository.delete(projectWithTutor);
