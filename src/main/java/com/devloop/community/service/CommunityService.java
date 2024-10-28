@@ -22,6 +22,7 @@ import com.devloop.communitycomment.repository.CommunityCommentRepository;
 import com.devloop.search.response.IntegrationSearchResponse;
 import com.devloop.user.entity.User;
 import com.devloop.user.repository.UserRepository;
+import com.devloop.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -43,7 +44,7 @@ import java.util.stream.Collectors;
 @Transactional(readOnly = true)
 public class CommunityService {
     private final CommunityRepository communityRepository;
-    private final UserRepository userRepository; //서비스로 받아오게
+    private final UserService userService;
     private final S3Service s3Service;
     private final CommunityATMRepository communityATMRepository;
 
@@ -52,8 +53,7 @@ public class CommunityService {
     public CommunitySaveResponse createCommunity(AuthUser authUser, MultipartFile file, CommunitySaveRequest communitySaveRequest) {
         Category category = Category.of(communitySaveRequest.getCategory());
         //사용자 조회
-        User user = userRepository.findById(authUser.getId())
-                .orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_USER));
+        User user = userService.findByUserId(authUser.getId());
         //게시글 Community객체 생성
         Community community = Community.of(
                 communitySaveRequest.getTitle(),
@@ -122,8 +122,7 @@ public class CommunityService {
         Category category = Category.of(communityUpdateRequest.getCategory());
 
         //사용자 조회
-        User user = userRepository.findById(authUser.getId())
-                .orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_USER));
+        User user = userService.findByUserId(authUser.getId());
 
         //게시글 조회
         Community community = communityRepository.findById(communityId)
