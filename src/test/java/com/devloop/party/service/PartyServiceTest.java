@@ -4,6 +4,7 @@ import com.devloop.attachment.entity.PartyAttachment;
 import com.devloop.attachment.enums.FileFormat;
 import com.devloop.attachment.repository.PartyAMTRepository;
 import com.devloop.attachment.s3.S3Service;
+import com.devloop.attachment.service.PartyAttachmentService;
 import com.devloop.common.AuthUser;
 import com.devloop.party.entity.Party;
 import com.devloop.party.repository.PartyRepository;
@@ -25,6 +26,8 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.springframework.security.core.parameters.P;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.multipart.MultipartFile;
@@ -50,9 +53,7 @@ class PartyServiceTest {
     @Mock
     private S3Service s3Service;
     @Mock
-    private PartyAMTRepository partyAMTRepository;
-    @Mock
-    private MultipartFile multipartFile;
+    private PartyAttachmentService partyAttachmentService;
     @InjectMocks
     public PartyService partyService;
 
@@ -62,6 +63,7 @@ class PartyServiceTest {
     private SavePartyRequest savePartyRequest;
     private UpdatePartyRequest updatePartyRequest;
     private PartyAttachment partyAttachment;
+    private MultipartFile file;
 
     @BeforeEach
     public void setUp() throws MalformedURLException {
@@ -71,6 +73,7 @@ class PartyServiceTest {
         user=User.of("홍길동","abc@eamil.com",passwordEncoder.encode("Abc1234!"),UserRole.ROLE_USER);
         party=Party.from(savePartyRequest,user);
         String imageURL="https://example.com/image.PNG";
+        file=mock(MultipartFile.class);
         partyAttachment=PartyAttachment.of(1L, new URL(imageURL), FileFormat.PNG,"image.PNG");
     }
     @Test
@@ -78,36 +81,20 @@ class PartyServiceTest {
         //given
         when(userService.findByUserId(anyLong())).thenReturn(user);
         when(partyRepository.save(any(Party.class))).thenReturn(party);
+        when(file.isEmpty()).thenReturn(false);
 
         //when
-        SavePartyResponse response=partyService.saveParty(authUser,multipartFile,savePartyRequest);
+        SavePartyResponse response=partyService.saveParty(authUser,file,savePartyRequest);
 
         //then
-        Assertions.assertNotNull(response);
         Assertions.assertEquals(party.getId(),response.getPartyId());
+        Assertions.assertEquals(party.getTitle(),response.getTitle());
+        verify(s3Service,times(1)).uploadFile(eq(file),eq(user),any(Party.class));
     }
 
     @Test
-    public void 파티_수정_정상동작() throws MalformedURLException {
-        //given
-//        Long partyId=1L;
-//        when(authUser.getId()).thenReturn(1L);
-//
-//        when(userService.findByUserId(anyLong())).thenReturn(user);
-//        when(partyRepository.findById(anyLong())).thenReturn(Optional.of(party));
-//        when(authUser.getId()).thenReturn(user.getId());
-//
-//        PartyAttachment partyAttachment=PartyAttachment.of(1L, new URL("https://example.com/image.PNG"), FileFormat.PNG,"image.PNG");
-//
-//        when(multipartFile.isEmpty()).thenReturn(false);
-//        when(partyAMTRepository.findByPartyId(anyLong())).thenReturn(Optional.of(partyAttachment));
-//
-//        //when
-//        UpdatePartyResponse response=partyService.updateParty(authUser,partyId,multipartFile,updatePartyRequest);
-//
-//        //then
-//        Assertions.assertNotNull(response);
-//        Assertions.assertEquals(party.getId(),response.getPartyId());
+    public void 파티_수정_정상동작() {
+
     }
 
     @Test
@@ -120,7 +107,7 @@ class PartyServiceTest {
         //given
         Long partyId=1L;
         when(partyRepository.findById(anyLong())).thenReturn(Optional.of(party));
-        when(partyAMTRepository.findByPartyId(anyLong())).thenReturn(Optional.of(partyAttachment));
+        when(partyAttachmentService.findPartyAttachmentByPartyId(anyLong())).thenReturn(partyAttachment);
 
         //when
         GetPartyDetailResponse response=partyService.getParty(partyId);
@@ -133,16 +120,6 @@ class PartyServiceTest {
 
     @Test
     public void 파티_삭제_정상동작(){
-        //given
-//        Long partyId=1L;
-//        when(partyRepository.findById(anyLong())).thenReturn(Optional.of(party));
-//        when(authUser.getId()).thenReturn(party.getUser().getId());
-//        when(partyAMTRepository.findByPartyId(anyLong())).thenReturn(Optional.of(partyAttachment));
-//
-//        //when
-//        partyService.deleteParty(authUser,partyId);
-//
-//        //then
-//        verify(s3Service,times(1)).delete(partyAttachment.getFileName());
+
     }
 }
