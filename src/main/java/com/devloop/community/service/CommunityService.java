@@ -3,6 +3,7 @@ package com.devloop.community.service;
 import com.devloop.attachment.entity.CommunityAttachment;
 import com.devloop.attachment.repository.CommunityATMRepository;
 import com.devloop.attachment.s3.S3Service;
+import com.devloop.attachment.service.CommunityAttachmentService;
 import com.devloop.common.AuthUser;
 import com.devloop.common.apipayload.dto.CommunitySimpleResponseDto;
 import com.devloop.common.apipayload.status.ErrorStatus;
@@ -47,6 +48,7 @@ public class CommunityService {
     private final UserService userService;
     private final S3Service s3Service;
     private final CommunityATMRepository communityATMRepository;
+    private final CommunityAttachmentService communityAttachmentService;
 
     //게시글 작성
     @Transactional
@@ -62,7 +64,7 @@ public class CommunityService {
                 user);
         //게시글 저장
         Community savedCommunity = communityRepository.save(community);
-        //첨부파일 저장
+        //첨부파일 있으면 저장
         if (file!=null && !file.isEmpty()){
             s3Service.uploadFile(file,user,community); //s3에 파일 올리고 communityattachment에 저장하는 것
         }
@@ -137,21 +139,16 @@ public class CommunityService {
                 resolvedStatus,
                 category
         );
-        //수정된 게시글 저장
-        communityRepository.save(community);
+
         //첨부파일 수정
         if (file != null && !file.isEmpty()) {
             // 기존 파일이 있는지 확인
-            communityATMRepository.findByCommunityId(communityId).ifPresentOrElse(
-                    existingAttachment -> {
-                        // 기존 파일이 있으면 삭제 후 새 파일 업로드
-                        s3Service.delete(existingAttachment.getFileName());
-                        communityATMRepository.delete(existingAttachment);
-                        s3Service.uploadFile(file, community.getUser(), community);
-                    },
-                    // 기존 파일이 없으면 바로 업로드
-                    () -> s3Service.uploadFile(file, community.getUser(), community)
-            );
+            CommunityAttachment communityAttachment = communityAttachmentService.findCommunityAttachmentByCommunityId(communityId);
+            if (communityAttachment == null) {
+                s3Service.uploadFile(file, community.getUser(), community);
+            } else {
+                s3Service.updateUploadFile(file, communityAttachment, community);
+            }
         }
         //응답반환
         return CommunityDetailResponse.withoutAttachment(
