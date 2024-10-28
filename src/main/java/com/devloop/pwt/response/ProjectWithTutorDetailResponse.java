@@ -2,6 +2,7 @@ package com.devloop.pwt.response;
 
 import lombok.Getter;
 
+import java.net.URL;
 import java.time.LocalDateTime;
 
 @Getter
@@ -15,6 +16,7 @@ public class ProjectWithTutorDetailResponse {
     private final Integer maxParticipants;
     private final String level;
     private final String tutorName;
+    private final URL attachmentUrl;
 
     private ProjectWithTutorDetailResponse(
             String title,
@@ -24,7 +26,8 @@ public class ProjectWithTutorDetailResponse {
             LocalDateTime deadline,
             Integer maxParticipants,
             String level,
-            String tutorName
+            String tutorName,
+            URL attachmentUrl
     ) {
         this.title = title;
         this.description = description;
@@ -34,6 +37,7 @@ public class ProjectWithTutorDetailResponse {
         this.maxParticipants = maxParticipants;
         this.level = level;
         this.tutorName = tutorName;
+        this.attachmentUrl = attachmentUrl;
     }
 
     public static ProjectWithTutorDetailResponse of(
@@ -44,8 +48,8 @@ public class ProjectWithTutorDetailResponse {
             LocalDateTime deadline,
             Integer maxParticipants,
             String level,
-            String tutorName
-
+            String tutorName,
+            URL attachmentUrl
     ){
         return new ProjectWithTutorDetailResponse(
                 title,
@@ -55,7 +59,8 @@ public class ProjectWithTutorDetailResponse {
                 deadline,
                 maxParticipants,
                 level,
-                tutorName
+                tutorName,
+                attachmentUrl
         );
     }
 
