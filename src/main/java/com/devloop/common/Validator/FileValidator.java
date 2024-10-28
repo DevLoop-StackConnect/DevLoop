@@ -18,7 +18,7 @@ import java.util.List;
 @Component
 public class FileValidator {
     public FileFormat mapStringToFileFormat(String fileType) {
-        log.info(fileType);
+        log.info("::: fileType :::" + fileType);
         if (fileType.equalsIgnoreCase("image/png")) {
             return FileFormat.PNG;
         } else if (fileType.equalsIgnoreCase("image/jpeg")) {
@@ -39,13 +39,13 @@ public class FileValidator {
 
         List<String> acceptedTypes = List.of();
         if (object instanceof Party) {
-            acceptedTypes = Arrays.asList("jpg", "png","pdf","jpeg");
+            acceptedTypes = Arrays.asList("jpg", "png", "pdf", "jpeg");
         } else if (object instanceof Community) {
-            acceptedTypes = Arrays.asList("jpg", "png","pdf","jpeg");
+            acceptedTypes = Arrays.asList("jpg", "png", "pdf", "jpeg");
         } else if (object instanceof User) {
-            acceptedTypes = Arrays.asList("jpg", "png","jpeg");
+            acceptedTypes = Arrays.asList("jpg", "png", "jpeg");
         } else if (object instanceof ProjectWithTutor) {
-            acceptedTypes = Arrays.asList("jpg", "png","jpeg","gif","pdf");
+            acceptedTypes = Arrays.asList("jpg", "png", "jpeg", "gif", "pdf");
         }
 
         String fileName = file.getOriginalFilename();
@@ -56,8 +56,8 @@ public class FileValidator {
     }
 
     public void fileSizeValidator(MultipartFile file, Long size) {
-        log.info(String.valueOf( file.getSize()));
-        if(file.getSize() > size) {
+        log.info(String.valueOf(file.getSize()));
+        if (file.getSize() > size) {
             throw new IllegalArgumentException("파일 크기가 너무 큽니다." + file.getSize());
         }
     }
