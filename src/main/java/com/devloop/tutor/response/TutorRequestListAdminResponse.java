@@ -1,7 +1,7 @@
 package com.devloop.tutor.response;
 
+import com.devloop.common.apipayload.dto.UserResponseDto;
 import com.devloop.tutor.entity.TutorRequest;
-import com.devloop.user.entity.User;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
@@ -12,25 +12,31 @@ public class TutorRequestListAdminResponse {
     private final String name;
     private final String subUrl;
     private final LocalDateTime applicationDate;
-    private final User user;
+    private final UserResponseDto user;
 
     private TutorRequestListAdminResponse(
             String name,
             String subUrl,
             LocalDateTime applicationDate,
-            User user) {
+            UserResponseDto user
+    ) {
         this.name = name;
         this.subUrl = subUrl;
         this.applicationDate = applicationDate;
         this.user = user;
     }
 
-    public static TutorRequestListAdminResponse from(TutorRequest tutorRequest) {
+    public static TutorRequestListAdminResponse of(
+            String name,
+            String subUrl,
+            LocalDateTime applicationDate,
+            UserResponseDto user
+    ) {
         return new TutorRequestListAdminResponse(
-                tutorRequest.getName(),
-                tutorRequest.getSubUrl(),
-                tutorRequest.getCreatedAt(),
-                tutorRequest.getUser()
+                name,
+                subUrl,
+                applicationDate,
+                user
         );
     }
 }

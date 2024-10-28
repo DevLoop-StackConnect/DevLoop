@@ -1,6 +1,9 @@
 package com.devloop.pwt.service;
 
+import com.devloop.attachment.entity.PWTAttachment;
+import com.devloop.attachment.service.PWTAttachmentService;
 import com.devloop.common.apipayload.dto.ProjectWithTutorResponseDto;
+import com.devloop.common.apipayload.dto.UserResponseDto;
 import com.devloop.common.apipayload.status.ErrorStatus;
 import com.devloop.common.enums.Approval;
 import com.devloop.common.exception.ApiException;
@@ -21,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class ProjectWithTutorAdminService {
 
     private final ProjectWithTutorRepository projectWithTutorRepository;
+    private final PWTAttachmentService pwtAttachmentService;
 
     // PWT 게시글 승인 (ADMIN)
     @Transactional
@@ -28,7 +32,7 @@ public class ProjectWithTutorAdminService {
 
         // PWT 게시글 객체 가져오기
         ProjectWithTutor projectWithTutor = projectWithTutorRepository.findById(pwtId)
-                .orElseThrow(()->new ApiException(ErrorStatus._NOT_FOUND_PROJECT_WITH_TUTOR));
+                .orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_PROJECT_WITH_TUTOR));
 
         // PWT 게시글 승인여부 상태 변경
         projectWithTutor.changeApproval(Approval.APPROVED);
@@ -42,6 +46,14 @@ public class ProjectWithTutorAdminService {
         ProjectWithTutor projectWithTutor = projectWithTutorRepository.findById(projectId)
                 .orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_PROJECT_WITH_TUTOR));
 
+        // PWT 첨부파일 객체 가져오기
+        PWTAttachment pwtAttachment = pwtAttachmentService.findPwtAttachmentByPwtId(projectWithTutor.getId());
+
+        UserResponseDto userResponseDto = UserResponseDto.of(
+                projectWithTutor.getUser().getUsername(),
+                projectWithTutor.getUser().getEmail()
+        );
+
         return ProjectWithTutorDetailAdminResponse.of(
                 projectWithTutor.getTitle(),
                 projectWithTutor.getDescription(),
@@ -50,7 +62,8 @@ public class ProjectWithTutorAdminService {
                 projectWithTutor.getDeadline(),
                 projectWithTutor.getMaxParticipants(),
                 projectWithTutor.getLevel().getLevel(),
-                projectWithTutor.getUser()
+                pwtAttachment.getImageURL(),
+                userResponseDto
         );
     }
 
@@ -60,10 +73,10 @@ public class ProjectWithTutorAdminService {
 
 
         Page<ProjectWithTutorResponseDto> projectWithTutors = projectWithTutorRepository.findAllWaiteProjectWithTutor(Approval.WAITE, pageable)
-                .filter(p->!p.isEmpty())
+                .filter(p -> !p.isEmpty())
                 .orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_PROJECT_WITH_TUTOR));
 
-        return projectWithTutors.map(p-> ProjectWithTutorListAdminResponse.of(
+        return projectWithTutors.map(p -> ProjectWithTutorListAdminResponse.of(
                 p.getId(),
                 p.getTitle(),
                 p.getPrice(),
