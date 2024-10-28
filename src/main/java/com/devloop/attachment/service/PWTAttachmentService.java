@@ -16,7 +16,7 @@ public class PWTAttachmentService {
     // PWTId 로 PWT 첨부파일 조회
     public PWTAttachment findPwtAttachmentByPwtId(Long id) {
         return PWTATMRepository.findByPWTId(id)
-                .orElseThrow(()-> new ApiException(ErrorStatus._ATTACHMENT_NOT_FOUND));
+                .orElse(null);
     }
 
     public void deletePwtAttachment(PWTAttachment pwtAttachment) {

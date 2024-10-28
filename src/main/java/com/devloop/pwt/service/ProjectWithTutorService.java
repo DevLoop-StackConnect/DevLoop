@@ -144,18 +144,25 @@ public class ProjectWithTutorService {
         ProjectWithTutor projectWithTutor = projectWithTutorRepository.findById(projectId)
                 .orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_PROJECT_WITH_TUTOR));
 
-        // PWT 첨부파일 객체 가져오기
-        PWTAttachment pwtAttachment = pwtAttachmentService.findPwtAttachmentByPwtId(projectWithTutor.getId());
-
         // 게시글 작성자와 현재 로그인된 사용자 일치 여부 예외 처리
         if (!user.getId().equals(projectWithTutor.getUser().getId())) {
             throw new ApiException(ErrorStatus._HAS_NOT_ACCESS_PERMISSION);
         }
 
-        // S3 사진 삭제 후 업로드
-        s3Service.delete(pwtAttachment.getFileName());
-        // PWT 첨부파일 수정
-        s3Service.updateUploadFile(file, pwtAttachment, projectWithTutor);
+        // 추가된 파일이 있는지 확인
+        if(file != null && !file.isEmpty()) {
+            // PWT 첨부파일 객체 가져오기
+            PWTAttachment pwtAttachment = pwtAttachmentService.findPwtAttachmentByPwtId(projectWithTutor.getId());
+
+            if(pwtAttachment == null){
+                s3Service.uploadFile(file, user, projectWithTutor);
+            }else{
+                // PWT 첨부파일 수정
+                s3Service.updateUploadFile(file, pwtAttachment, projectWithTutor);
+            }
+
+        }
+
 
 
         // 변경사항 업데이트

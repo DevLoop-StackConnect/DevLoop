@@ -4,10 +4,7 @@ import com.amazonaws.AmazonServiceException;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
-import com.devloop.attachment.entity.CommunityAttachment;
-import com.devloop.attachment.entity.PWTAttachment;
-import com.devloop.attachment.entity.PartyAttachment;
-import com.devloop.attachment.entity.ProfileAttachment;
+import com.devloop.attachment.entity.*;
 import com.devloop.attachment.enums.FileFormat;
 import com.devloop.attachment.repository.CommunityATMRepository;
 import com.devloop.attachment.repository.PWTATMRepository;
@@ -110,16 +107,19 @@ public class S3Service {
         }
     }
 
-    public void updateUploadFile(MultipartFile file, PWTAttachment pwtAttachment, ProjectWithTutor projectWithTutor) {
+    // 첨부파일 업데이트
+    public <T extends Attachment, U> void updateUploadFile(MultipartFile file, T attachment, U object) {
+        // 기존 S3 첨부파일 삭제
+        delete(attachment.getFileName());
 
-        fileValidator.fileTypeValidator(file, projectWithTutor);
+        // 새로운 첨부파일 file S3에 업로드
+        fileValidator.fileTypeValidator(file, object);
         FileFormat fileType = fileValidator.mapStringToFileFormat(Objects.requireNonNull(file.getContentType()));
 
         String fileName = makeFileName(file);
         ObjectMetadata metadata = new ObjectMetadata();
         metadata.setContentType(file.getContentType());
         metadata.setContentLength(file.getSize());
-
 
         try {
             amazonS3Client.putObject(bucketName, fileName, file.getInputStream(), metadata);
@@ -129,7 +129,8 @@ public class S3Service {
 
         URL url = amazonS3Client.getUrl(bucketName, fileName);
 
-        pwtAttachment.updateAttachment(url, fileType, fileName);
+        // 업로드한 S3파일을 기존 첨부파일 로컬 DB에 업데이트
+        attachment.updateAttachment(url, fileType, fileName);
     }
 
     public void delete(String fileName){
