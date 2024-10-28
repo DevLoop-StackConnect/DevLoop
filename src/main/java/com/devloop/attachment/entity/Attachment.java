@@ -35,5 +35,11 @@ public abstract class Attachment extends Timestamped {
         this.fileFormat = fileFormat;
         this.fileName = fileName;
     }
+
+    public void updateAttachment(URL imageURL, FileFormat fileFormat,String fileName){
+        this.imageURL = imageURL;
+        this.fileFormat = fileFormat;
+        this.fileName = fileName;
+    }
 }
 
