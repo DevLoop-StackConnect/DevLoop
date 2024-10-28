@@ -61,7 +61,7 @@ public class ProjectWithTutor extends Timestamped {
     private Category category;
 
     @ManyToOne
-    @JoinColumn(name="user_id")
+    @JoinColumn(name = "user_id")
     private User user;
 
     private ProjectWithTutor(
@@ -93,7 +93,7 @@ public class ProjectWithTutor extends Timestamped {
             Level level,
             Category category,
             User user
-    ){
+    ) {
         return new ProjectWithTutor(
                 title,
                 description,
@@ -129,4 +129,5 @@ public class ProjectWithTutor extends Timestamped {
     public void changeApproval(Approval approval) {
         this.approval = approval;
     }
+
 }
