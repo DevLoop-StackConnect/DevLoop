@@ -3,6 +3,7 @@ package com.devloop.party.service;
 import com.devloop.attachment.entity.PartyAttachment;
 import com.devloop.attachment.repository.PartyAMTRepository;
 import com.devloop.attachment.s3.S3Service;
+import com.devloop.attachment.service.PartyAttachmentService;
 import com.devloop.common.AuthUser;
 import com.devloop.common.apipayload.status.ErrorStatus;
 import com.devloop.common.enums.BoardType;
@@ -37,11 +38,10 @@ import java.util.Optional;
 @Transactional(readOnly = true)
 @Slf4j
 public class PartyService {
-
     private final PartyRepository partyRepository;
     private final UserService userService;
     private final S3Service s3Service;
-    private final PartyAMTRepository partyAMTRepository;
+    private final PartyAttachmentService partyAttachmentService;
 
     //스터디 파티 모집 게시글 등록
     @Transactional
@@ -82,7 +82,6 @@ public class PartyService {
             throw new ApiException(ErrorStatus._PERMISSION_DENIED);
         }
 
-        party.update(updatePartyRequest);
         /**
          * 추가된 파일 이 있는 지 확인
          * -> 기존 파일이 있는 지 확인
@@ -90,15 +89,18 @@ public class PartyService {
          */
         //추가된 파일이 있는지 확인
         if(file!=null && !file.isEmpty()){
-            Optional<PartyAttachment> partyAttachment=partyAMTRepository.findByPartyId(partyId);
+            PartyAttachment partyAttachment=partyAttachmentService.findPartyAttachmentByPartyId(partyId);
+
             //기존 파일이 있는지 확인
-            if(partyAttachment.isPresent()){
-                //기존 파일 삭제 (S3, 로컬)
-                s3Service.delete(partyAttachment.get().getFileName());
-                partyAMTRepository.delete(partyAttachment.get());
+            if(partyAttachment==null){
+                s3Service.uploadFile(file,user,party);
+            }else{
+                s3Service.updateUploadFile(file,partyAttachment,party);
             }
-            s3Service.uploadFile(file,user,party);
+
         }
+
+        party.update(updatePartyRequest);
 
         return UpdatePartyResponse.of(
                 party.getId(),
@@ -116,10 +118,8 @@ public class PartyService {
                 new ApiException(ErrorStatus._NOT_FOUND_PARTY));
 
         //기존 파일이 있는 지 확인
-        Optional<PartyAttachment> partyAttachment=partyAMTRepository.findByPartyId(partyId);
+        PartyAttachment partyAttachment=partyAttachmentService.findPartyAttachmentByPartyId(partyId);
 
-        //파일이 없으면 null로 전달
-        String imageURL= String.valueOf(partyAttachment.map(attachment -> attachment.getImageURL()).orElse(null));
 
         return GetPartyDetailResponse.of(
                 party.getId(),
@@ -129,7 +129,7 @@ public class PartyService {
                 party.getCategory().getDescription(),
                 party.getCreatedAt(),
                 party.getModifiedAt(),
-                imageURL
+                String.valueOf(partyAttachment.getImageURL())
         );
     }
 
@@ -164,12 +164,12 @@ public class PartyService {
             throw new ApiException(ErrorStatus._PERMISSION_DENIED);
         }
 
-        Optional<PartyAttachment> partyAttachment=partyAMTRepository.findByPartyId(partyId);
+        PartyAttachment partyAttachment=partyAttachmentService.findPartyAttachmentByPartyId(partyId);
         //파일이 있는지 확인
-        if(partyAttachment.isPresent()){
+        if(partyAttachment!=null){
             //파일 삭제 (S3, 로컬)
-            s3Service.delete(partyAttachment.get().getFileName());
-            partyAMTRepository.delete(partyAttachment.get());
+            s3Service.delete(partyAttachment.getFileName());
+            partyAttachmentService.deletePartyAttachment(partyAttachment);
         }
         partyRepository.delete(party);
 
