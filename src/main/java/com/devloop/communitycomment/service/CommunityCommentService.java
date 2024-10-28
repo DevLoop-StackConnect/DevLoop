@@ -17,6 +17,7 @@ import com.devloop.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,7 +35,7 @@ public class CommunityCommentService {
 
     //댓글 작성
     @Transactional
-    public CommentSaveResponse creatComment(AuthUser authUser, CommentSaveRequest commentSaveRequest, Long communityId) {
+    public CommentSaveResponse createComment(AuthUser authUser, CommentSaveRequest commentSaveRequest, Long communityId) {
         //커뮤니티 게시글 조회
         Community community = communityService.getCommunityId(communityId);
 
@@ -90,7 +91,8 @@ public class CommunityCommentService {
     }
 
     //댓글 다건 조회
-    public Page<CommentResponse> getComments(Long communityId, Pageable pageable) {
+    public Page<CommentResponse> getComments(Long communityId, int page, int size) {
+        Pageable pageable = PageRequest.of(page-1,size);
         //페이지네이션된 댓글 조회
         Page<CommunityComment> comments = communityCommentRepository.findByCommunityId(communityId, pageable);
 

@@ -25,7 +25,7 @@ public class CommunityCommentController {
     //댓글 작성
     @PostMapping("/v1/communities/{communityId}/comments")
     public ApiResponse<CommentSaveResponse> createComment(@AuthenticationPrincipal AuthUser authUser, @Valid @RequestBody CommentSaveRequest commentSaveRequest, @PathVariable Long communityId) {
-        return ApiResponse.ok(communityCommentService.creatComment(authUser, commentSaveRequest, communityId));
+        return ApiResponse.ok(communityCommentService.createComment(authUser, commentSaveRequest, communityId));
     }
 
     //댓글 수정
@@ -43,8 +43,7 @@ public class CommunityCommentController {
 
     //댓글 다건 조회
     @GetMapping("/v1/communities/{communityId}/comments")
-    public ApiResponse<Page<CommentResponse>> getComments(@PathVariable Long communityId, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
-        Pageable pageable = PageRequest.of(page, size);
-        return ApiResponse.ok(communityCommentService.getComments(communityId, pageable));
+    public ApiResponse<Page<CommentResponse>> getComments(@PathVariable Long communityId, @RequestParam(defaultValue = "1") int page, @RequestParam(defaultValue = "10") int size) {
+        return ApiResponse.ok(communityCommentService.getComments(communityId, page, size));
     }
 }
