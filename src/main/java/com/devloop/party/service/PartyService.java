@@ -1,7 +1,6 @@
 package com.devloop.party.service;
 
 import com.devloop.attachment.entity.PartyAttachment;
-import com.devloop.attachment.repository.PartyAMTRepository;
 import com.devloop.attachment.s3.S3Service;
 import com.devloop.attachment.service.PartyAttachmentService;
 import com.devloop.common.AuthUser;
@@ -31,7 +30,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
