@@ -98,7 +98,7 @@ public class CommunityService {
         Community community = communityRepository.findById(communityId)
                 .orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_COMMUNITY));
         //첨부파일 url이 있는지 확인
-        String imageUrl = communityATMRepository.findByCommunityId(communityId)
+        String imageUrl = communityATMRepository.findByCommunityId(communityId) //첨부파일 있는지 조회
                 .map(CommunityAttachment::getImageURL)
                 .map(URL ::toString)
                 .orElse(null);
@@ -120,9 +120,6 @@ public class CommunityService {
     public CommunityDetailResponse updateCommunity(AuthUser authUser,Long communityId, CommunityUpdateRequest communityUpdateRequest, MultipartFile file) {
         ResolveStatus resolvedStatus = ResolveStatus.of(communityUpdateRequest.getStatus());
         Category category = Category.of(communityUpdateRequest.getCategory());
-
-        //사용자 조회
-        User user = userService.findByUserId(authUser.getId());
 
         //게시글 조회
         Community community = communityRepository.findById(communityId)
