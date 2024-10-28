@@ -94,7 +94,7 @@ public class PartyCommentService {
 
     //스터디 파티 게시글 댓글 삭제
     @Transactional
-    public void deletePartyComment(AuthUser authUser, Long partyId, Long commentId) {
+    public String deletePartyComment(AuthUser authUser, Long partyId, Long commentId) {
         //스터디 파티 게시글이 존재하는 지 확인
         Party party=partyService.findById(partyId);
 
@@ -108,5 +108,6 @@ public class PartyCommentService {
         }
 
         partyCommentRepository.delete(partyComment);
+        return String.format("댓글을 삭제하였습니다.");
     }
 }

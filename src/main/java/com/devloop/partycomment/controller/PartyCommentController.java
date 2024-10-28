@@ -54,13 +54,12 @@ public class PartyCommentController {
 
     //스터디 파티 게시글 댓글 삭제
     @DeleteMapping("/v1/parties/{partyId}/comments/{commentId}")
-    public ResponseEntity<Void> deletePartyComment(
+    public ApiResponse<String> deletePartyComment(
             @AuthenticationPrincipal AuthUser authUser,
             @PathVariable("partyId") Long partyId,
             @PathVariable("commentId") Long commentId
     ){
-        partyCommentService.deletePartyComment(authUser,partyId,commentId);
-        return ResponseEntity.noContent().build();
+        return ApiResponse.ok(partyCommentService.deletePartyComment(authUser,partyId,commentId));
     }
 
 }

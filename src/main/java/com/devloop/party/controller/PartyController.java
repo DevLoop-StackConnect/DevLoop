@@ -66,12 +66,11 @@ public class PartyController {
 
     //파티모집 게시글 삭제
     @DeleteMapping("/v1/parties/{partyId}")
-    public ResponseEntity<Void> deleteParty(
+    public ApiResponse<String> deleteParty(
             @AuthenticationPrincipal AuthUser authUser,
             @PathVariable Long partyId) {
 
-        partyService.deleteParty(authUser,partyId);
-        return ResponseEntity.noContent().build();
+        return ApiResponse.ok(partyService.deleteParty(authUser,partyId));
     }
 
 }
