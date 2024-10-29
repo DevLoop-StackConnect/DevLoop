@@ -20,7 +20,7 @@ public class ScheduleBoard extends Timestamped {
     @JoinColumn(name = "project_with_tutor_id", nullable = false)
     private ProjectWithTutor projectWithTutor;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "manager_tutor_id", nullable = false)
     private User managerTutor;//게시글 작성자(튜터)
 
