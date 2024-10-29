@@ -4,6 +4,7 @@ package com.devloop.lecture.controller;
 import com.devloop.common.AuthUser;
 import com.devloop.common.apipayload.ApiResponse;
 import com.devloop.lecture.request.SaveLectureRequest;
+import com.devloop.lecture.response.LectureDetailResponse;
 import com.devloop.lecture.service.LectureService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -24,5 +25,12 @@ public class LectureController {
         return ApiResponse.ok(lectureService.saveLecture(authUser,saveLectureRequest));
     }
 
+    //강의 단건 조회 (승인이 완료된 강의)
+    @GetMapping("/v2/lectures/{lectureId}")
+    public ApiResponse<LectureDetailResponse> getLecture(
+            @PathVariable("lectureId") Long lectureId
+    ){
+        return ApiResponse.ok(lectureService.getLecture(lectureId));
+    }
 
 }

@@ -44,7 +44,7 @@ public class Lecture extends Timestamped {
 
     @NotNull
     @Enumerated(EnumType.STRING)
-    private Approval approval=Approval.WAITE;
+    private Approval approval=Approval.APPROVED;
 
     @ManyToOne
     @JoinColumn(name="user_id")
