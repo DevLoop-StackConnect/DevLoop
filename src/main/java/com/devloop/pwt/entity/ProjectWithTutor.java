@@ -113,7 +113,8 @@ public class ProjectWithTutor extends Timestamped {
             LocalDateTime deadline,
             Integer maxParticipants,
             Level level,
-            User user
+            User user,
+            Category category
     ) {
         this.title = title;
         this.description = description;
@@ -122,6 +123,7 @@ public class ProjectWithTutor extends Timestamped {
         this.maxParticipants = maxParticipants;
         this.level = level;
         this.user = user;
+        this.category = category;
     }
 
     public void changeApproval(Approval approval) {
