@@ -98,4 +98,19 @@ public class ScheduleTodoService {
         );
 
     }
+
+    @Transactional
+    public void deleteScheduleTodo(Long scheduleTodoId, AuthUser authUser) {
+        ScheduleTodo scheduleTodo = scheduleTodoRepository.findById(scheduleTodoId)
+                .orElseThrow(()->new ApiException(ErrorStatus._NOT_FOUND_SCHEDULE_TODO));
+        ProjectWithTutor project = scheduleTodo.getScheduleBoard().getProjectWithTutor();
+        User currentUser = userRepository.findById(authUser.getId())
+                .orElseThrow(()-> new ApiException(ErrorStatus._NOT_FOUND_USER));
+
+        //권한 체크 : 일반 유저는 본인 글만, 튜터는 모두 삭제 가능
+        if (!currentUser.equals(scheduleTodo.getCreatedBy())&&!currentUser.equals(project.getUser())){
+            throw new ApiException(ErrorStatus._PERMISSION_DENIED);
+        }
+        scheduleTodoRepository.delete(scheduleTodo);
+    }
 }

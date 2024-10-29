@@ -35,4 +35,12 @@ public class ScheduleTodoController {
         return ApiResponse.ok(scheduleTodoService.updateScheduleTodo(authUser,scheduleTodoId,scheduleTodoRequest));
     }
 
+    //일정 삭제
+    @DeleteMapping("/{scheduleTodoId}")
+    public ApiResponse<String> deleteScheduleTodo(@PathVariable Long scheduleTodoId,@AuthenticationPrincipal AuthUser authUser){
+        scheduleTodoService.deleteScheduleTodo(scheduleTodoId,authUser);
+        return ApiResponse.ok(null);
+
+    }
+
 }
