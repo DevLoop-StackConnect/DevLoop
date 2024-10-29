@@ -52,4 +52,18 @@ public class ScheduleTodoService {
                 scheduleTodo.getEndDate()
         );
     }
+
+    public ScheduleTodoResponse getScheduleTodo(Long scheduleTodoId) {
+        ScheduleTodo scheduleTodo = scheduleTodoRepository.findById(scheduleTodoId)
+                .orElseThrow(()->new ApiException(ErrorStatus._NOT_FOUND_SCHEDULE_TODO));
+
+        return ScheduleTodoResponse.of(
+                scheduleTodo.getId(),
+                scheduleTodo.getCreatedBy().getUsername(),
+                scheduleTodo.getTitle(),
+                scheduleTodo.getContent(),
+                scheduleTodo.getStartDate(),
+                scheduleTodo.getEndDate()
+        );
+    }
 }
