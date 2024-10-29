@@ -11,6 +11,7 @@ import com.devloop.pwt.entity.ProjectWithTutor;
 import com.devloop.pwt.repository.ProjectWithTutorRepository;
 import com.devloop.pwt.response.ProjectWithTutorDetailAdminResponse;
 import com.devloop.pwt.response.ProjectWithTutorListAdminResponse;
+import com.devloop.scheduleBoard.service.ScheduleBoardService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -25,6 +26,7 @@ public class ProjectWithTutorAdminService {
 
     private final ProjectWithTutorRepository projectWithTutorRepository;
     private final PWTAttachmentService pwtAttachmentService;
+    private final ScheduleBoardService scheduleBoardService;
 
     // PWT 게시글 승인 (ADMIN)
     @Transactional
@@ -36,6 +38,9 @@ public class ProjectWithTutorAdminService {
 
         // PWT 게시글 승인여부 상태 변경
         projectWithTutor.changeApproval(Approval.APPROVED);
+
+        //ScheduleBoard 생성
+        scheduleBoardService.createScheduleBoard(projectWithTutor);
 
         return String.format("%s 게시글이 승인 되었습니다.", projectWithTutor.getTitle());
     }
