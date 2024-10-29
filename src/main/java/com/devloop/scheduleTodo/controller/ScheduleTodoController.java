@@ -23,4 +23,10 @@ public class ScheduleTodoController {
         return ApiResponse.ok(scheduleTodoService.createScheduleTodo(scheduleBoardId, scheduleTodoRequest, authUser));
     }
 
+    //일정 단건 조회
+    @GetMapping("/{scheduletodoId}")
+    public ApiResponse<ScheduleTodoResponse> getScheduleTodo(@PathVariable Long scheduleTodoId){
+        return ApiResponse.ok(scheduleTodoService.getScheduleTodo(scheduleTodoId));
+    }
+
 }
