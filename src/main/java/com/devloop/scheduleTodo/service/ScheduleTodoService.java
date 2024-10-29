@@ -3,6 +3,7 @@ package com.devloop.scheduleTodo.service;
 import com.devloop.common.AuthUser;
 import com.devloop.common.apipayload.status.ErrorStatus;
 import com.devloop.common.exception.ApiException;
+import com.devloop.pwt.entity.ProjectWithTutor;
 import com.devloop.pwt.repository.ProjectWithTutorRepository;
 import com.devloop.scheduleBoard.entity.ScheduleBoard;
 import com.devloop.scheduleBoard.repository.ScheduleBoardRepository;
@@ -65,5 +66,36 @@ public class ScheduleTodoService {
                 scheduleTodo.getStartDate(),
                 scheduleTodo.getEndDate()
         );
+    }
+
+    @Transactional
+    public ScheduleTodoResponse updateScheduleTodo(AuthUser authUser, Long scheduleTodoId, ScheduleTodoRequest scheduleTodoRequest) {
+        ScheduleTodo scheduleTodo = scheduleTodoRepository.findById(scheduleTodoId)
+                .orElseThrow(()-> new ApiException(ErrorStatus._NOT_FOUND_SCHEDULE_TODO));
+
+        ProjectWithTutor project = scheduleTodo.getScheduleBoard().getProjectWithTutor();
+        User currentUser = userRepository.findById(authUser.getId())
+                .orElseThrow(()->new ApiException(ErrorStatus._NOT_FOUND_USER));
+
+        //권한체크 : 일반유저는 본인 것만, 튜터는 모두 수정 가능
+        if (!currentUser.equals(scheduleTodo.getCreatedBy())&&!currentUser.equals(project.getUser())){
+            throw new ApiException(ErrorStatus._PERMISSION_DENIED);
+        }
+        scheduleTodo.updateScheduleTodo(
+                scheduleTodoRequest.getTitle(),
+                scheduleTodoRequest.getContent(),
+                scheduleTodoRequest.getStartDate(),
+                scheduleTodoRequest.getEndDate()
+        );
+
+        return ScheduleTodoResponse.of(
+                scheduleTodo.getId(),
+                currentUser.getUsername(),
+                scheduleTodo.getTitle(),
+                scheduleTodo.getContent(),
+                scheduleTodo.getStartDate(),
+                scheduleTodo.getEndDate()
+        );
+
     }
 }

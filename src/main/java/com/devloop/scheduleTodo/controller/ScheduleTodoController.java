@@ -24,9 +24,15 @@ public class ScheduleTodoController {
     }
 
     //일정 단건 조회
-    @GetMapping("/{scheduletodoId}")
+    @GetMapping("/{scheduleTodoId}")
     public ApiResponse<ScheduleTodoResponse> getScheduleTodo(@PathVariable Long scheduleTodoId){
         return ApiResponse.ok(scheduleTodoService.getScheduleTodo(scheduleTodoId));
+    }
+
+    //일정 수정
+    @PatchMapping("/{scheduleTodoId}")
+    public ApiResponse<ScheduleTodoResponse> updateScheduleTodo(@AuthenticationPrincipal AuthUser authUser,@PathVariable Long scheduleTodoId, @RequestBody ScheduleTodoRequest scheduleTodoRequest){
+        return ApiResponse.ok(scheduleTodoService.updateScheduleTodo(authUser,scheduleTodoId,scheduleTodoRequest));
     }
 
 }
