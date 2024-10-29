@@ -24,7 +24,7 @@ public class CommunityController {
     //게시글 작성
     @PostMapping("/v1/communities")
     public ApiResponse<CommunitySaveResponse> createCommunity(@AuthenticationPrincipal AuthUser authUser, @Valid @ModelAttribute CommunitySaveRequest communitySaveRequest, @RequestParam(value = "file", required = false) MultipartFile file) {
-        return ApiResponse.ok(communityService.createCommunity(authUser,file, communitySaveRequest));
+        return ApiResponse.ok(communityService.createCommunity(authUser, file, communitySaveRequest));
     }
 
     //게시글 다건 조회
@@ -41,14 +41,14 @@ public class CommunityController {
 
     //게시글 수정
     @PatchMapping("/v1/communities/{communityId}")
-    public ApiResponse<CommunityDetailResponse> updateCommunity(@AuthenticationPrincipal AuthUser authUser,@PathVariable Long communityId, @Valid @ModelAttribute CommunityUpdateRequest communityUpdateRequest,@RequestParam(value = "file", required = false) MultipartFile file) {
-        return ApiResponse.ok(communityService.updateCommunity(authUser,communityId, communityUpdateRequest,file));
+    public ApiResponse<CommunityDetailResponse> updateCommunity(@AuthenticationPrincipal AuthUser authUser, @PathVariable Long communityId, @Valid @ModelAttribute CommunityUpdateRequest communityUpdateRequest, @RequestParam(value = "file", required = false) MultipartFile file) {
+        return ApiResponse.ok(communityService.updateCommunity(authUser, communityId, communityUpdateRequest, file));
     }
 
     //게시글 삭제
     @DeleteMapping("/v1/communities/{communityId}")
-    public ApiResponse<Void> deleteCommunity(@AuthenticationPrincipal AuthUser authUser,@PathVariable Long communityId) {
-        communityService.deleteCommunity(authUser,communityId);
+    public ApiResponse<Void> deleteCommunity(@AuthenticationPrincipal AuthUser authUser, @PathVariable Long communityId) {
+        communityService.deleteCommunity(authUser, communityId);
         return ApiResponse.ok(null);
     }
 }
