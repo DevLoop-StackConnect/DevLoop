@@ -7,8 +7,8 @@ import com.devloop.common.AuthUser;
 import com.devloop.common.apipayload.dto.ProjectWithTutorResponseDto;
 import com.devloop.common.apipayload.status.ErrorStatus;
 import com.devloop.common.enums.Approval;
-import com.devloop.common.enums.Category;
 import com.devloop.common.enums.BoardType;
+import com.devloop.common.enums.Category;
 import com.devloop.common.exception.ApiException;
 import com.devloop.common.utils.SearchResponseUtil;
 import com.devloop.pwt.entity.ProjectWithTutor;
@@ -21,7 +21,6 @@ import com.devloop.pwt.response.ProjectWithTutorListResponse;
 import com.devloop.search.response.IntegrationSearchResponse;
 import com.devloop.user.entity.User;
 import com.devloop.user.enums.UserRole;
-import com.devloop.user.repository.UserRepository;
 import com.devloop.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -114,10 +113,10 @@ public class ProjectWithTutorService {
 
 
         Page<ProjectWithTutorResponseDto> projectWithTutors = projectWithTutorRepository.findAllApprovedProjectWithTutor(Approval.APPROVED, pageable)
-                .filter(p->!p.isEmpty())
+                .filter(p -> !p.isEmpty())
                 .orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_PROJECT_WITH_TUTOR));
 
-        return projectWithTutors.map(p->ProjectWithTutorListResponse.of(
+        return projectWithTutors.map(p -> ProjectWithTutorListResponse.of(
                 p.getId(),
                 p.getTitle(),
                 p.getPrice(),
@@ -150,19 +149,18 @@ public class ProjectWithTutorService {
         }
 
         // 추가된 파일이 있는지 확인
-        if(file != null && !file.isEmpty()) {
+        if (file != null && !file.isEmpty()) {
             // PWT 첨부파일 객체 가져오기
             PWTAttachment pwtAttachment = pwtAttachmentService.findPwtAttachmentByPwtId(projectWithTutor.getId());
 
-            if(pwtAttachment == null){
+            if (pwtAttachment == null) {
                 s3Service.uploadFile(file, user, projectWithTutor);
-            }else{
+            } else {
                 // PWT 첨부파일 수정
                 s3Service.updateUploadFile(file, pwtAttachment, projectWithTutor);
             }
 
         }
-
 
 
         // 변경사항 업데이트
@@ -211,16 +209,22 @@ public class ProjectWithTutorService {
         return String.format("%s 게시글을 삭제하였습니다.", projectWithTutor.getTitle());
     }
 
+    //Util
+    public ProjectWithTutor findByPwtId(Long pwtId) {
+        return projectWithTutorRepository.findById(pwtId)
+                .orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_PROJECT_WITH_TUTOR));
+    }
+
     /**
      * Search에서 사용
      */
-    public List<IntegrationSearchResponse> getProjectWithTutor(Specification<ProjectWithTutor> spec){
+    public List<IntegrationSearchResponse> getProjectWithTutor(Specification<ProjectWithTutor> spec) {
         List<ProjectWithTutor> pwts = projectWithTutorRepository.findAll(spec);
         return SearchResponseUtil.wrapResponse(BoardType.PWT, pwts);
     }
 
-    public Page<IntegrationSearchResponse> getProjectWithTutorPage(Specification<ProjectWithTutor> spec, PageRequest pageable){
-        Page<ProjectWithTutor> pwtPage = projectWithTutorRepository.findAll(spec,pageable);
+    public Page<IntegrationSearchResponse> getProjectWithTutorPage(Specification<ProjectWithTutor> spec, PageRequest pageable) {
+        Page<ProjectWithTutor> pwtPage = projectWithTutorRepository.findAll(spec, pageable);
         List<IntegrationSearchResponse> response = SearchResponseUtil.wrapResponse(
                 BoardType.PWT, pwtPage.getContent()
         );
