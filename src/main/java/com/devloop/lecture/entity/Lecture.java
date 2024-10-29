@@ -4,6 +4,7 @@ import com.devloop.common.Timestamped;
 import com.devloop.common.enums.Approval;
 import com.devloop.common.enums.Category;
 import com.devloop.lecture.request.SaveLectureRequest;
+import com.devloop.lecture.request.UpdateLectureRequest;
 import com.devloop.pwt.enums.Level;
 import com.devloop.user.entity.User;
 import jakarta.persistence.*;
@@ -70,5 +71,18 @@ public class Lecture extends Timestamped {
                 request.getPrice(),
                 user
         );
+    }
+
+    public void update(UpdateLectureRequest request){
+        this.title= request.getTitle();
+        this.description= request.getDescription();
+        this.recommend= request.getRecommend();
+        this.category=Category.of(request.getCategory());
+        this.level=Level.of(request.getLevel());
+        this.price=request.getPrice();
+    }
+
+    public void changeApproval(Approval approval) {
+        this.approval = approval;
     }
 }
