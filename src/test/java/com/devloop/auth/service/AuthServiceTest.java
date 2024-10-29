@@ -45,7 +45,7 @@ class AuthServiceTest {
     @BeforeEach
     void setUp() {
         signupRequest = new SignupRequest("testExample@example.com", "Qwer!234", "testUser", "ROLE_USER");
-        user = User.from("testUser", "testExample@example.com", "encodedPassword", UserRole.ROLE_USER);
+        user = User.of("testUser", "testExample@example.com", "encodedPassword", UserRole.ROLE_USER);
         user.setId(1L);
         loginRequest = new LoginRequest("testExample.com", "password");
         signoutRequest = new SignoutRequest("Qwer!234");
