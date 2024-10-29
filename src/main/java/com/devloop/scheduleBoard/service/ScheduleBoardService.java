@@ -7,9 +7,14 @@ import com.devloop.pwt.repository.ProjectWithTutorRepository;
 import com.devloop.scheduleBoard.dto.response.ScheduleBoardResponse;
 import com.devloop.scheduleBoard.entity.ScheduleBoard;
 import com.devloop.scheduleBoard.repository.ScheduleBoardRepository;
+import com.devloop.scheduleTodo.dto.response.ScheduleTodoSimpleResponse;
+import com.devloop.scheduleTodo.repository.ScheduleTodoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -17,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class ScheduleBoardService {
     private final ScheduleBoardRepository scheduleBoardRepository;
     private final ProjectWithTutorRepository projectWithTutorRepository;
+    private final ScheduleTodoRepository scheduleTodoRepository;
 
     //PWT 승인 시 스케줄보드 생성 메서드
     @Transactional
@@ -35,10 +41,17 @@ public class ScheduleBoardService {
         ScheduleBoard scheduleBoard = scheduleBoardRepository.findByProjectWithTutor(projectWithTutor)
                 .orElseThrow(()->new ApiException(ErrorStatus._NOT_FOUND_SCHEDULE_BOARD));
 
+        //SceduleTodo 목록 조회
+        List<ScheduleTodoSimpleResponse> todos = scheduleTodoRepository.findByScheduleBoard(scheduleBoard)
+                .stream()
+                .map(todo->ScheduleTodoSimpleResponse.of(todo.getTitle(),todo.getStartDate(),todo.getEndDate()))
+                .collect(Collectors.toList());
+
         return ScheduleBoardResponse.of(
                 scheduleBoard.getId(),
-                projectWithTutorRepository.count(),
-                scheduleBoard.getManagerTutor().getUsername()
-                );
+                projectWithTutor.getId(),
+                scheduleBoard.getManagerTutor().getUsername(),
+                todos
+        );
     }
 }
