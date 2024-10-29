@@ -55,4 +55,14 @@ public class LectureController {
         return ApiResponse.ok(lectureService.getLectureList(title,page,size));
     }
 
+
+    //강의 삭제
+    @DeleteMapping("/v2/lectures/{lectureId}")
+    public ApiResponse<String> deleteLecture(
+            @AuthenticationPrincipal AuthUser authUser,
+            @PathVariable("lectureId") Long lectureId
+    ){
+        return ApiResponse.ok(lectureService.deleteLecture(authUser,lectureId));
+    }
+
 }
