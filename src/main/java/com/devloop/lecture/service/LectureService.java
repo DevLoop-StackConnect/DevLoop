@@ -9,10 +9,13 @@ import com.devloop.lecture.repository.LectureRepository;
 import com.devloop.lecture.request.SaveLectureRequest;
 import com.devloop.lecture.request.UpdateLectureRequest;
 import com.devloop.lecture.response.LectureDetailResponse;
+import com.devloop.lecture.response.LectureListResponse;
 import com.devloop.user.entity.User;
 import com.devloop.user.enums.UserRole;
 import com.devloop.user.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -87,6 +90,28 @@ public class LectureService {
     }
 
     //강의 다건 조회
+    public Page<LectureListResponse> getLectureList(String title, int page, int size) {
+        PageRequest pageable= PageRequest.of(page-1,size);
+
+        Page<Lecture> lectures;
+
+        if(title==null || title.isEmpty()){
+            lectures=lectureRepository.findAll(pageable);
+        }else{
+            lectures=lectureRepository.findByTitleContaining(title,pageable);
+        }
+        return lectures.map(lecture->LectureListResponse.of(
+                lecture.getTitle(),
+                lecture.getCategory().getDescription(),
+                lecture.getLevel().getLevel(),
+                lecture.getPrice()
+        ));
+    }
+
+
+
+
+
 
 
 }
