@@ -12,13 +12,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/scheduleBoards")
+@RequestMapping("/api/pwt")
 public class ScehduleBoardController {
     private final ScheduleBoardService scheduleBoardService;
     private final PWTAttachmentService pWTAttachmentService;
 
     //pwt 게시판의 게시글에서 scheduleBoard 조회
-    @GetMapping("{pwtId}")
+    @GetMapping("{pwtId}/scheduleboards")
     public ApiResponse<ScheduleBoardResponse> getScheduleBoard(@PathVariable Long pwtId) {
         return ApiResponse.ok(scheduleBoardService.getScheduleBoard(pwtId));
     }
