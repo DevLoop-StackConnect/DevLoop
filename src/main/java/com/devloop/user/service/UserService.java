@@ -4,7 +4,6 @@ import com.devloop.attachment.entity.ProfileAttachment;
 import com.devloop.attachment.repository.ProfileATMRepository;
 import com.devloop.attachment.s3.S3Service;
 import com.devloop.common.AuthUser;
-import com.devloop.common.Validator.FileValidator;
 import com.devloop.common.apipayload.status.ErrorStatus;
 import com.devloop.common.exception.ApiException;
 import com.devloop.community.dto.response.CommunitySimpleResponse;
