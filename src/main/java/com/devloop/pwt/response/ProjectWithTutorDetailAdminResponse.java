@@ -4,6 +4,7 @@ import com.devloop.common.apipayload.dto.UserResponseDto;
 import com.devloop.user.entity.User;
 import lombok.Getter;
 
+import java.math.BigDecimal;
 import java.net.URL;
 import java.time.LocalDateTime;
 
@@ -12,7 +13,7 @@ public class ProjectWithTutorDetailAdminResponse {
 
     private final String title;
     private final String description;
-    private final Integer price;
+    private final BigDecimal price;
     private final String status;
     private final LocalDateTime deadline;
     private final Integer maxParticipants;
@@ -23,7 +24,7 @@ public class ProjectWithTutorDetailAdminResponse {
     private ProjectWithTutorDetailAdminResponse(
             String title,
             String description,
-            Integer price,
+            BigDecimal price,
             String status,
             LocalDateTime deadline,
             Integer maxParticipants,
@@ -45,7 +46,7 @@ public class ProjectWithTutorDetailAdminResponse {
     public static ProjectWithTutorDetailAdminResponse of(
             String title,
             String description,
-            Integer price,
+            BigDecimal price,
             String status,
             LocalDateTime deadline,
             Integer maxParticipants,
