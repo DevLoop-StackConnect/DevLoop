@@ -50,6 +50,7 @@ public class WebSecurityConfig {
                                 "/success",
                                 "/fail",
                                 "/error",
+                                "/error/**",
                                 "/favicon.ico"
                         )
                         .permitAll()
