@@ -23,7 +23,7 @@ public class ScheduleBoardService {
     @Transactional
     public ScheduleBoard createScheduleBoard(ProjectWithTutor projectWithTutor) {
         //스케줄보드객체 생성해서 db에 저장
-        ScheduleBoard scheduleBoard = ScheduleBoard.of(projectWithTutor, projectWithTutor.getUser());
+        ScheduleBoard scheduleBoard = ScheduleBoard.of(projectWithTutor);
         return scheduleBoardRepository.save(scheduleBoard);
     }
 
@@ -39,7 +39,8 @@ public class ScheduleBoardService {
         return ScheduleBoardResponse.of(
                 scheduleBoard.getId(),
                 projectWithTutor.getId(),
-                scheduleBoard.getManagerTutor().getUsername()
+                projectWithTutor.getUser().getUsername()
+//                scheduleBoard.getManagerTutor().getUsername()
         );
     }
 
