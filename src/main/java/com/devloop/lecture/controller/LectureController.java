@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 public class LectureController {
     private final LectureService lectureService;
 
-    //강의 생성 (일반 사용자 접근 불가)
+    //강의 데이터 생성 (일반 사용자 접근 불가)
     @PostMapping("/v2/lectures")
     public ApiResponse<String> saveLecture(
             @AuthenticationPrincipal AuthUser authUser,
