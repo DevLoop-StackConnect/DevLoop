@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Getter
@@ -19,7 +20,7 @@ public class ProjectWithTutorUpdateRequest {
     private String description;
 
     @NotNull(message = "가격을 입력해 주세요.")
-    private Integer price;
+    private BigDecimal price;
 
     @NotNull(message = "마감일을 입력해 주세요.")
     @Future(message = "마감일은 현재보다 미래 시간이어야 합니다.")
