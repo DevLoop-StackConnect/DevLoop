@@ -37,7 +37,29 @@ public class ScheduleTodoService {
         ScheduleBoard scheduleBoard = scheduleBoardService.findByScheduleBoardId(scheduleBoardId);
         User currentUser = userService.findByUserId(authUser.getId());
 
-        // 현재 유저가 해당 스케줄 보드에 속한 PWT 게시글의 유저인지 확인
+        //현재 유저가 해당 pwt 게시글의 튜터인지 확인(글작성자=튜터는 일정작성 가능)
+        ProjectWithTutor projectWithTutor = scheduleBoard.getProjectWithTutor();
+        if (currentUser.equals(projectWithTutor.getUser())) {
+            // 별도 권한 확인 없이 일정 생성 허용
+            ScheduleTodo scheduleTodo = ScheduleTodo.of(
+                    scheduleBoard,
+                    scheduleTodoRequest.getTitle(),
+                    scheduleTodoRequest.getContent(),
+                    scheduleTodoRequest.getStartDate(),
+                    scheduleTodoRequest.getEndDate()
+            );
+
+            scheduleTodoRepository.save(scheduleTodo);
+            return ScheduleTodoResponse.of(
+                    scheduleTodo.getId(),
+                    scheduleTodo.getTitle(),
+                    scheduleTodo.getContent(),
+                    scheduleTodo.getStartDate(),
+                    scheduleTodo.getEndDate()
+            );
+        }
+
+        // 현재 유저가 해당 스케줄 보드에 속한 PWT 게시글의 유저인지 확인 BoardAssignment로 접근 권한 확인
         boolean hasAccess = boardAssignmentRepository.existsByScheduleBoardAndUserId(scheduleBoard, currentUser.getId());
         if (!hasAccess) {
             throw new ApiException(ErrorStatus._PERMISSION_DENIED);
