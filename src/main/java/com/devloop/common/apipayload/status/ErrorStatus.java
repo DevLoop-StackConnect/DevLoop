@@ -67,8 +67,8 @@ public enum ErrorStatus implements BaseCode {
     //S3
     _UNSUPPORTED_OBJECT_TYPE(HttpStatus.BAD_REQUEST,"400","지원하지 않는 객체입니다."),
     _STATUS_NOT_EXSIST(HttpStatus.BAD_REQUEST, "400", "잘못된 해결 상태 입력값입니다. 오타 및 해결상태 종류를 확인하세요"),
-    _CATEGORY_NOT_EXSIST(HttpStatus.BAD_REQUEST, "400", "잘못된 카테고리 입력값입니다. 오타 및 카테고리 종류를 확인하세요");
-
+    _CATEGORY_NOT_EXSIST(HttpStatus.BAD_REQUEST, "400", "잘못된 카테고리 입력값입니다. 오타 및 카테고리 종류를 확인하세요"),
+    _RESOURCE_CLOSING_FAILED(HttpStatus.CONFLICT, "409" , "파일을 닫지 못했습니다.");
 
 
     private HttpStatus httpStatus;

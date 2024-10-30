@@ -4,6 +4,7 @@ import com.amazonaws.AmazonServiceException;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.amazonaws.services.s3.model.S3Object;
 import com.devloop.attachment.entity.*;
 import com.devloop.attachment.enums.FileFormat;
 import com.devloop.attachment.repository.CommunityATMRepository;
@@ -139,6 +140,19 @@ public class S3Service {
                 amazonS3Client.deleteObject(new DeleteObjectRequest(bucketName,fileName));
             } catch (AmazonServiceException e) {
                 throw new ApiException(ErrorStatus._HAS_NOT_ACCESS_PERMISSION);
+            }
+        } else {
+            throw new ApiException(ErrorStatus._ATTACHMENT_NOT_FOUND);
+        }
+    }
+    public S3Object getProfileImgFromS3(String fileName) {
+        if (amazonS3Client.doesObjectExist(bucketName, fileName)) {
+            try (S3Object s3Object = amazonS3Client.getObject(bucketName, fileName)) {
+                return s3Object; // The s3Object will be closed automatically after this block
+            } catch (AmazonServiceException e) {
+                throw new ApiException(ErrorStatus._HAS_NOT_ACCESS_PERMISSION);
+            } catch (IOException e) {
+                throw new ApiException(ErrorStatus._RESOURCE_CLOSING_FAILED);
             }
         } else {
             throw new ApiException(ErrorStatus._ATTACHMENT_NOT_FOUND);
