@@ -1,5 +1,6 @@
 package com.devloop.user.controller;
 
+import com.amazonaws.services.s3.model.S3Object;
 import com.devloop.common.AuthUser;
 import com.devloop.common.apipayload.ApiResponse;
 import com.devloop.user.dto.response.UserResponse;
@@ -27,5 +28,10 @@ public class UserController {
     public ApiResponse<String>updateProfileImg(@RequestParam("file") MultipartFile[] files, @AuthenticationPrincipal AuthUser authUser){
         userService.updateProfileImg(files, authUser);
         return ApiResponse.ok("프로필 이미지가 변경 되었습니다.");
+    }
+
+    @GetMapping("/v1/users/profiles/image/s3")
+    public  ApiResponse<S3Object>getProfileImgFromS3(@AuthenticationPrincipal AuthUser authUser){
+        return ApiResponse.ok(userService.getProfileImgFromS3(authUser));
     }
 }
