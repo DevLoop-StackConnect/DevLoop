@@ -33,7 +33,7 @@ public class WebSecurityConfig {
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtSecurityFilter, SecurityContextHolderAwareRequestFilter.class)
                 .formLogin(form -> form.disable())
-                .anonymous(anonymous -> anonymous.disable())
+//                .anonymous(anonymous -> anonymous.disable())  // payment 프론트 테스트 위해 익명 접근 가동하도록 주석처리 하겠습니다.
                 .httpBasic(httpBasic -> httpBasic.disable())
                 .logout(logout -> logout.disable())
                 .authorizeHttpRequests(auth -> auth
@@ -42,7 +42,15 @@ public class WebSecurityConfig {
                                 "/api/v1/auth/login",
                                 "/api/v1/auth/kakao/login",
                                 "/api/v1/main/search/**",
-                                "api/v1/pwts/**"
+                                "api/v1/pwts/**",
+                                // payments test 위해 열어두는 API
+                                "/payments/**",
+                                "/success.html",
+                                "/fail.html",
+                                "/success",
+                                "/fail",
+                                "/error",
+                                "/favicon.ico"
                         )
                         .permitAll()
                         .requestMatchers(
