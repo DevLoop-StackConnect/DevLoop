@@ -5,6 +5,7 @@ import com.devloop.common.apipayload.status.ErrorStatus;
 import com.devloop.common.exception.ApiException;
 import com.devloop.pwt.entity.ProjectWithTutor;
 import com.devloop.scheduleBoard.entity.ScheduleBoard;
+import com.devloop.scheduleBoard.repository.BoardAssignmentRepository;
 import com.devloop.scheduleBoard.service.ScheduleBoardService;
 import com.devloop.scheduleTodo.dto.request.ScheduleTodoRequest;
 import com.devloop.scheduleTodo.dto.response.ScheduleTodoResponse;
@@ -27,17 +28,24 @@ public class ScheduleTodoService {
     private final ScheduleTodoRepository scheduleTodoRepository;
     private final UserService userService;
     private final ScheduleBoardService scheduleBoardService;
+    private final BoardAssignmentRepository boardAssignmentRepository;
 
     //생성
     @Transactional
     public ScheduleTodoResponse createScheduleTodo(Long scheduleBoardId, ScheduleTodoRequest scheduleTodoRequest, AuthUser authUser) {
 
         ScheduleBoard scheduleBoard = scheduleBoardService.findByScheduleBoardId(scheduleBoardId);
-        User createdBy = userService.findByUserId(authUser.getId());
+        User currentUser = userService.findByUserId(authUser.getId());
 
+        // 현재 유저가 해당 스케줄 보드에 속한 PWT 게시글의 유저인지 확인
+        boolean hasAccess = boardAssignmentRepository.existsByScheduleBoardAndUserId(scheduleBoard, currentUser.getId());
+        if (!hasAccess) {
+            throw new ApiException(ErrorStatus._PERMISSION_DENIED);
+        }
+
+        //접근권한이 있으면 scheduleTodo 생성
         ScheduleTodo scheduleTodo = ScheduleTodo.of(
                 scheduleBoard,
-                createdBy,
                 scheduleTodoRequest.getTitle(),
                 scheduleTodoRequest.getContent(),
                 scheduleTodoRequest.getStartDate(),
@@ -47,7 +55,6 @@ public class ScheduleTodoService {
         scheduleTodoRepository.save(scheduleTodo);
         return ScheduleTodoResponse.of(
                 scheduleTodo.getId(),
-                createdBy.getUsername(),
                 scheduleTodo.getTitle(),
                 scheduleTodo.getContent(),
                 scheduleTodo.getStartDate(),
@@ -72,7 +79,6 @@ public class ScheduleTodoService {
 
         return ScheduleTodoResponse.of(
                 scheduleTodo.getId(),
-                scheduleTodo.getCreatedBy().getUsername(),
                 scheduleTodo.getTitle(),
                 scheduleTodo.getContent(),
                 scheduleTodo.getStartDate(),
@@ -86,42 +92,69 @@ public class ScheduleTodoService {
         ScheduleTodo scheduleTodo = scheduleTodoRepository.findById(scheduleTodoId)
                 .orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_SCHEDULE_TODO));
 
-        ProjectWithTutor project = scheduleTodo.getScheduleBoard().getProjectWithTutor();
+        ScheduleBoard scheduleBoard = scheduleTodo.getScheduleBoard();
+        ProjectWithTutor projectWithTutor = scheduleBoard.getProjectWithTutor();
         User currentUser = userService.findByUserId(authUser.getId());
 
-        //권한체크 : 일반유저는 본인 것만, 튜터는 모두 수정 가능
-        if (!currentUser.equals(scheduleTodo.getCreatedBy()) && !currentUser.equals(project.getUser())) {
+
+        //튜터는 모든 scheduleTodo수정가능
+        if (currentUser.equals(projectWithTutor.getUser())) {
+            scheduleTodo.updateScheduleTodo(
+                    scheduleTodoRequest.getTitle(),
+                    scheduleTodoRequest.getContent(),
+                    scheduleTodoRequest.getStartDate(),
+                    scheduleTodoRequest.getEndDate()
+            );
+
+            return ScheduleTodoResponse.of(
+                    scheduleTodo.getId(),
+                    scheduleTodo.getTitle(),
+                    scheduleTodo.getContent(),
+                    scheduleTodo.getStartDate(),
+                    scheduleTodo.getEndDate()
+            );
+        }
+        boolean hasAcess = boardAssignmentRepository.existsByScheduleBoardAndUserId(scheduleBoard, currentUser.getId());
+        if (!hasAcess) {
             throw new ApiException(ErrorStatus._PERMISSION_DENIED);
         }
+        //권한 확인 후에 수정로직
         scheduleTodo.updateScheduleTodo(
                 scheduleTodoRequest.getTitle(),
                 scheduleTodoRequest.getContent(),
                 scheduleTodoRequest.getStartDate(),
                 scheduleTodoRequest.getEndDate()
         );
-
         return ScheduleTodoResponse.of(
                 scheduleTodo.getId(),
-                currentUser.getUsername(),
                 scheduleTodo.getTitle(),
                 scheduleTodo.getContent(),
                 scheduleTodo.getStartDate(),
                 scheduleTodo.getEndDate()
         );
-
     }
 
     @Transactional
     public void deleteScheduleTodo(Long scheduleTodoId, AuthUser authUser) {
         ScheduleTodo scheduleTodo = scheduleTodoRepository.findById(scheduleTodoId)
                 .orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_SCHEDULE_TODO));
-        ProjectWithTutor project = scheduleTodo.getScheduleBoard().getProjectWithTutor();
+
+        ScheduleBoard scheduleBoard = scheduleTodo.getScheduleBoard();
+        ProjectWithTutor projectWithTutor = scheduleBoard.getProjectWithTutor();
         User currentUser = userService.findByUserId(authUser.getId());
 
-        //권한 체크 : 일반 유저는 본인 글만, 튜터는 모두 삭제 가능
-        if (!currentUser.equals(scheduleTodo.getCreatedBy()) && !currentUser.equals(project.getUser())) {
+
+        // 튜터 권한 확인: 프로젝트 작성자(튜터)라면 모든 스케줄Todo 삭제 가능
+        if (currentUser.equals(projectWithTutor.getUser())) {
+            scheduleTodoRepository.delete(scheduleTodo);
+            return;
+        }
+        // 일반 유저의 권한 확인: BoardAssignment 통해 권한 확인
+        boolean hasAccess = boardAssignmentRepository.existsByScheduleBoardAndUserId(scheduleBoard, currentUser.getId());
+        if (!hasAccess) {
             throw new ApiException(ErrorStatus._PERMISSION_DENIED);
         }
+
         scheduleTodoRepository.delete(scheduleTodo);
     }
 

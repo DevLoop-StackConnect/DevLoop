@@ -2,7 +2,6 @@ package com.devloop.scheduleBoard.entity;
 
 import com.devloop.common.Timestamped;
 import com.devloop.pwt.entity.ProjectWithTutor;
-import com.devloop.user.entity.User;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,16 +19,16 @@ public class ScheduleBoard extends Timestamped {
     @JoinColumn(name = "project_with_tutor_id", nullable = false)
     private ProjectWithTutor projectWithTutor;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "manager_tutor_id", nullable = false)
-    private User managerTutor;//게시글 작성자(튜터)
+//    @OneToMany(mappedBy = "scheduleBoard", cascade = CascadeType.ALL, orphanRemoval = true)
+//    private List<BoardAssignment> boardAssignments = new ArrayList<>();
 
-    private ScheduleBoard(ProjectWithTutor projectWithTutor, User managerTutor) {
+    private ScheduleBoard(ProjectWithTutor projectWithTutor) {
         this.projectWithTutor = projectWithTutor;
-        this.managerTutor = managerTutor;
     }
 
-    public static ScheduleBoard of(ProjectWithTutor projectWithTutor, User managerTutor) {
-        return new ScheduleBoard(projectWithTutor, managerTutor);
+    public static ScheduleBoard of(ProjectWithTutor projectWithTutor) {
+        return new ScheduleBoard(projectWithTutor);
     }
+
+
 }
