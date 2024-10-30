@@ -1,8 +1,22 @@
-
 spring:
   profiles:
     active: local
 
+logging:
+  config: classpath:logback-spring.xml
+  level:
+    root: INFO
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,prometheus  # prometheus 추가
+  endpoint:
+    health:
+      show-details: always
+    prometheus:
+      enabled: true
 
 jwt:
   secret:
@@ -11,10 +25,10 @@ jwt:
 cloud:
   aws:
     credentials:
-      accessKey: ${AWS_ACCESS_KEY}
-      secretKey: ${AWS_SECRET_KEY}
+      accessKey: ${AWS_ACCESS_KEY_V2}
+      secretKey: ${AWS_SECRET_KEY_V2}
     s3:
-      bucketName: ${AWS_BUCKET_NAME}
+      bucketName: ${AWS_BUCKET_NAME_V2}
     region:
       static: ${AWS_REGION}
     stack:
