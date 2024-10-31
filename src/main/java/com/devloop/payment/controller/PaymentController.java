@@ -1,24 +1,46 @@
-//package com.devloop.payment.controller;
-//
-//import org.json.simple.JSONObject;
-//import org.json.simple.parser.JSONParser;
-//import org.springframework.stereotype.Controller;
-//import org.springframework.ui.Model;
-//import org.springframework.web.bind.annotation.GetMapping;
-//import org.springframework.web.bind.annotation.RequestMapping;
-//import org.springframework.web.bind.annotation.RequestParam;
-//import org.springframework.web.bind.annotation.RestController;
-//
-//import java.io.*;
-//import java.net.HttpURLConnection;
-//import java.net.URL;
-//import java.nio.charset.StandardCharsets;
-//import java.util.Base64;
-//
-//@Controller
+package com.devloop.payment.controller;
+
+import com.devloop.order.entity.Order;
+import com.devloop.order.service.OrderService;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.io.*;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
+
 //@RequestMapping(value="/")
-//public class PaymentController {
-//
+@Controller
+@RequiredArgsConstructor
+public class PaymentController {
+
+    private final OrderService orderService;
+
+    @GetMapping("/payments-request")
+    public String paymentsRequest(
+            @RequestParam("orderId") Long orderId,
+            Model model
+    ) {
+        Order order = orderService.findByOrderId(orderId);
+
+        // 모델에 필요한 속성 추가
+        model.addAttribute("orderRequestId", order.getOrderRequestId());
+        model.addAttribute("totalPrice", order.getTotalPrice());
+        model.addAttribute("customerKey", "customerKey-"+order.getUser().getUsername());
+
+        return "payment-request";   // payment-request.html 템플릿 렌더링
+    }
+
 //    @GetMapping(value = "success")
 //    public String paymentResult(
 //            Model model,
@@ -92,5 +114,5 @@
 //
 //        return "fail";
 //    }
-//
-//}
+
+}

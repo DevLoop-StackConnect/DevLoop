@@ -36,35 +36,31 @@ public class Order extends Timestamped {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private OrderStatus status;
+    private OrderStatus status = OrderStatus.WAIT;
 
     private Order(
             BigDecimal totalPrice,
             String orderRequestId,
             User user,
-            Cart cart,
-            OrderStatus status
+            Cart cart
     ) {
         this.totalPrice = totalPrice;
         this.orderRequestId = orderRequestId;
         this.user = user;
         this.cart = cart;
-        this.status = status;
     }
 
     public static Order of(
             BigDecimal totalPrice,
             String orderRequestId,
             User user,
-            Cart cart,
-            OrderStatus status
+            Cart cart
     ) {
         return new Order(
                 totalPrice,
                 orderRequestId,
                 user,
-                cart,
-                status
+                cart
         );
     }
 

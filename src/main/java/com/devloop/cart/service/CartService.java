@@ -113,4 +113,10 @@ public class CartService {
 
         return String.format("상품 [ %s ]가 장바구니에서 삭제되었습니다.", cartItem.getProduct().getTitle());
     }
+
+    // Utile method
+    public Cart findByUserId(Long userId) {
+        return cartRepository.findByUserId(userId)
+                .orElseThrow(()->new ApiException(ErrorStatus._NOT_FOUND_CART));
+    }
 }
