@@ -2,8 +2,7 @@ package com.devloop.lecturereview.controller;
 
 import com.devloop.common.AuthUser;
 import com.devloop.common.apipayload.ApiResponse;
-import com.devloop.lecture.request.SaveLectureRequest;
-import com.devloop.lecturereview.request.SaveLectureReviewRequest;
+import com.devloop.lecturereview.request.LectureReviewRequest;
 import com.devloop.lecturereview.service.LectureReviewService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -21,8 +20,20 @@ public class LectureReviewController {
     public ApiResponse<String> saveLectureReview(
             @AuthenticationPrincipal AuthUser authUser,
             @PathVariable("lectureId") Long lectureId,
-            @Valid @RequestBody SaveLectureReviewRequest saveLectureReviewRequest
+            @Valid @RequestBody LectureReviewRequest saveLectureReviewRequest
     ){
         return ApiResponse.ok(lectureReviewService.saveLectureReview(authUser,lectureId,saveLectureReviewRequest));
     }
+
+    //강의 후기 수정
+    @PatchMapping("/v2/lectures/{lectureId}/reviews/{reviewId}")
+    public ApiResponse<String> updateLectureReview(
+            @AuthenticationPrincipal AuthUser authUser,
+            @PathVariable("lectureId") Long lectureId,
+            @PathVariable("reviewId") Long reviewId,
+            @Valid @RequestBody LectureReviewRequest lectureReviewRequest
+    ){
+        return ApiResponse.ok(lectureReviewService.updateLectureReview(authUser,lectureId,reviewId,lectureReviewRequest));
+    }
+
 }

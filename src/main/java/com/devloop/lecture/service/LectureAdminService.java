@@ -27,7 +27,7 @@ public class LectureAdminService {
     public String changeApproval(Long lectureId) {
         //강의가 존재하는 지 확인
         Lecture lecture=lectureRepository.findById(lectureId).orElseThrow(()->
-                new ApiException(ErrorStatus._NOT_FOUND_Lecture));
+                new ApiException(ErrorStatus._NOT_FOUND_LECTURE));
 
         //강의 승인여부 상태 변경
         lecture.changeApproval(Approval.APPROVED);
