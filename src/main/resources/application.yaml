@@ -33,3 +33,9 @@ cloud:
       static: ${AWS_REGION}
     stack:
       auto: false
+
+
+toss:
+  payment:
+    secret:
+      key: ${TOSS_SECRET_KEY}
