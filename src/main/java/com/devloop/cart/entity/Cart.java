@@ -46,6 +46,10 @@ public class Cart extends Timestamped {
         item.assignCart(this);  // 양방향 관계 설정 메서드
     }
 
+    public void deleteItem(CartItem item) {
+        items.remove(item);
+    }
+
     // totaPrice 업데이트
     public void updateTotalPrice(BigDecimal totalPrice) {
         this.totalPrice = totalPrice;
