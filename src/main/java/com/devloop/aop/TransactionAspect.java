@@ -1,5 +1,7 @@
 package com.devloop.aop;
 
+import com.devloop.common.apipayload.status.ErrorStatus;
+import com.devloop.common.exception.ApiException;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -42,7 +44,7 @@ public class TransactionAspect {
             if (isTransactionalActive) {
                 log.error(" 트랜잭션 롤백 {}.{} 메서드 처리 중 오류 발생 : {} - {}", className, method.getName(), e.getClass().getSimpleName(), e.getMessage());
             }
-            throw e;
+            throw new ApiException(ErrorStatus._TRANSACTION_RUN_ERROR);
         } finally {
             if (isTransactionalActive) {
                 log.info(" 트랜잭션 종료 {}. {} 메서드 처리 완료", className, method.getName());

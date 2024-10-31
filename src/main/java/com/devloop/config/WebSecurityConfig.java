@@ -42,7 +42,9 @@ public class WebSecurityConfig {
                                 "/api/v1/auth/login",
                                 "/api/v1/auth/kakao/login",
                                 "/api/v1/main/search/**",
-                                "api/v1/pwts/**"
+                                "api/v1/pwts/**",
+                                "/actuator/**",
+                                "/api/v1/slack/**"
                         )
                         .permitAll()
                         .requestMatchers(
@@ -50,7 +52,8 @@ public class WebSecurityConfig {
                         )
                         .hasAnyAuthority(UserRole.authority.TUTOR, UserRole.authority.ADMIN)
                         .requestMatchers(
-                                "/api/v1/admin/**"
+                                "/api/v1/admin/**",
+                                "/actuator/**"
                         )
                         .hasAuthority(UserRole.authority.ADMIN)
                         .anyRequest().authenticated()

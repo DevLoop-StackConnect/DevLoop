@@ -1,11 +1,21 @@
 plugins {
 	id 'java'
-	id 'org.springframework.boot' version '3.3.4'
+	id 'org.springframework.boot' version '3.2.9'
 	id 'io.spring.dependency-management' version '1.1.6'
 }
 
 group = 'com.devloop'
 version = '0.0.1-SNAPSHOT'
+
+ext {
+	set('springCloudVersion', "2023.0.0")
+}
+
+dependencyManagement {
+	imports {
+		mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+	}
+}
 
 java {
 	toolchain {
@@ -62,9 +72,30 @@ dependencies {
 
 	// AOP
 	implementation 'org.springframework.boot:spring-boot-starter-aop'
+	implementation 'org.springframework.retry:spring-retry'
 
 	//logstash
 	implementation 'net.logstash.logback:logstash-logback-encoder:7.3'
+
+	//Actuator
+	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+
+	//prometheous
+	implementation 'io.micrometer:micrometer-registry-prometheus'
+
+	//redis
+	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
+
+	//slack
+	implementation("com.slack.api:bolt:1.44.1")
+	implementation("com.slack.api:bolt-servlet:1.44.1")
+	implementation("com.slack.api:bolt-jetty:1.44.1")
+	implementation("org.slf4j:slf4j-simple:1.7.36")
+
+	//feign
+	implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
+
 
 }
 

@@ -1,5 +1,7 @@
 package com.devloop.search.response;
 
+import com.devloop.common.apipayload.status.ErrorStatus;
+import com.devloop.common.exception.ApiException;
 import com.devloop.community.entity.Community;
 import com.devloop.party.entity.Party;
 import com.devloop.pwt.entity.ProjectWithTutor;
@@ -64,6 +66,6 @@ public class IntegrationSearchResponse {
                     .build();
         }
 
-        throw new IllegalArgumentException("Unsupported data type");
+        throw new ApiException(ErrorStatus._UNSUPPORTED_DATA_TYPE);
     }
 }

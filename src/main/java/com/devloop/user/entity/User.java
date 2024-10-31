@@ -2,6 +2,7 @@
 package com.devloop.user.entity;
 
 import com.devloop.common.Timestamped;
+import com.devloop.notification.entity.SlackUserMapping;
 import com.devloop.user.enums.LoginType;
 import com.devloop.user.enums.UserRole;
 import com.devloop.user.enums.UserStatus;
@@ -52,6 +53,13 @@ public class User extends Timestamped {
     @Column(nullable = true)
     private String loginId;
 
+    private String slackId;
+    private String slackEmail;
+    private boolean slackLinked;
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    private SlackUserMapping slackMapping;
+
     private User(String username, String email, String password, UserRole userRole) {
         this.username = username;
         this.email = email;
@@ -92,4 +100,18 @@ public class User extends Timestamped {
     public void setId(long id){
         this.id = id;
     }
+
+    public void updateSlackInfo(String slackId, String slackEmail) {
+        this.slackId = slackId;
+        this.slackEmail = slackEmail;
+        this.slackLinked = true;
+    }
+
+    public void unlinkSlack() {
+        this.slackId = null;
+        this.slackEmail = null;
+        this.slackLinked = false;
+
+    }
 }
+

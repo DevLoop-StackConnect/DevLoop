@@ -1,6 +1,5 @@
 package com.devloop.common.apipayload.dto;
 
-import com.devloop.common.enums.Approval;
 import com.devloop.pwt.enums.Level;
 import com.devloop.pwt.enums.ProjectWithTutorStatus;
 import com.devloop.user.entity.User;
@@ -22,4 +21,6 @@ public class ProjectWithTutorResponseDto {
     private final Integer maxParticipants;
     private final Level level;
     private final User user;
+
+    //pageImpl 생각해보기 (테스트 중 필요 시 생성)
 }

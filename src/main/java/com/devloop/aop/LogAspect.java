@@ -1,5 +1,7 @@
 package com.devloop.aop;
 
+import com.devloop.common.apipayload.status.ErrorStatus;
+import com.devloop.common.exception.ApiException;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -44,7 +46,7 @@ public class LogAspect {
             return result;
         } catch(Exception e){
             log.error("{}.{} 메서드 실행 중 오류 발생 : {} - {}",className, method.getName(),e.getClass().getSimpleName(),e.getMessage());
-            throw e;
+            throw new ApiException(ErrorStatus._METHOD_RUN_ERROR);
         }
     }
 }

@@ -72,6 +72,7 @@ public enum ErrorStatus implements BaseCode {
 
     //Search
     _BAD_SEARCH_KEYWORD(HttpStatus.BAD_REQUEST, "400", "검색 오류"),
+    _UNSUPPORTED_DATA_TYPE(HttpStatus.BAD_REQUEST, "400" , "데이터 타입이 올바르지 않습니다"),
 
     //Community
     _NOT_FOUND_COMMUNITY(HttpStatus.NOT_FOUND, "404", "존재하지 않는 게시글입니다"),
@@ -79,7 +80,27 @@ public enum ErrorStatus implements BaseCode {
     //S3
     _UNSUPPORTED_OBJECT_TYPE(HttpStatus.BAD_REQUEST,"400","지원하지 않는 객체입니다."),
     _STATUS_NOT_EXSIST(HttpStatus.BAD_REQUEST, "400", "잘못된 해결 상태 입력값입니다. 오타 및 해결상태 종류를 확인하세요"),
-    _CATEGORY_NOT_EXSIST(HttpStatus.BAD_REQUEST, "400", "잘못된 카테고리 입력값입니다. 오타 및 카테고리 종류를 확인하세요");
+    _CATEGORY_NOT_EXSIST(HttpStatus.BAD_REQUEST, "400", "잘못된 카테고리 입력값입니다. 오타 및 카테고리 종류를 확인하세요"),
+
+    //slack
+    _SLACK_API_ERROR(HttpStatus.BAD_REQUEST, "401", "Slack Api 호출 중 오류가 발생하였습니다."),
+    _NOTIFICATION_SEND_ERROR(HttpStatus.BAD_REQUEST, "400", "알림 전송이 실패하였습니다."),
+    _SLACK_USER_NOT_FOUND(HttpStatus.NOT_FOUND, "404", "Slack 사용자 정보 조회에 실패했습니다"),
+    _SLACK_NOT_LINKED(HttpStatus.BAD_REQUEST, "404", "슬랙과 연동되어 있지 않습니다."),
+    _SLACK_LINK_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "404", "Slack 계정과 연동이 실패하였습니다."),
+    _SLACK_UNLINK_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "404", "Slack 계정 연동 해제에 실패하였습니다."),
+    _SLACK_STATUS_CHECK_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "404", "Slack 연동 상태 확인이 실패하였습니다."),
+    _SLACK_EVENT_HANDLING_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "400", "Slack 이벤트 처리에 실패하였습니다."),
+    _INVALID_SLACK_USER(HttpStatus.INTERNAL_SERVER_ERROR, "403", "Slack에 검증되지 않은 유저입니다."),
+
+    //AOP
+    _METHOD_RUN_ERROR(HttpStatus.BAD_REQUEST, "400", "메서드 실행 중 오류가 발생하였습니다"),
+    _TRANSACTION_RUN_ERROR(HttpStatus.BAD_REQUEST, "400", "트랜잭션 처리 중 에러가 발생하였습니다."),
+    _INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR ,"400", "알림 생성에 실패하였습니다"),
+    _NOTIFICATION_QUEUE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "400", "알림 큐 처리에 실패하였습니다.");
+
+
+
 
 
 
