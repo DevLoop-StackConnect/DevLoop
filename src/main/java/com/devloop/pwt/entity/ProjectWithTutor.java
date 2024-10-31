@@ -10,7 +10,9 @@ import com.devloop.pwt.enums.ProjectWithTutorStatus;
 import com.devloop.user.entity.User;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 
 import java.math.BigDecimal;
@@ -18,19 +20,16 @@ import java.time.LocalDateTime;
 
 @Getter
 @Entity
-@RequiredArgsConstructor
-@Table
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ProjectWithTutor extends Product {
 
 
     @Enumerated(EnumType.STRING)
     private BoardType boardType = BoardType.PWT;
 
-
     @NotNull
     @Column(columnDefinition = "TEXT")
     private String description;
-
 
     @NotNull
     @Enumerated(EnumType.STRING)
