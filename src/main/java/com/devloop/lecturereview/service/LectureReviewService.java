@@ -8,10 +8,14 @@ import com.devloop.lecture.service.LectureService;
 import com.devloop.lecturereview.entity.LectureReview;
 import com.devloop.lecturereview.repository.LectureReviewRepository;
 import com.devloop.lecturereview.request.LectureReviewRequest;
+import com.devloop.lecturereview.response.LectureReviewResponse;
 import com.devloop.user.entity.User;
 import com.devloop.user.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -61,5 +65,23 @@ public class LectureReviewService {
         lectureReview.update(lectureReviewRequest);
 
         return String.format("%s 님의 댓글이 수정되었습니다",user.getUsername());
+    }
+
+    //댓글 다건 조회
+    public Page<LectureReviewResponse> getLectureReviewList(Long lectureId, int page, int size) {
+        Pageable pageable= PageRequest.of(page-1,size);
+
+        //강의가 존재하는 지 확인
+        Lecture lecture=lectureService.findById(lectureId);
+
+        Page<LectureReview> lectureReviews=lectureReviewRepository.findByLectureId(lecture.getId(),pageable);
+
+        //후기 리스트 조회
+         return lectureReviews.map(lectureReview -> {
+             return LectureReviewResponse.of(
+                     lectureReview.getUser().getUsername(),
+                     lectureReview.getReview(),
+                     lectureReview.getRating());
+         });
     }
 }

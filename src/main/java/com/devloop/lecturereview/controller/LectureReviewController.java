@@ -3,9 +3,11 @@ package com.devloop.lecturereview.controller;
 import com.devloop.common.AuthUser;
 import com.devloop.common.apipayload.ApiResponse;
 import com.devloop.lecturereview.request.LectureReviewRequest;
+import com.devloop.lecturereview.response.LectureReviewResponse;
 import com.devloop.lecturereview.service.LectureReviewService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -34,6 +36,16 @@ public class LectureReviewController {
             @Valid @RequestBody LectureReviewRequest lectureReviewRequest
     ){
         return ApiResponse.ok(lectureReviewService.updateLectureReview(authUser,lectureId,reviewId,lectureReviewRequest));
+    }
+
+    //강의 후기 다건 조회
+    @GetMapping("/v2/search/lectures/{lectureId}/reviews")
+    public ApiResponse<Page<LectureReviewResponse>> getLectureReviewList(
+            @PathVariable("lectureId") Long lectureId,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size
+    ){
+        return ApiResponse.ok(lectureReviewService.getLectureReviewList(lectureId,page,size));
     }
 
 }
