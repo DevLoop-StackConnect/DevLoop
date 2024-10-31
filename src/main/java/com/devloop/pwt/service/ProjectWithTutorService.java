@@ -116,7 +116,7 @@ public class ProjectWithTutorService {
         Page<ProjectWithTutorResponseDto> projectWithTutors = projectWithTutorRepository.findAllApprovedProjectWithTutor(Approval.APPROVED, pageable);
 
         // 값이 비어있을때 예외 처리
-        if(projectWithTutors.getContent().isEmpty()) {
+        if(projectWithTutors.isEmpty()) {
             throw new ApiException(ErrorStatus._NOT_FOUND_PROJECT_WITH_TUTOR);
         }
 
