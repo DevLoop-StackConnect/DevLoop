@@ -48,4 +48,13 @@ public class LectureReviewController {
         return ApiResponse.ok(lectureReviewService.getLectureReviewList(lectureId,page,size));
     }
 
+    //강의 후기 삭제
+    @DeleteMapping("/v2/lectures/{lectureId}/reviews/{reviewId}")
+    public ApiResponse<String> deleteLectureReview(
+            @AuthenticationPrincipal AuthUser authUser,
+            @PathVariable("lectureId") Long lectureId,
+            @PathVariable("reviewId") Long reviewId
+    ){
+        return ApiResponse.ok(lectureReviewService.deleteLectureReview(authUser,lectureId,reviewId));
+    }
 }

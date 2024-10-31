@@ -47,9 +47,6 @@ public class LectureReviewService {
     //강의 후기 수정
     @Transactional
     public String updateLectureReview(AuthUser authUser, Long lectureId, Long reviewId, @Valid LectureReviewRequest lectureReviewRequest) {
-        //유저가 존재하는 지 확인
-        User user=userService.findByUserId(authUser.getId());
-
         //강의가 존재하는 지 확인
         Lecture lecture=lectureService.findById(lectureId);
 
@@ -64,10 +61,10 @@ public class LectureReviewService {
 
         lectureReview.update(lectureReviewRequest);
 
-        return String.format("%s 님의 댓글이 수정되었습니다",user.getUsername());
+        return String.format("%s 님의 댓글이 수정되었습니다",lectureReview.getUser().getUsername());
     }
 
-    //댓글 다건 조회
+    //후기 다건 조회
     public Page<LectureReviewResponse> getLectureReviewList(Long lectureId, int page, int size) {
         Pageable pageable= PageRequest.of(page-1,size);
 
@@ -83,5 +80,25 @@ public class LectureReviewService {
                      lectureReview.getReview(),
                      lectureReview.getRating());
          });
+    }
+
+    //강의 후기 삭제
+    @Transactional
+    public String deleteLectureReview(AuthUser authUser, Long lectureId, Long reviewId) {
+        //강의가 존재하는 지 확인
+        Lecture lecture=lectureService.findById(lectureId);
+
+        //강의 후기가 존재하는 지 확인
+        LectureReview lectureReview=lectureReviewRepository.findById(reviewId).orElseThrow(()->
+                new ApiException(ErrorStatus._NOT_FOUND_LECTURE_REVIEW));
+
+        //후기를 작성한 유저가 맞는 지 확인
+        if(!authUser.getId().equals(lectureReview.getUser().getId())){
+            throw new ApiException((ErrorStatus._PERMISSION_DENIED));
+        }
+
+        lectureReviewRepository.delete(lectureReview);
+
+        return String.format("%s 님의 댓글이 삭제되었습니다",lectureReview.getUser().getUsername());
     }
 }
