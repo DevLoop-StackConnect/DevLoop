@@ -49,6 +49,11 @@ public class ProjectWithTutorAdminService {
         // PWT 첨부파일 객체 가져오기
         PWTAttachment pwtAttachment = pwtAttachmentService.findPwtAttachmentByPwtId(projectWithTutor.getId());
 
+        // null 예외 처리
+        if(pwtAttachment == null) {
+            throw new ApiException(ErrorStatus._ATTACHMENT_NOT_FOUND);
+        }
+
         UserResponseDto userResponseDto = UserResponseDto.of(
                 projectWithTutor.getUser().getUsername(),
                 projectWithTutor.getUser().getEmail()
