@@ -40,13 +40,8 @@ public class SlackMappingService {
         user.updateSlackInfo(slackId, slackEmail);
     }
 
-    public String getSlackId(Long userId) {
-        return mappingRepository.findByUserIdAndActiveTrue(userId)
-                .map(SlackUserMapping::getSlackId)
-                .orElseThrow(() -> new ApiException(ErrorStatus._SLACK_NOT_LINKED));
-    }
-
     @Transactional
+    //Slack 사용자의 채널 가입 처리
     public void handleSlackJoin(String slackEmail) {
         try {
             SlackUserResponse slackUser = slackUserService.findByEmail(slackEmail);
@@ -91,11 +86,5 @@ public class SlackMappingService {
             log.error("Slack 연동 상태 확인 실패. userId: {}", userId);
             return false;
         }
-    }
-
-    // 매핑 정보 조회 메서드 추가
-    public SlackUserMapping getCurrentMapping(Long userId) {
-        return mappingRepository.findByUserIdAndActiveTrue(userId)
-                .orElseThrow(() -> new ApiException(ErrorStatus._SLACK_NOT_LINKED));
     }
 }

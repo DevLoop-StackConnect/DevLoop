@@ -52,8 +52,8 @@ public class SlackTestController {
                     .type(NotificationType.ERROR)
                     .notificationTarget("#error-monitoring")
                     .data(Map.of(
-                            "method", "테스트 메서드",
-                            "error", "테스트 에러 메시지",
+                            "method", "🔔🔔테스트 메서드",
+                            "error", "🔔🔔테스트 에러 메시지",
                             "timestamp", LocalDateTime.now().toString()
                     ))
                     .timestamp(LocalDateTime.now())
@@ -74,8 +74,8 @@ public class SlackTestController {
                     .type(NotificationType.WORKSPACE_JOIN)
                     .notificationTarget("#general")
                     .data(Map.of(
-                            "username", "테스트 사용자",
-                            "workspace", "DevLoop"
+                            "username", "🔔🔔테스트 사용자",
+                            "workspace", "🔔🔔DevLoop"
                     ))
                     .timestamp(LocalDateTime.now())
                     .build();

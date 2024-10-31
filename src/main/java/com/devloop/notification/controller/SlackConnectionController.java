@@ -18,15 +18,19 @@ import java.util.Map;
 @RequestMapping("/api/v1/slack/connection")
 @Slf4j
 public class SlackConnectionController {
+    //Slack 계정 매핑 관련 로직 처리하는 서비스
     private final SlackMappingService slackMappingService;
+    //Slack 애플리케이션 관련 로직을 처리하는 서비스
     private final SlackAppService slackAppService;
 
     @PostMapping("/link")
+    //Slack 연동 메서드
     public ApiResponse linkSlackAccount(
-            @AuthenticationPrincipal Long userId,
-            @RequestBody SlackLinkRequest request
+            @AuthenticationPrincipal Long userId, //인증된 사용자의 Id 주입
+            @RequestBody SlackLinkRequest request //클라이언트 요청에서 Slakc 연동 요청 데이터 주입
     ) {
         try {
+            //Slack 계정을 검증하고 연동하는 메서드 호출
             slackAppService.verifyAndLinkAccount(
                     userId,
                     request.getSlackId(),
@@ -40,6 +44,7 @@ public class SlackConnectionController {
     }
 
     @PostMapping("/unlink")
+    //Slack 연동 해제 메서드
     public ApiResponse unlinkSlackAccount(@AuthenticationPrincipal Long userId) {
         try {
             slackMappingService.unlinkSlackAccount(userId);
@@ -51,8 +56,10 @@ public class SlackConnectionController {
     }
 
     @GetMapping("/status")
+    // 슬랙 계정 연동 상태 확인
     public ApiResponse checkConnectionStatus(@AuthenticationPrincipal Long userId) {
         try {
+            //Slack 연동 여부 확인
             boolean isLinked = slackMappingService.isSlackLinked(userId);
             return ApiResponse.success(Map.of("isLinked", isLinked));
         } catch (Exception e) {

@@ -19,10 +19,13 @@ public class SlackUserService {
     private final SlackFeignClient slackFeignClient;
     private final ObjectMapper objectMapper;
 
+    //캐시를 사용해서 Slack 사용자 ID를 저장
     @Cacheable(value = "slackUsers", key = "#userId", unless = "#result == null")
     public String getSlackUserId(String userId) {
         try {
+            //Slack Api를 통해 이메일로 사용자 정보 가져오기
             Object userInfo = slackFeignClient.getUserInfo(userId);
+            //추출 및 반환
             return extractSlackUserId(userInfo);
         } catch (Exception e) {
             log.error("Slack 사용자 정보 조회 실패: {}", e.getMessage());
@@ -40,6 +43,7 @@ public class SlackUserService {
         }
     }
 
+    //Slack Api응답에서 사용자 Id 추출
     private String extractSlackUserId(Object userInfo) {
         try {
             SlackUserResponse response = objectMapper.convertValue(userInfo, SlackUserResponse.class);
@@ -59,7 +63,7 @@ public class SlackUserService {
             throw new ApiException(ErrorStatus._SLACK_API_ERROR);
         }
     }
-
+    //Slack 사용자 검증 메서드
     public boolean verifySlackUser(String slackId) {
         try {
             Object userInfo = slackFeignClient.getUserInfo(slackId);

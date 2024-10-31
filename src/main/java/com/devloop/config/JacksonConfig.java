@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
+//Jackson 라이브러리 관련 설정 담당 (Java 8 시간 관련 모듈 위해)
 public class JacksonConfig {
     @Bean
     public ObjectMapper objectMapper() {

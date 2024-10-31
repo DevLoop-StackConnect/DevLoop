@@ -15,35 +15,32 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 public class RedisConfig {
 
     @Bean
-    public RedisTemplate<String, NotificationMessage> redisTemplate(RedisConnectionFactory connectionFactory) {
-        RedisTemplate<String, NotificationMessage> template = new RedisTemplate<>();
-        template.setConnectionFactory(connectionFactory);
-
-        // ObjectMapper 설정
+    // Redis에서 사용할 ObjectMapper 설정 메서드
+    public ObjectMapper redisObjectMapper() {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
         objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+        return objectMapper;
+    }
 
-        // JSON Serializer 설정
-        GenericJackson2JsonRedisSerializer serializer = new GenericJackson2JsonRedisSerializer(objectMapper);
+    @Bean
+    // RedisTemplate 설정 메서드
+    public RedisTemplate<String, NotificationMessage> redisTemplate(
+            RedisConnectionFactory connectionFactory,
+            ObjectMapper redisObjectMapper) {
 
-        // Key, Value Serializer 설정
+        RedisTemplate<String, NotificationMessage> template = new RedisTemplate<>();
+        template.setConnectionFactory(connectionFactory);
+
+        GenericJackson2JsonRedisSerializer serializer =
+                new GenericJackson2JsonRedisSerializer(redisObjectMapper);
+
         template.setKeySerializer(new StringRedisSerializer());
         template.setValueSerializer(serializer);
         template.setHashKeySerializer(new StringRedisSerializer());
         template.setHashValueSerializer(serializer);
 
         template.afterPropertiesSet();
-
         return template;
-    }
-
-    @Bean
-    public GenericJackson2JsonRedisSerializer genericJackson2JsonRedisSerializer() {
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.registerModule(new JavaTimeModule());
-        objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
-
-        return new GenericJackson2JsonRedisSerializer(objectMapper);
     }
 }

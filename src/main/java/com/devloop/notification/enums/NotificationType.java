@@ -7,13 +7,13 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public enum NotificationType {
-    WORKSPACE_JOIN("#general"),
+    WORKSPACE_JOIN("#데브루프"),
     PAYMENT("@{userId}"),
-    INQUIRY("#admin-inquiries"),
-    ERROR("#error-monitoring"),
+    INQUIRY("#문의-채널"),
+    ERROR("#에러-모니터링"),
     COMMUNITY_COMMENT("@{userId}"),
     PARTY_COMMENT("@{userId}"),
-    GENERAL("#general");
+    GENERAL("#데브루프");
 
     private final String channelFormat;
 

@@ -13,12 +13,18 @@ import java.util.Map;
 
 @Data
 @Builder
+//Slack 등의 알림 메시지를 표현하는 DTO
 public class NotificationMessage {
+    //알림 유형
     private NotificationType type;
+    //알림 전송 대상(채널)
     private String notificationTarget;
+    //알림 관련 data
     private Map<String, Object> data;
 
+    //Json 역직렬화
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
+    //Json 직렬화
     @JsonSerialize(using = LocalDateTimeSerializer.class)
     private LocalDateTime timestamp;
 }
