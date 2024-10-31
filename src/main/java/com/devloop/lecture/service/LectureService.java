@@ -1,10 +1,12 @@
 package com.devloop.lecture.service;
 
+import com.devloop.attachment.s3.S3Service;
 import com.devloop.common.AuthUser;
 import com.devloop.common.apipayload.status.ErrorStatus;
 import com.devloop.common.enums.Approval;
 import com.devloop.common.exception.ApiException;
 import com.devloop.lecture.entity.Lecture;
+import com.devloop.lecture.entity.LectureVideo;
 import com.devloop.lecture.repository.LectureRepository;
 import com.devloop.lecture.request.SaveLectureRequest;
 import com.devloop.lecture.request.UpdateLectureRequest;
@@ -21,12 +23,17 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class LectureService {
     private final LectureRepository lectureRepository;
     private final UserService userService;
+    private final LectureVideoService lectureVideoService;
+    private final S3Service s3Service;
 
     //강의 등록 (유저의 권한이 TUTOR일 경우에만 가능)
     @Transactional
@@ -128,6 +135,17 @@ public class LectureService {
             throw new ApiException(ErrorStatus._HAS_NOT_ACCESS_PERMISSION);
         }
 
+        //영상리스트 있는 지 확인 및 삭제
+        Optional<List<LectureVideo>> lectureVideoList=lectureVideoService.findLectureVideoByLectureId(lectureId);
+
+        lectureVideoList.ifPresent(lectureVideos -> lectureVideos.forEach(video -> {
+            //S3 영상 파일 삭제
+            s3Service.delete(video.getFileName());
+            //데이터베이스에서 삭제
+            lectureVideoService.deleteLectureVideo(video);
+        }));
+
+        //강의 삭제
         lectureRepository.delete(lecture);
 
         return String.format("%s 강의를 삭제하였습니다.", lecture.getTitle());
@@ -138,4 +156,6 @@ public class LectureService {
         return lectureRepository.findById(lectureId).orElseThrow(()->
                 new ApiException(ErrorStatus._NOT_FOUND_LECTURE));
     }
+
+
 }

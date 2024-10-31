@@ -1,5 +1,6 @@
 package com.devloop.lecture.service;
 
+import com.amazonaws.AmazonServiceException;
 import com.devloop.common.AuthUser;
 import com.devloop.common.apipayload.status.ErrorStatus;
 import com.devloop.common.exception.ApiException;
@@ -158,5 +159,14 @@ public class LectureVideoService {
         return response.uploadId();
     }
 
+
+    //Util
+    public Optional<List<LectureVideo>> findLectureVideoByLectureId(Long lectureId){
+       return lectureVideoRepository.findAllByLectureId(lectureId);
+    }
+
+    public void deleteLectureVideo(LectureVideo lectureVideo){
+        lectureVideoRepository.delete(lectureVideo);
+    }
 
 }

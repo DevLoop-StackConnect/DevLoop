@@ -67,6 +67,7 @@ public enum ErrorStatus implements BaseCode {
     //Lecture
     _NOT_FOUND_LECTURE(HttpStatus.NOT_FOUND, "404", "존재하지 않는 강의입니다"),
     _NOT_FOUND_LECTURE_REVIEW(HttpStatus.NOT_FOUND,"404","존재하지 않는 강의 후기 입니다"),
+    _NOT_FOUND_LECTURE_VIDEO(HttpStatus.NOT_FOUND,"404","존재하지 않는 영상 입니다"),
 
     //S3
     _S3_UPLOAD_ERROR(HttpStatus.INTERNAL_SERVER_ERROR,"500","영상 업로드 중 실패하였습니다"),
