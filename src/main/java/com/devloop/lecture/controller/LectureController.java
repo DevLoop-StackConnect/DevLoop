@@ -6,6 +6,8 @@ import com.devloop.lecture.request.SaveLectureRequest;
 import com.devloop.lecture.request.UpdateLectureRequest;
 import com.devloop.lecture.response.LectureDetailResponse;
 import com.devloop.lecture.response.LectureListResponse;
+import com.devloop.lecture.response.SaveLectureResponse;
+import com.devloop.lecture.response.UpdateLectureResponse;
 import com.devloop.lecture.service.LectureService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -20,7 +22,7 @@ public class LectureController {
 
     //강의 데이터 생성 (일반 사용자 접근 불가)
     @PostMapping("/v2/tutor/lectures")
-    public ApiResponse<String> saveLecture(
+    public ApiResponse<SaveLectureResponse> saveLecture(
             @AuthenticationPrincipal AuthUser authUser,
             @RequestBody SaveLectureRequest saveLectureRequest
     ){
@@ -29,7 +31,7 @@ public class LectureController {
 
     //강의 수정 (일반 사용자 접근 불가)
     @PatchMapping("/v2/tutor/lectures/{lectureId}")
-    public ApiResponse<String> updateLecture(
+    public ApiResponse<UpdateLectureResponse> updateLecture(
             @AuthenticationPrincipal AuthUser authUser,
             @PathVariable("lectureId") Long lectureId,
             @RequestBody UpdateLectureRequest updateLectureRequest
@@ -37,7 +39,7 @@ public class LectureController {
         return ApiResponse.ok(lectureService.updateLecture(authUser,lectureId,updateLectureRequest));
     }
 
-    //강의 단건 조회 (승인이 완료된 강의)
+    //강의 단건 조회 (승인이 완료된 강의만 조회)
     @GetMapping("/v2/search/lectures/{lectureId}")
     public ApiResponse<LectureDetailResponse> getLecture(
             @PathVariable("lectureId") Long lectureId
@@ -45,7 +47,7 @@ public class LectureController {
         return ApiResponse.ok(lectureService.getLecture(lectureId));
     }
 
-    //강의 다건 조회
+    //강의 다건 조회 (승인이 완료된 강의만 조회)
     @GetMapping("/v2/search/lectures")
     public ApiResponse<Page<LectureListResponse>> getLectureList(
             @RequestParam(required = false) String title,

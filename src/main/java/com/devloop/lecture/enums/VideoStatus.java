@@ -9,7 +9,7 @@ public enum VideoStatus {
     FAILED("업로드 실패"),
     PENDING("업로드 전"),
     IN_PROGRESS("업로드 중"),
-    COMPLETED("업로드 성공");
+    COMPLETED("업로드 완료");
 
     private final String status;
 }
