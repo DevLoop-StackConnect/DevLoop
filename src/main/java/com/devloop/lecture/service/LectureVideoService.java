@@ -31,7 +31,7 @@ public class LectureVideoService {
     private final LectureRepository lectureRepository;
     private final LectureVideoRepository lectureVideoRepository;
 
-    @Value("${cloud.aws.s3.bucket}")
+    @Value("${cloud.aws.s3.bucketName}")
     private String bucketName;
 
     //Upload Id 반환

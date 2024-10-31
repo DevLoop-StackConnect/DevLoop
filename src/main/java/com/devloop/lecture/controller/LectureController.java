@@ -19,7 +19,7 @@ public class LectureController {
     private final LectureService lectureService;
 
     //강의 데이터 생성 (일반 사용자 접근 불가)
-    @PostMapping("/v2/lectures")
+    @PostMapping("/v2/tutor/lectures")
     public ApiResponse<String> saveLecture(
             @AuthenticationPrincipal AuthUser authUser,
             @RequestBody SaveLectureRequest saveLectureRequest
@@ -28,7 +28,7 @@ public class LectureController {
     }
 
     //강의 수정 (일반 사용자 접근 불가)
-    @PatchMapping("/v2/lectures/{lectureId}")
+    @PatchMapping("/v2/tutor/lectures/{lectureId}")
     public ApiResponse<String> updateLecture(
             @AuthenticationPrincipal AuthUser authUser,
             @PathVariable("lectureId") Long lectureId,
@@ -57,7 +57,7 @@ public class LectureController {
 
 
     //강의 삭제
-    @DeleteMapping("/v2/lectures/{lectureId}")
+    @DeleteMapping("/v2/tutor/lectures/{lectureId}")
     public ApiResponse<String> deleteLecture(
             @AuthenticationPrincipal AuthUser authUser,
             @PathVariable("lectureId") Long lectureId
