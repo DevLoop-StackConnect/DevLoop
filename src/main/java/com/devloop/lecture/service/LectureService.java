@@ -52,7 +52,7 @@ public class LectureService {
 
         //강의가 존재하는 지 확인
         Lecture lecture=lectureRepository.findById(lectureId).orElseThrow(()->
-                new ApiException(ErrorStatus._NOT_FOUND_Lecture));
+                new ApiException(ErrorStatus._NOT_FOUND_LECTURE));
 
         //강의 등록한 유저 인지 확인
         if(!user.getId().equals(lecture.getUser().getId())){
@@ -69,7 +69,7 @@ public class LectureService {
     public LectureDetailResponse getLecture(Long lectureId) {
         //강의가 존재하는 지 확인
         Lecture lecture=lectureRepository.findById(lectureId).orElseThrow(()->
-                new ApiException(ErrorStatus._NOT_FOUND_Lecture));
+                new ApiException(ErrorStatus._NOT_FOUND_LECTURE));
 
         //강의가 승인이 되었는 지 확인
         if(!lecture.getApproval().equals(Approval.APPROVED)){
@@ -116,7 +116,7 @@ public class LectureService {
 
         //강의가 존재하는 지 확인
         Lecture lecture=lectureRepository.findById(lectureId).orElseThrow(()->
-                new ApiException(ErrorStatus._NOT_FOUND_Lecture));
+                new ApiException(ErrorStatus._NOT_FOUND_LECTURE));
 
         //강의 등록한 유저 인지 확인
         if(!user.getId().equals(lecture.getUser().getId())){
@@ -131,6 +131,6 @@ public class LectureService {
     //Util
     public Lecture findById(Long lectureId){
         return lectureRepository.findById(lectureId).orElseThrow(()->
-                new ApiException(ErrorStatus._NOT_FOUND_Lecture));
+                new ApiException(ErrorStatus._NOT_FOUND_LECTURE));
     }
 }

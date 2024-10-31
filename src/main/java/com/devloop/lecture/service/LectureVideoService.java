@@ -79,7 +79,7 @@ public class LectureVideoService {
     public String completeMultipartUpload(Long lectureId, MultipartUploadCompleteRequest uploadCompleteRequest) throws MalformedURLException {
         //강의가 존재하는 지 확인
         Lecture lecture=lectureRepository.findById(lectureId).orElseThrow(()->
-                new ApiException(ErrorStatus._NOT_FOUND_Lecture));
+                new ApiException(ErrorStatus._NOT_FOUND_LECTURE));
 
         //각 파트를 CompletedPart 객체로 변환, 멀티파트 업로드를 완료할 때 필요한 데이터
         List<CompletedPart> completedParts=uploadCompleteRequest.getParts().stream()
