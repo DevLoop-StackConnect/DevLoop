@@ -1,14 +1,12 @@
 package com.devloop.cart.controller;
 
+import com.devloop.cart.response.CartResponse;
 import com.devloop.cart.service.CartService;
 import com.devloop.common.AuthUser;
 import com.devloop.common.apipayload.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -24,6 +22,16 @@ public class CartController {
             @PathVariable Long productId
     ) {
         return ApiResponse.ok(cartService.addItemToCart(authUser, productId));
+    }
+
+    // 장바구니에 담긴 상품 조회 (다건 조회)
+    @GetMapping("/v2/carts")
+    public ApiResponse<CartResponse> getAllCartItems(
+            @AuthenticationPrincipal AuthUser authUser,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        return ApiResponse.ok(cartService.getAllCartItems(authUser, page, size));
     }
 
 }
