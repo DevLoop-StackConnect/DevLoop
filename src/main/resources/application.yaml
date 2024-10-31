@@ -2,10 +2,10 @@ spring:
   profiles:
     active: local
 
-logging:
-  config: classpath:logback-spring.xml
-  level:
-    root: INFO
+##logging:
+##  config: classpath:logback-spring.xml
+#  level:
+#    root: INFO
 
 management:
   endpoints:

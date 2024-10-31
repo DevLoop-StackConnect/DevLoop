@@ -3,7 +3,6 @@ import com.devloop.common.apipayload.ApiResponse;
 import com.devloop.lecture.request.MultipartUploadCompleteRequest;
 import com.devloop.lecture.service.LectureVideoService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.MalformedURLException;
@@ -51,7 +50,7 @@ public class LectureVideoController {
      * @param uploadCompleteRequest
      * @return
      */
-    @PostMapping("/v2/lecture/{lectureId}/videos/complete-multipart-upload")
+    @PostMapping("/v2/lectures/{lectureId}/videos/complete-multipart-upload")
     public ApiResponse<String> completeMultipartUpload(
             @PathVariable("lectureId") Long lectureId,
             @RequestBody MultipartUploadCompleteRequest uploadCompleteRequest

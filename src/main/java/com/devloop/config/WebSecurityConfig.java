@@ -44,6 +44,8 @@ public class WebSecurityConfig {
                                 "/api/v1/main/search/**",
                                 "/api/v2/search/**",
                                 "/api/v1/search/**",
+                                "/api/v2/videos/**",
+                                "/api/v2/lectures/**",
                                 "api/v1/pwts/**"
                         )
                         .permitAll()
