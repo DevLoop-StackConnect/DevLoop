@@ -34,4 +34,13 @@ public class CartController {
         return ApiResponse.ok(cartService.getAllCartItems(authUser, page, size));
     }
 
+    // 장바구니에 담긴 상품 삭제
+    @DeleteMapping("/v2/carts/products/{productId}")
+    public ApiResponse<String> deleteItemFromCart(
+            @AuthenticationPrincipal AuthUser authUser,
+            @PathVariable("productId") Long productId
+    ){
+        return ApiResponse.ok(cartService.deleteItemFromCart(authUser, productId));
+    }
+
 }
