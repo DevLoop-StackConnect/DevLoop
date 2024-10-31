@@ -127,4 +127,10 @@ public class LectureService {
 
         return String.format("%s 강의를 삭제하였습니다.", lecture.getTitle());
     }
+
+    //Util
+    public Lecture findById(Long lectureId){
+        return lectureRepository.findById(lectureId).orElseThrow(()->
+                new ApiException(ErrorStatus._NOT_FOUND_Lecture));
+    }
 }
