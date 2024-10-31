@@ -114,10 +114,10 @@ public class ProjectWithTutorService {
 
 
         Page<ProjectWithTutorResponseDto> projectWithTutors = projectWithTutorRepository.findAllApprovedProjectWithTutor(Approval.APPROVED, pageable)
-                .filter(p->!p.isEmpty())
+                .filter(p -> !p.isEmpty())
                 .orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_PROJECT_WITH_TUTOR));
 
-        return projectWithTutors.map(p->ProjectWithTutorListResponse.of(
+        return projectWithTutors.map(p -> ProjectWithTutorListResponse.of(
                 p.getId(),
                 p.getTitle(),
                 p.getPrice(),
@@ -150,20 +150,18 @@ public class ProjectWithTutorService {
         }
 
         // 추가된 파일이 있는지 확인
-        if(file != null && !file.isEmpty()) {
+        if (file != null && !file.isEmpty()) {
             // PWT 첨부파일 객체 가져오기
             PWTAttachment pwtAttachment = pwtAttachmentService.findPwtAttachmentByPwtId(projectWithTutor.getId());
 
-            if(pwtAttachment == null){
+            if (pwtAttachment == null) {
                 s3Service.uploadFile(file, user, projectWithTutor);
-            }else{
+            } else {
                 // PWT 첨부파일 수정
                 s3Service.updateUploadFile(file, pwtAttachment, projectWithTutor);
             }
 
         }
-
-
 
         // 변경사항 업데이트
         projectWithTutor.update(
@@ -214,13 +212,13 @@ public class ProjectWithTutorService {
     /**
      * Search에서 사용
      */
-    public List<IntegrationSearchResponse> getProjectWithTutor(Specification<ProjectWithTutor> spec){
+    public List<IntegrationSearchResponse> getProjectWithTutor(Specification<ProjectWithTutor> spec) {
         List<ProjectWithTutor> pwts = projectWithTutorRepository.findAll(spec);
         return SearchResponseUtil.wrapResponse(BoardType.PWT, pwts);
     }
 
-    public Page<IntegrationSearchResponse> getProjectWithTutorPage(Specification<ProjectWithTutor> spec, PageRequest pageable){
-        Page<ProjectWithTutor> pwtPage = projectWithTutorRepository.findAll(spec,pageable);
+    public Page<IntegrationSearchResponse> getProjectWithTutorPage(Specification<ProjectWithTutor> spec, PageRequest pageable) {
+        Page<ProjectWithTutor> pwtPage = projectWithTutorRepository.findAll(spec, pageable);
         List<IntegrationSearchResponse> response = SearchResponseUtil.wrapResponse(
                 BoardType.PWT, pwtPage.getContent()
         );
