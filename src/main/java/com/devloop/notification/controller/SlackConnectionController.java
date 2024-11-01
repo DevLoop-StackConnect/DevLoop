@@ -4,8 +4,7 @@ import com.devloop.common.apipayload.ApiResponse;
 import com.devloop.common.apipayload.status.ErrorStatus;
 import com.devloop.common.exception.ApiException;
 import com.devloop.notification.request.SlackLinkRequest;
-import com.devloop.notification.service.SlackAppService;
-import com.devloop.notification.service.SlackMappingService;
+import com.devloop.notification.service.SlackAccountService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -19,9 +18,7 @@ import java.util.Map;
 @Slf4j
 public class SlackConnectionController {
     //Slack 계정 매핑 관련 로직 처리하는 서비스
-    private final SlackMappingService slackMappingService;
-    //Slack 애플리케이션 관련 로직을 처리하는 서비스
-    private final SlackAppService slackAppService;
+    private final SlackAccountService slackAccountService;
 
     @PostMapping("/link")
     //Slack 연동 메서드
@@ -31,7 +28,7 @@ public class SlackConnectionController {
     ) {
         try {
             //Slack 계정을 검증하고 연동하는 메서드 호출
-            slackAppService.verifyAndLinkAccount(
+            slackAccountService.verifyAndLinkAccount(
                     userId,
                     request.getSlackId(),
                     request.getSlackEmail()
@@ -47,7 +44,7 @@ public class SlackConnectionController {
     //Slack 연동 해제 메서드
     public ApiResponse unlinkSlackAccount(@AuthenticationPrincipal Long userId) {
         try {
-            slackMappingService.unlinkSlackAccount(userId);
+            slackAccountService.unlinkSlackAccount(userId);
             return ApiResponse.success();
         } catch (Exception e) {
             log.error("Slack 계정 연동 해제 실패", e);
@@ -60,7 +57,7 @@ public class SlackConnectionController {
     public ApiResponse checkConnectionStatus(@AuthenticationPrincipal Long userId) {
         try {
             //Slack 연동 여부 확인
-            boolean isLinked = slackMappingService.isSlackLinked(userId);
+            boolean isLinked = slackAccountService.isSlackLinked(userId);
             return ApiResponse.success(Map.of("isLinked", isLinked));
         } catch (Exception e) {
             log.error("Slack 연동 상태 확인 실패", e);

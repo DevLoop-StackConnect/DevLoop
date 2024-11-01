@@ -1,7 +1,7 @@
 package com.devloop.notification.controller;
 
 import com.devloop.config.SlackProperties;
-import com.devloop.notification.service.SlackAppService;
+import com.devloop.notification.service.SlackAccountService;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v1/slack/events")  // 이대로 유지
 @Slf4j
 public class SlackEventController {
-    private final SlackAppService slackAppService;
+    private final SlackAccountService slackAccountService;
     private final SlackProperties slackProperties;
     private final ObjectMapper objectMapper;
 
@@ -43,7 +43,7 @@ public class SlackEventController {
         // 이벤트 처리
         try {
             //slack 이벤트를 서비스 처리
-            slackAppService.handleSlackEvent(event);
+            slackAccountService.handleSlackEvent(event);
             return ResponseEntity.ok().build();
         } catch (Exception e) {
             log.error("Slack 이벤트 처리 실패", e);

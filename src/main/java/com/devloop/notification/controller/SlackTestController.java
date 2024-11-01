@@ -2,7 +2,7 @@ package com.devloop.notification.controller;
 
 import com.devloop.notification.dto.NotificationMessage;
 import com.devloop.notification.enums.NotificationType;
-import com.devloop.notification.service.SlackAppService;
+import com.devloop.notification.service.SlackAccountService;
 import com.devloop.notification.service.SlackNotificationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -22,7 +22,7 @@ import java.util.Map;
 public class SlackTestController {
 
     private final SlackNotificationService notificationService;
-    private final SlackAppService slackAppService;
+    private final SlackAccountService slackAccountService;
 
     @PostMapping("/notification")
     public ResponseEntity<?> testNotification() {
