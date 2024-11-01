@@ -2,6 +2,7 @@ package com.devloop.search.controller;
 
 import com.devloop.common.apipayload.ApiResponse;
 import com.devloop.search.request.IntegrationSearchRequest;
+import com.devloop.search.response.IntegratedSearchPreview;
 import com.devloop.search.response.IntegrationSearchResponse;
 import com.devloop.search.service.SearchService;
 import lombok.RequiredArgsConstructor;
@@ -15,12 +16,18 @@ public class SearchController {
 
     private final SearchService searchService;
 
-    @GetMapping("/v1/main/search")
-    public ApiResponse<Page<IntegrationSearchResponse>> integrationSearch(
-            @RequestBody IntegrationSearchRequest integrationSearchRequest,
+    @GetMapping("/v1/main/search/preview")
+    public ApiResponse<IntegratedSearchPreview> previewSearch(
+            @RequestBody IntegrationSearchRequest request) {
+        return ApiResponse.ok(searchService.integratedSearchPreview(request));
+    }
+
+    @GetMapping("/v1/main/search/{category}")
+    public ApiResponse<Page<IntegrationSearchResponse>> searchByCategory(
+            @PathVariable String category,
+            @RequestBody IntegrationSearchRequest request,
             @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "10") int size){
-        Page<IntegrationSearchResponse> search = searchService.integrationSearch(integrationSearchRequest,page, size);
-        return ApiResponse.ok(search);
+            @RequestParam(defaultValue = "10") int size) {
+        return ApiResponse.ok(searchService.searchByCategory(request, category, page, size));
     }
 }

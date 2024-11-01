@@ -12,8 +12,12 @@ public class IntegrationSearchRequest {
     private String username;
     private String category;
 
-
-
-
-    //강의 목록 추가 가능
+    public String generateCacheKey(){
+        StringBuilder key = new StringBuilder();
+        if(boardType != null) key.append(":type").append(boardType);
+        if(title != null) key.append(":title").append(title);
+        if(username != null) key.append(":uesr").append(username);
+        if(category != null) key.append(":category").append(category);
+        return key.toString();
+    }
 }
