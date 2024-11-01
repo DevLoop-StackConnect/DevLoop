@@ -34,11 +34,22 @@ public class PaymentController {
         Order order = orderService.findByOrderId(orderId);
 
         // 모델에 필요한 속성 추가
+        model.addAttribute("orderName", order.getOrderName());
+        model.addAttribute("customerName", order.getUser().getUsername());
+        model.addAttribute("customerEmail", order.getUser().getEmail());
         model.addAttribute("orderRequestId", order.getOrderRequestId());
         model.addAttribute("totalPrice", order.getTotalPrice());
-        model.addAttribute("customerKey", "customerKey-"+order.getUser().getUsername());
+        model.addAttribute("customerKey", "customerKey-"+order.getUser().getId());
 
         return "payment-request";   // payment-request.html 템플릿 렌더링
+    }
+
+
+    @GetMapping("/payments-success")
+    public String paymentsSuccess(
+
+    ){
+        return "payment-success";
     }
 
 //    @GetMapping(value = "success")
