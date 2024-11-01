@@ -52,15 +52,32 @@ public class OrderService {
     // 주문 요청됨
     @Transactional
     public void orderRequested(String orderRequestId) {
-        Order order = orderRepository.findByOrderRequestId(orderRequestId).orElseThrow(()->new ApiException(ErrorStatus._NOT_FOUND_ORDER));
+        // orderRequestId(UUID : orderId)로 Order 객체 찾기
+        Order order = findByOrderRequestId(orderRequestId);
 
+        // 주문 상태 "REQUESTED("주문 요청됨")"으로 변경
         order.updateStatus(OrderStatus.REQUESTED);
+    }
+
+    // 주문 실패됨(주문 취소)
+    @Transactional
+    public void orderFailed(String orderRequestId) {
+        // orderRequestId(UUID : orderId)로 Order 객체 찾기
+        Order order = findByOrderRequestId(orderRequestId);
+
+        // 주문 삭제
+        orderRepository.delete(order);
     }
 
     public Order findByOrderId(Long orderId) {
         return orderRepository.findById(orderId)
                 .orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_ORDER));
     }
+
+    public Order findByOrderRequestId(String orderRequestId) {
+        return orderRepository.findByOrderRequestId(orderRequestId).orElseThrow(()->new ApiException(ErrorStatus._NOT_FOUND_ORDER));
+    }
+
 
 
 }

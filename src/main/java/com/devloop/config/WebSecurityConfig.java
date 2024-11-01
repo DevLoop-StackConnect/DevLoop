@@ -47,11 +47,13 @@ public class WebSecurityConfig {
                                 "/payments/**",
                                 "/api/v2/orders",
                                 "/payments-success",
-                                "payment-request",
+                                "/payment-request",
                                 "/payments-request",
-                                "/payment-fail",
+                                "/payments-fail",
                                 "/favicon.ico",
-                                "/confirm"
+                                "/confirm",
+                                "/api/v2/orders-fail",
+                                "/payment-fail"
                         )
                         .permitAll()
                         .requestMatchers(

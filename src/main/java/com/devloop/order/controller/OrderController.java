@@ -32,11 +32,11 @@ public class OrderController {
     @RequestMapping("/api/v2/orders-fail")
     public String failOrder(
             @RequestParam("orderRequestId") String orderRequestId,
-            @RequestParam(value = "message", required = false) String message,
-            @RequestParam(value = "code", required = false) int code
+            @RequestParam(value = "message", required = false, defaultValue = "orderFailed") String message,
+            @RequestParam(value = "code", required = false, defaultValue = "400") Integer code
 
     ) {
-
+        orderService.orderFailed(orderRequestId);
         return "redirect:/payments-fail?message=" + message + "&code=" + code;
     }
 }

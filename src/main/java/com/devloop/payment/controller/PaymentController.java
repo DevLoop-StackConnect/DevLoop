@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.*;
 import java.net.HttpURLConnection;
@@ -63,9 +64,12 @@ public class PaymentController {
     @GetMapping("/payments-fail")
     public String paymentsFail(
             @RequestParam("message") String message,
-            @RequestParam("code") int code
+            @RequestParam("code") Integer code,
+            Model model
     ) {
-        return "payment-fail?message=" + message + "&code=" + code;
+        model.addAttribute("message", message);
+        model.addAttribute("code", code);
+        return "payment-fail";
     }
 
 
