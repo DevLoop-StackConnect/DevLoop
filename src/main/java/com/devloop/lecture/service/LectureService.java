@@ -5,7 +5,6 @@ import com.devloop.common.apipayload.status.ErrorStatus;
 import com.devloop.common.enums.Approval;
 import com.devloop.common.exception.ApiException;
 import com.devloop.lecture.entity.Lecture;
-import com.devloop.lecture.entity.LectureVideo;
 import com.devloop.lecture.repository.LectureRepository;
 import com.devloop.lecture.request.SaveLectureRequest;
 import com.devloop.lecture.request.UpdateLectureRequest;
@@ -30,7 +29,6 @@ import java.util.List;
 public class LectureService {
     private final LectureRepository lectureRepository;
     private final UserService userService;
-    private final LectureVideoService lectureVideoService;
 
     //강의 등록 (유저의 권한이 TUTOR일 경우에만 가능)
     @Transactional
@@ -132,13 +130,6 @@ public class LectureService {
         //강의 등록한 유저 인지 확인
         if(!user.getId().equals(lecture.getUser().getId())){
             throw new ApiException(ErrorStatus._HAS_NOT_ACCESS_PERMISSION);
-        }
-
-        //영상리스트 있는 지 확인 및 삭제
-        List<LectureVideo> lectureVideoList=lectureVideoService.findLectureVideoByLectureId(lectureId);
-
-        if(!lectureVideoList.isEmpty()){
-            lectureVideoList.forEach(lectureVideoService::deleteLectureVideo);
         }
 
         //강의 삭제

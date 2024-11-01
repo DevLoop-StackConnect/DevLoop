@@ -86,6 +86,10 @@ dependencies {
 	//slack webflux
 	implementation 'org.springframework.boot:spring-boot-starter-webflux'
 
+	//CloudFront
+	implementation 'software.amazon.awssdk:cloudfront:2.20.32' // 예시 버전
+	implementation 'software.amazon.awssdk:sts:2.20.32'       // 예시 버전
+
 	// json-simple : toss payment 에서 사용
 	implementation 'com.googlecode.json-simple:json-simple:1.1.1'
 

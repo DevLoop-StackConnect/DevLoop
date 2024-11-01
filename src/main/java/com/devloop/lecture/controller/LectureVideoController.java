@@ -62,7 +62,7 @@ public class LectureVideoController {
     public ApiResponse<GetLectureVideoDetailResponse> getLectureVideo(
             @AuthenticationPrincipal AuthUser authUser,
             @PathVariable("videoId") Long videoId
-    ){
+    ) throws Exception {
         return ApiResponse.ok(lectureVideoService.getLectureVideo(authUser,videoId));
     }
 
