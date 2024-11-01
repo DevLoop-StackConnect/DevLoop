@@ -6,11 +6,13 @@ import com.devloop.order.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Slf4j
-@RestController
+@Controller
 @RequiredArgsConstructor
 public class OrderController {
 
@@ -23,5 +25,18 @@ public class OrderController {
     ) {
         Order order = orderService.createOrder(authUser);
         return "redirect:/payments-request?orderId=" + order.getId();
+    }
+
+
+    // 주문 실패
+    @RequestMapping("/api/v2/orders-fail")
+    public String failOrder(
+            @RequestParam("orderRequestId") String orderRequestId,
+            @RequestParam(value = "message", required = false) String message,
+            @RequestParam(value = "code", required = false) int code
+
+    ) {
+
+        return "redirect:/payments-fail?message=" + message + "&code=" + code;
     }
 }

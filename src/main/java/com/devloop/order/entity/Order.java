@@ -72,5 +72,8 @@ public class Order extends Timestamped {
         );
     }
 
-
+    // 주문 상태 변경
+    public void updateStatus(OrderStatus orderStatus) {
+        this.status = orderStatus;
+    }
 }

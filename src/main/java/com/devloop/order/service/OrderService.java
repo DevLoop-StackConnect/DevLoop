@@ -6,6 +6,7 @@ import com.devloop.common.AuthUser;
 import com.devloop.common.apipayload.status.ErrorStatus;
 import com.devloop.common.exception.ApiException;
 import com.devloop.order.entity.Order;
+import com.devloop.order.enums.OrderStatus;
 import com.devloop.order.repository.OrderRepository;
 import com.devloop.user.entity.User;
 import com.devloop.user.repository.UserRepository;
@@ -25,7 +26,7 @@ public class OrderService {
     private final UserService userService;
     private final CartService cartService;
 
-    // 주문 하기 (주문 객체 생성)
+    // 주문 하기 (주문 요청, 주문 객체 생성)
     @Transactional
     public Order createOrder(AuthUser authUser) {
 
@@ -48,9 +49,18 @@ public class OrderService {
         return order;
     }
 
+    // 주문 요청됨
+    @Transactional
+    public void orderRequested(String orderRequestId) {
+        Order order = orderRepository.findByOrderRequestId(orderRequestId).orElseThrow(()->new ApiException(ErrorStatus._NOT_FOUND_ORDER));
+
+        order.updateStatus(OrderStatus.REQUESTED);
+    }
 
     public Order findByOrderId(Long orderId) {
         return orderRepository.findById(orderId)
                 .orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_ORDER));
     }
+
+
 }

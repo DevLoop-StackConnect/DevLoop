@@ -49,7 +49,7 @@ public class WebSecurityConfig {
                                 "/payments-success",
                                 "payment-request",
                                 "/payments-request",
-                                "/fail",
+                                "/payment-fail",
                                 "/favicon.ico",
                                 "/confirm"
                         )
