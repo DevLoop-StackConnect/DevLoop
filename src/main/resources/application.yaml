@@ -25,14 +25,18 @@ jwt:
 cloud:
   aws:
     credentials:
-      accessKey: ${AWS_ACCESS_KEY}
-      secretKey: ${AWS_SECRET_KEY}
+      accessKey: ${AWS_ACCESS_KEY_V2}
+      secretKey: ${AWS_SECRET_KEY_V2}
     s3:
-      bucketName: ${AWS_BUCKET_NAME}
+      bucketName: ${AWS_BUCKET_NAME_V2}
     region:
       static: ${AWS_REGION}
     stack:
       auto: false
+    cloudfront:
+      cloudFrontUrl: ${CLOUD_FRONT_URL}
+      keyPairId: ${CLOUDFRONT_KEY_PAIR_ID}
+      privateKeyPath: ${CLOUDFRONT_PRIVATE_KEY_PATH}
 
 
 toss:

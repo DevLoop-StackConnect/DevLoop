@@ -54,10 +54,10 @@ public class Lecture extends Timestamped {
     @JoinColumn(name="user_id")
     private User user;
 
-    @OneToMany(mappedBy = "lecture", cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "lecture", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<LectureVideo> lectureVideos;
 
-    @OneToMany(mappedBy = "lecture",  cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "lecture",  cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<LectureReview> lectureReviews;
 
     private Lecture(String title, String description, String recommend,Category category, Level level,Integer price,User user){

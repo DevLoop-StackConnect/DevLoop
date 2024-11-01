@@ -18,9 +18,6 @@ public class LectureVideo extends Timestamped {
     private Long id;
 
     @NotNull
-    private URL videoURL;
-
-    @NotNull
     private String fileName;
 
     @NotNull
@@ -37,16 +34,14 @@ public class LectureVideo extends Timestamped {
     @JoinColumn(name="lecture_id")
     private Lecture lecture;
 
-    private LectureVideo(URL videoURL,String fileName,String title,VideoStatus status, Lecture lecture){
-        this.videoURL=videoURL;
+    private LectureVideo(String fileName,String title,VideoStatus status, Lecture lecture){
         this.fileName=fileName;
         this.title=title;
         this.status=status;
         this.lecture=lecture;
     }
-    public static LectureVideo of(URL videoURL,String fileName,String title,VideoStatus status, Lecture lecture){
+    public static LectureVideo of(String fileName,String title,VideoStatus status, Lecture lecture){
         return new LectureVideo(
-                videoURL,
                 fileName,
                 title,
                 status,

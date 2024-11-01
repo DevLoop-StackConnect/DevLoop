@@ -1,5 +1,6 @@
 package com.devloop.lecture.service;
 
+import com.devloop.attachment.cloudfront.CloudFrontService;
 import com.devloop.attachment.s3.S3Service;
 import com.devloop.common.AuthUser;
 import com.devloop.common.apipayload.status.ErrorStatus;
@@ -8,7 +9,6 @@ import com.devloop.common.exception.ApiException;
 import com.devloop.lecture.entity.Lecture;
 import com.devloop.lecture.entity.LectureVideo;
 import com.devloop.lecture.enums.VideoStatus;
-import com.devloop.lecture.repository.LectureRepository;
 import com.devloop.lecture.repository.LectureVideoRepository;
 import com.devloop.lecture.response.GetLectureVideoDetailResponse;
 import com.devloop.lecture.response.GetLectureVideoListResponse;
@@ -34,10 +34,11 @@ import java.util.*;
 @Slf4j
 public class LectureVideoService {
     private final S3Client s3Client;
-    private final LectureRepository lectureRepository;
     private final LectureVideoRepository lectureVideoRepository;
     private final UserService userService;
     private final S3Service s3Service;
+    private final CloudFrontService cloudFrontService;
+    private final LectureService lectureService;
 
     @Value("${cloud.aws.s3.bucketName}")
     private String bucketName;
@@ -56,8 +57,7 @@ public class LectureVideoService {
         User user= userService.findByUserId(authUser.getId());
 
         //강의가 존재하는 지 확인
-        Lecture lecture=lectureRepository.findById(lectureId).orElseThrow(()->
-                new ApiException(ErrorStatus._NOT_FOUND_LECTURE));
+        Lecture lecture=lectureService.findById(lectureId);
 
         //유저가 강의 등록한 유저인지 확인
         if(!user.getId().equals(lecture.getUser().getId())){
@@ -68,7 +68,9 @@ public class LectureVideoService {
         File file=convertMultipartFileToFile(multipartFile);
 
         long fileSize=file.length();
-        String fileName = makeFileName(multipartFile);
+
+        String folderPath="lectures/"+lectureId+"/";
+        String fileName = makeFileName(folderPath,multipartFile);
         long partSize=5 * 1024 * 1024; //5MB 단위로 파트 분할
         String uploadId=null;
         List<CompletedPart> completedParts=new ArrayList<>();
@@ -119,12 +121,9 @@ public class LectureVideoService {
 
             s3Client.completeMultipartUpload(completeMultipartUploadRequest);
 
-            //강의 영상 첨부파일 DB 저장
-            String s3Url = "https://" + bucketName + ".s3.amazonaws.com/" + fileName;
 
             //새로운 강의 영상 객체 생성
             LectureVideo lectureVideo=LectureVideo.of(
-                    new URL(s3Url),
                     fileName,
                     title,
                     VideoStatus.COMPLETED,
@@ -132,7 +131,7 @@ public class LectureVideoService {
             );
             lectureVideoRepository.save(lectureVideo);
 
-            return s3Url;
+            return fileName;
 
         }catch (S3Exception e){
             //예외 발생 시, 업로드 취소
@@ -156,8 +155,8 @@ public class LectureVideoService {
         return file;
     }
     //파일 이름 생성
-    public String makeFileName(MultipartFile multipartFile){
-        return UUID.randomUUID() +"_"+ multipartFile.getOriginalFilename();
+    public String makeFileName(String folderPath,MultipartFile multipartFile){
+        return folderPath+UUID.randomUUID() +"_"+ multipartFile.getOriginalFilename();
     }
 
     //Upload Id 반환
@@ -182,8 +181,7 @@ public class LectureVideoService {
      */
     public List<GetLectureVideoListResponse> getLectureVideoList(AuthUser authUser, Long lectureId) {
         //강의가 존재하는 지 확인
-        Lecture lecture=lectureRepository.findById(lectureId).orElseThrow(()->
-                new ApiException(ErrorStatus._NOT_FOUND_LECTURE));
+        Lecture lecture=lectureService.findById(lectureId);
 
         //강의가 승인이 되었는 지 확인
         if(!lecture.getApproval().equals(Approval.APPROVED)){
@@ -206,16 +204,19 @@ public class LectureVideoService {
      * @param videoId
      * @return
      */
-    public GetLectureVideoDetailResponse getLectureVideo(AuthUser authUser, Long videoId) {
+    public GetLectureVideoDetailResponse getLectureVideo(AuthUser authUser, Long videoId) throws Exception {
         //수강 유저인지 확인
 
         //해당 영상이 있는 지 확인
         LectureVideo lectureVideo=lectureVideoRepository.findById(videoId).orElseThrow(()->
                 new ApiException(ErrorStatus._NOT_FOUND_LECTURE_VIDEO));
 
+        //signedURL 생성
+        String signedUrl=cloudFrontService.generateSignedUrl(lectureVideo.getFileName(),60);
+
         return GetLectureVideoDetailResponse.of(
                 lectureVideo.getTitle(),
-                lectureVideo.getVideoURL()
+                new URL(signedUrl)
         );
     }
 
