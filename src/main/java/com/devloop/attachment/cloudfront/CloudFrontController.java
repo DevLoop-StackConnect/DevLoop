@@ -11,7 +11,7 @@ public class CloudFrontController {
 
     private final CloudFrontService cloudFrontService;
 
-    @GetMapping("/api/v2/cloudfront/generate-signed-url")
+    @GetMapping("/api/v2/cloudfront/signedUrl")
     public String generateSignedUrl(
             @RequestParam String path,
             @RequestParam(defaultValue = "60") int minutes) {
