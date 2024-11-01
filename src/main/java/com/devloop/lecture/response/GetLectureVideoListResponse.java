@@ -3,8 +3,6 @@ package com.devloop.lecture.response;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.net.URL;
-
 @Getter
 @NoArgsConstructor
 public class GetLectureVideoListResponse {

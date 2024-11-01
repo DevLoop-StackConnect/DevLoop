@@ -1,6 +1,5 @@
 package com.devloop.lecture.service;
 
-import com.devloop.attachment.s3.S3Service;
 import com.devloop.common.AuthUser;
 import com.devloop.common.apipayload.status.ErrorStatus;
 import com.devloop.common.enums.Approval;
@@ -24,7 +23,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -33,7 +31,6 @@ public class LectureService {
     private final LectureRepository lectureRepository;
     private final UserService userService;
     private final LectureVideoService lectureVideoService;
-    private final S3Service s3Service;
 
     //강의 등록 (유저의 권한이 TUTOR일 경우에만 가능)
     @Transactional
