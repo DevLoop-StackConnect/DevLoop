@@ -101,16 +101,7 @@ public class UserService {
         s3Service.uploadFile(file,user,user);
     }
 
-    public S3Object getProfileImgFromS3(AuthUser authUser) {
-        User user = userRepository.findById(authUser.getId())
-                .orElseThrow(()->new ApiException(ErrorStatus._NOT_FOUND_USER));
 
-        ProfileAttachment profileAttachment = profileATMRepository.findById(user.getAttachmentId())
-                .orElseThrow(()->new ApiException(ErrorStatus._ATTACHMENT_NOT_FOUND));
-        String fileName = profileAttachment.getFileName();
-
-        return s3Service.getProfileImgFromS3(fileName);
-    }
     //----------------------------------------------------util---------------------------------------------------//
     public User findByUserId(Long userId) {
         return userRepository.findById(userId).orElseThrow(()->new ApiException(ErrorStatus._NOT_FOUND_USER));
