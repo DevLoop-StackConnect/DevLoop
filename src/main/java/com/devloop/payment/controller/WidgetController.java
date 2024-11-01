@@ -1,5 +1,7 @@
 package com.devloop.payment.controller;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -36,18 +38,18 @@ public class WidgetController {
     public String checkout() {
         return "checkout";
     }
+//
+//    @GetMapping("/success")
+//    public String success() {
+//        return "success";
+//    }
+//
+//    @GetMapping("/fail")
+//    public String fail() {
+//        return "fail";
+//    }
 
-    @GetMapping("/success")
-    public String success() {
-        return "success";
-    }
-
-    @GetMapping("/fail")
-    public String fail() {
-        return "fail";
-    }
-
-    @RequestMapping("/payments/confirm")
+    @RequestMapping("/confirm")
     public ResponseEntity<JSONObject> confirmPayment(@RequestBody String jsonBody) throws Exception {
 
         JSONParser parser = new JSONParser();
@@ -55,6 +57,7 @@ public class WidgetController {
         String amount;
         String paymentKey;
         try {
+            JsonNode jsonObject = new ObjectMapper().readTree(jsonBody);
             // 클라이언트에서 받은 JSON 요청 바디입니다.
             JSONObject requestData = (JSONObject) parser.parse(jsonBody);
             paymentKey = (String) requestData.get("paymentKey");

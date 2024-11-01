@@ -45,13 +45,13 @@ public class WebSecurityConfig {
                                 "api/v1/pwts/**",
                                 // payments test 위해 열어두는 API
                                 "/payments/**",
-                                "/success.html",
-                                "/fail.html",
-                                "/success",
+                                "/api/v2/orders",
+                                "/payments-success",
+                                "payment-request",
+                                "/payments-request",
                                 "/fail",
-                                "/error",
-                                "/error/**",
-                                "/favicon.ico"
+                                "/favicon.ico",
+                                "/confirm"
                         )
                         .permitAll()
                         .requestMatchers(

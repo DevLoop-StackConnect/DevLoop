@@ -39,6 +39,7 @@ public class OrderService {
         Order order = Order.of(
                 cart.getTotalPrice(),
                 UUID.randomUUID().toString(),
+                String.format("%s 외 %d 개", cart.getItems().get(0).getProduct().getTitle(), cart.getItems().size()),
                 user,
                 cart
         );

@@ -14,6 +14,7 @@ import java.math.BigDecimal;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Table(name = "orders")
 public class Order extends Timestamped {
 
     @Id
@@ -25,6 +26,9 @@ public class Order extends Timestamped {
 
     @Column(nullable = false)
     private String orderRequestId;
+
+    @Column(nullable = false)
+    private String orderName;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
@@ -41,11 +45,13 @@ public class Order extends Timestamped {
     private Order(
             BigDecimal totalPrice,
             String orderRequestId,
+            String orderName,
             User user,
             Cart cart
     ) {
         this.totalPrice = totalPrice;
         this.orderRequestId = orderRequestId;
+        this.orderName = orderName;
         this.user = user;
         this.cart = cart;
     }
@@ -53,12 +59,14 @@ public class Order extends Timestamped {
     public static Order of(
             BigDecimal totalPrice,
             String orderRequestId,
+            String orderName,
             User user,
             Cart cart
     ) {
         return new Order(
                 totalPrice,
                 orderRequestId,
+                orderName,
                 user,
                 cart
         );
