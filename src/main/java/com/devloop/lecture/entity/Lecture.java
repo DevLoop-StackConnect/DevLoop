@@ -5,12 +5,15 @@ import com.devloop.common.enums.Approval;
 import com.devloop.common.enums.Category;
 import com.devloop.lecture.request.SaveLectureRequest;
 import com.devloop.lecture.request.UpdateLectureRequest;
+import com.devloop.lecturereview.entity.LectureReview;
 import com.devloop.pwt.enums.Level;
 import com.devloop.user.entity.User;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 @Entity
 @NoArgsConstructor
@@ -47,9 +50,15 @@ public class Lecture extends Timestamped {
     @Enumerated(EnumType.STRING)
     private Approval approval=Approval.WAITE;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="user_id")
     private User user;
+
+    @OneToMany(mappedBy = "lecture", cascade = CascadeType.REMOVE)
+    private List<LectureVideo> lectureVideos;
+
+    @OneToMany(mappedBy = "lecture",  cascade = CascadeType.REMOVE)
+    private List<LectureReview> lectureReviews;
 
     private Lecture(String title, String description, String recommend,Category category, Level level,Integer price,User user){
         this.title=title;

@@ -2,7 +2,7 @@ package com.devloop.lecturereview.entity;
 
 import com.devloop.common.Timestamped;
 import com.devloop.lecture.entity.Lecture;
-import com.devloop.lecturereview.request.LectureReviewRequest;
+import com.devloop.lecturereview.request.SaveLectureReviewRequest;
 import com.devloop.user.entity.User;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -24,11 +24,11 @@ public class LectureReview extends Timestamped {
     @NotNull
     private Integer rating;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="user_id")
     private User user;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="lecture_id")
     private Lecture lecture;
 
@@ -39,7 +39,7 @@ public class LectureReview extends Timestamped {
         this.lecture=lecture;
     }
 
-    public static LectureReview from(LectureReviewRequest request, User user, Lecture lecture){
+    public static LectureReview from(SaveLectureReviewRequest request, User user, Lecture lecture){
         return new LectureReview(
                 request.getReview(),
                 request.getRating(),
@@ -48,7 +48,7 @@ public class LectureReview extends Timestamped {
         );
     }
 
-    public void update(LectureReviewRequest request){
+    public void update(SaveLectureReviewRequest request){
         this.review=request.getReview();
         this.rating=request.getRating();
     }

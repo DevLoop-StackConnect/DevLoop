@@ -2,13 +2,14 @@ package com.devloop.lecturereview.service;
 
 import com.devloop.common.AuthUser;
 import com.devloop.common.apipayload.status.ErrorStatus;
+import com.devloop.common.enums.Approval;
 import com.devloop.common.exception.ApiException;
 import com.devloop.lecture.entity.Lecture;
 import com.devloop.lecture.service.LectureService;
 import com.devloop.lecturereview.entity.LectureReview;
 import com.devloop.lecturereview.repository.LectureReviewRepository;
-import com.devloop.lecturereview.request.LectureReviewRequest;
-import com.devloop.lecturereview.response.LectureReviewResponse;
+import com.devloop.lecturereview.request.SaveLectureReviewRequest;
+import com.devloop.lecturereview.response.GetLectureReviewResponse;
 import com.devloop.user.entity.User;
 import com.devloop.user.service.UserService;
 import jakarta.validation.Valid;
@@ -30,12 +31,17 @@ public class LectureReviewService {
 
     //강의 후기 등록
     @Transactional
-    public String saveLectureReview(AuthUser authUser, Long lectureId, @Valid LectureReviewRequest saveLectureReviewRequest) {
+    public String saveLectureReview(AuthUser authUser, Long lectureId, @Valid SaveLectureReviewRequest saveLectureReviewRequest) {
         //유저가 존재하는 지 확인
         User user=userService.findByUserId(authUser.getId());
 
         //강의가 존재하는 지 확인
         Lecture lecture=lectureService.findById(lectureId);
+
+        //강의가 승인되었는 지 확인
+        if(lecture.getApproval().equals(Approval.WAITE)){
+            throw new ApiException(ErrorStatus._ACCESS_PERMISSION_DENIED);
+        }
 
         //새로운 강의 후기 생성 및 저장
         LectureReview newLectureReview=LectureReview.from(saveLectureReviewRequest,user,lecture);
@@ -46,9 +52,14 @@ public class LectureReviewService {
 
     //강의 후기 수정
     @Transactional
-    public String updateLectureReview(AuthUser authUser, Long lectureId, Long reviewId, @Valid LectureReviewRequest lectureReviewRequest) {
+    public String updateLectureReview(AuthUser authUser, Long lectureId, Long reviewId, @Valid SaveLectureReviewRequest lectureReviewRequest) {
         //강의가 존재하는 지 확인
         Lecture lecture=lectureService.findById(lectureId);
+
+        //강의가 승인되었는 지 확인
+        if(lecture.getApproval().equals(Approval.WAITE)){
+            throw new ApiException(ErrorStatus._ACCESS_PERMISSION_DENIED);
+        }
 
         //강의 후기가 존재하는 지 확인
         LectureReview lectureReview=lectureReviewRepository.findById(reviewId).orElseThrow(()->
@@ -65,17 +76,22 @@ public class LectureReviewService {
     }
 
     //후기 다건 조회
-    public Page<LectureReviewResponse> getLectureReviewList(Long lectureId, int page, int size) {
+    public Page<GetLectureReviewResponse> getLectureReviewList(Long lectureId, int page, int size) {
         Pageable pageable= PageRequest.of(page-1,size);
 
         //강의가 존재하는 지 확인
         Lecture lecture=lectureService.findById(lectureId);
 
+        //강의가 승인되었는 지 확인
+        if(lecture.getApproval().equals(Approval.WAITE)){
+            throw new ApiException(ErrorStatus._ACCESS_PERMISSION_DENIED);
+        }
+
         Page<LectureReview> lectureReviews=lectureReviewRepository.findByLectureId(lecture.getId(),pageable);
 
         //후기 리스트 조회
          return lectureReviews.map(lectureReview -> {
-             return LectureReviewResponse.of(
+             return GetLectureReviewResponse.of(
                      lectureReview.getUser().getUsername(),
                      lectureReview.getReview(),
                      lectureReview.getRating());
@@ -87,6 +103,11 @@ public class LectureReviewService {
     public String deleteLectureReview(AuthUser authUser, Long lectureId, Long reviewId) {
         //강의가 존재하는 지 확인
         Lecture lecture=lectureService.findById(lectureId);
+
+        //강의가 승인되었는 지 확인
+        if(lecture.getApproval().equals(Approval.WAITE)){
+            throw new ApiException(ErrorStatus._ACCESS_PERMISSION_DENIED);
+        }
 
         //강의 후기가 존재하는 지 확인
         LectureReview lectureReview=lectureReviewRepository.findById(reviewId).orElseThrow(()->

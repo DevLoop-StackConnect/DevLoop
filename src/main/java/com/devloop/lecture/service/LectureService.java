@@ -10,8 +10,8 @@ import com.devloop.lecture.entity.LectureVideo;
 import com.devloop.lecture.repository.LectureRepository;
 import com.devloop.lecture.request.SaveLectureRequest;
 import com.devloop.lecture.request.UpdateLectureRequest;
-import com.devloop.lecture.response.LectureDetailResponse;
-import com.devloop.lecture.response.LectureListResponse;
+import com.devloop.lecture.response.GetLectureDetailResponse;
+import com.devloop.lecture.response.GetLectureListResponse;
 import com.devloop.lecture.response.SaveLectureResponse;
 import com.devloop.lecture.response.UpdateLectureResponse;
 import com.devloop.user.entity.User;
@@ -78,7 +78,7 @@ public class LectureService {
     }
 
     //강의 단건 조회
-    public LectureDetailResponse getLecture(Long lectureId) {
+    public GetLectureDetailResponse getLecture(Long lectureId) {
         //강의가 존재하는 지 확인
         Lecture lecture=lectureRepository.findById(lectureId).orElseThrow(()->
                 new ApiException(ErrorStatus._NOT_FOUND_LECTURE));
@@ -89,7 +89,7 @@ public class LectureService {
         }
 
         //후기 평균 별점, 영상 총 수 포함
-        return LectureDetailResponse.of(
+        return GetLectureDetailResponse.of(
                 lecture.getTitle(),
                 lecture.getDescription(),
                 lecture.getRecommend(),
@@ -102,17 +102,19 @@ public class LectureService {
     }
 
     //강의 다건 조회
-    public Page<LectureListResponse> getLectureList(String title, int page, int size) {
+    public Page<GetLectureListResponse> getLectureList(String title, int page, int size) {
         PageRequest pageable= PageRequest.of(page-1,size);
 
         Page<Lecture> lectures;
 
+        //승인 된 강의만 조회
         if(title==null || title.isEmpty()){
-            lectures=lectureRepository.findAll(pageable);
+            lectures=lectureRepository.findByApproval(Approval.APPROVED,pageable);
         }else{
-            lectures=lectureRepository.findByTitleContaining(title,pageable);
+            lectures=lectureRepository.findByTitleContainingAndApproval(title,Approval.APPROVED,pageable);
         }
-        return lectures.map(lecture->LectureListResponse.of(
+        return lectures.map(lecture-> GetLectureListResponse.of(
+                lecture.getId(),
                 lecture.getTitle(),
                 lecture.getCategory().getDescription(),
                 lecture.getLevel().getLevel(),
@@ -136,14 +138,11 @@ public class LectureService {
         }
 
         //영상리스트 있는 지 확인 및 삭제
-        Optional<List<LectureVideo>> lectureVideoList=lectureVideoService.findLectureVideoByLectureId(lectureId);
+        List<LectureVideo> lectureVideoList=lectureVideoService.findLectureVideoByLectureId(lectureId);
 
-        lectureVideoList.ifPresent(lectureVideos -> lectureVideos.forEach(video -> {
-            //S3 영상 파일 삭제
-            s3Service.delete(video.getFileName());
-            //데이터베이스에서 삭제
-            lectureVideoService.deleteLectureVideo(video);
-        }));
+        if(!lectureVideoList.isEmpty()){
+            lectureVideoList.forEach(lectureVideoService::deleteLectureVideo);
+        }
 
         //강의 삭제
         lectureRepository.delete(lecture);

@@ -59,11 +59,13 @@ public class WebSecurityConfig {
                         )
                         .permitAll()
                         .requestMatchers(
-                                "/api/v1/tutor/**"
+                                "/api/v1/tutor/**",
+                                "/api/v2/tutor/**"
                         )
                         .hasAnyAuthority(UserRole.authority.TUTOR, UserRole.authority.ADMIN)
                         .requestMatchers(
-                                "/api/v1/admin/**"
+                                "/api/v1/admin/**",
+                                "/api/v2/admin/**"
                         )
                         .hasAuthority(UserRole.authority.ADMIN)
                         .anyRequest().authenticated()

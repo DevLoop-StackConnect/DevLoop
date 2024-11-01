@@ -8,7 +8,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.net.URL;
-import java.sql.Time;
 
 @Entity
 @NoArgsConstructor
@@ -25,26 +24,31 @@ public class LectureVideo extends Timestamped {
     private String fileName;
 
     @NotNull
+    private String title;
+
+    @NotNull
     @Enumerated(EnumType.STRING)
     private VideoStatus status=VideoStatus.PENDING;
 
 //    @NotNull
 //    private Integer sequence;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="lecture_id")
     private Lecture lecture;
 
-    private LectureVideo(URL videoURL,String fileName,VideoStatus status, Lecture lecture){
+    private LectureVideo(URL videoURL,String fileName,String title,VideoStatus status, Lecture lecture){
         this.videoURL=videoURL;
         this.fileName=fileName;
+        this.title=title;
         this.status=status;
         this.lecture=lecture;
     }
-    public static LectureVideo of(URL videoURL,String fileName,VideoStatus status, Lecture lecture){
+    public static LectureVideo of(URL videoURL,String fileName,String title,VideoStatus status, Lecture lecture){
         return new LectureVideo(
                 videoURL,
                 fileName,
+                title,
                 status,
                 lecture
         );
