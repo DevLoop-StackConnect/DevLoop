@@ -6,6 +6,9 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Getter
 @NoArgsConstructor
@@ -19,8 +22,8 @@ public class ScheduleBoard extends Timestamped {
     @JoinColumn(name = "project_with_tutor_id", nullable = false)
     private ProjectWithTutor projectWithTutor;
 
-//    @OneToMany(mappedBy = "scheduleBoard", cascade = CascadeType.ALL, orphanRemoval = true)
-//    private List<BoardAssignment> boardAssignments = new ArrayList<>();
+    @OneToMany(mappedBy = "scheduleBoard", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<BoardAssignment> boardAssignments = new ArrayList<>();
 
     private ScheduleBoard(ProjectWithTutor projectWithTutor) {
         this.projectWithTutor = projectWithTutor;

@@ -1,9 +1,6 @@
 package com.devloop.scheduleBoard.dto.response;
 
-import com.devloop.scheduleTodo.dto.response.ScheduleTodoSimpleResponse;
 import lombok.Getter;
-
-import java.util.List;
 
 @Getter
 public class ScheduleBoardResponse {

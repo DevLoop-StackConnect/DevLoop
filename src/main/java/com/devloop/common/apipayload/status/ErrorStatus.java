@@ -73,7 +73,8 @@ public enum ErrorStatus implements BaseCode {
     _NOT_FOUND_SCHEDULE_BOARD(HttpStatus.NOT_FOUND,"404","존재하지 않는 스케줄보드입니다."),
 
     //ScheduleTodo
-    _NOT_FOUND_SCHEDULE_TODO(HttpStatus.NOT_FOUND,"404","존재하지 않는 일정입니다.");
+    _NOT_FOUND_SCHEDULE_TODO(HttpStatus.NOT_FOUND,"404","존재하지 않는 일정입니다."),
+    _CONFLICT(HttpStatus.CONFLICT,"409","다른 사용자가 이미 수저했습니다. 다시 시도하세요");
 
 
 
