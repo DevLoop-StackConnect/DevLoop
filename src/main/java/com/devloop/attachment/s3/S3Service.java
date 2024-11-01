@@ -4,7 +4,6 @@ import com.amazonaws.AmazonServiceException;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
-import com.amazonaws.services.s3.model.S3Object;
 import com.devloop.attachment.entity.*;
 import com.devloop.attachment.enums.FileFormat;
 import com.devloop.attachment.repository.CommunityATMRepository;
