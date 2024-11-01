@@ -1,6 +1,5 @@
 package com.devloop.user.service;
 
-import com.amazonaws.services.s3.model.S3Object;
 import com.devloop.attachment.entity.ProfileAttachment;
 import com.devloop.attachment.repository.ProfileATMRepository;
 import com.devloop.attachment.s3.S3Service;
@@ -15,7 +14,7 @@ import com.devloop.party.repository.PartyRepository;
 import com.devloop.party.response.GetPartyListResponse;
 import com.devloop.tutor.entity.TutorRequest;
 import com.devloop.tutor.repository.TutorRequestRepository;
-import com.devloop.user.dto.response.UserResponse;
+import com.devloop.user.response.UserResponse;
 import com.devloop.user.entity.User;
 import com.devloop.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;

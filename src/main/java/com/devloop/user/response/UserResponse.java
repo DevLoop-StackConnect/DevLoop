@@ -1,4 +1,4 @@
-package com.devloop.user.dto.response;
+package com.devloop.user.response;
 
 import com.devloop.community.dto.response.CommunitySimpleResponse;
 import com.devloop.party.response.GetPartyListResponse;
