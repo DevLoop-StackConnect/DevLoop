@@ -107,7 +107,7 @@ class PartyServiceTest {
         //given
         Long partyId=1L;
         when(partyRepository.findById(anyLong())).thenReturn(Optional.of(party));
-        when(partyAttachmentService.findPartyAttachmentByPartyId(anyLong())).thenReturn(partyAttachment);
+       // when(partyAttachmentService.findPartyAttachmentByPartyId(anyLong())).thenReturn(partyAttachment);
 
         //when
         GetPartyDetailResponse response=partyService.getParty(partyId);

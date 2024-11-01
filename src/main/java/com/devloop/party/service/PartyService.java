@@ -30,6 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -87,13 +88,13 @@ public class PartyService {
          */
         //추가된 파일이 있는지 확인
         if(file!=null && !file.isEmpty()){
-            PartyAttachment partyAttachment=partyAttachmentService.findPartyAttachmentByPartyId(partyId);
+            Optional<PartyAttachment> partyAttachment=partyAttachmentService.findPartyAttachmentByPartyId(partyId);
 
             //기존 파일이 있는지 확인
-            if(partyAttachment==null){
+            if(partyAttachment.isEmpty()){
                 s3Service.uploadFile(file,user,party);
             }else{
-                s3Service.updateUploadFile(file,partyAttachment,party);
+                s3Service.updateUploadFile(file,partyAttachment.get(),party);
             }
 
         }
@@ -116,7 +117,7 @@ public class PartyService {
                 new ApiException(ErrorStatus._NOT_FOUND_PARTY));
 
         //기존 파일이 있는 지 확인
-        PartyAttachment partyAttachment=partyAttachmentService.findPartyAttachmentByPartyId(partyId);
+        Optional<PartyAttachment> partyAttachment=partyAttachmentService.findPartyAttachmentByPartyId(partyId);
 
 
         return GetPartyDetailResponse.of(
@@ -127,7 +128,7 @@ public class PartyService {
                 party.getCategory().getDescription(),
                 party.getCreatedAt(),
                 party.getModifiedAt(),
-                String.valueOf(partyAttachment.getImageURL())
+                String.valueOf(partyAttachment.get().getImageURL())
         );
     }
 
@@ -162,12 +163,12 @@ public class PartyService {
             throw new ApiException(ErrorStatus._PERMISSION_DENIED);
         }
 
-        PartyAttachment partyAttachment=partyAttachmentService.findPartyAttachmentByPartyId(partyId);
+        Optional<PartyAttachment> partyAttachment=partyAttachmentService.findPartyAttachmentByPartyId(partyId);
         //파일이 있는지 확인
-        if(partyAttachment!=null){
+        if(partyAttachment.isPresent()){
             //파일 삭제 (S3, 로컬)
-            s3Service.delete(partyAttachment.getFileName());
-            partyAttachmentService.deletePartyAttachment(partyAttachment);
+            s3Service.delete(partyAttachment.get().getFileName());
+            partyAttachmentService.deletePartyAttachment(partyAttachment.get());
         }
         partyRepository.delete(party);
 

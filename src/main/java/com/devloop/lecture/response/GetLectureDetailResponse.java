@@ -1,6 +1,5 @@
 package com.devloop.lecture.response;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -8,7 +7,7 @@ import java.time.LocalDateTime;
 
 @Getter
 @NoArgsConstructor
-public class LectureDetailResponse {
+public class GetLectureDetailResponse {
     private String title;
     private String description;
     private String recommend;
@@ -18,7 +17,10 @@ public class LectureDetailResponse {
     private LocalDateTime created_at;
     private LocalDateTime modified_at;
 
-    private LectureDetailResponse(
+    //강의 총 개수
+    //강의 총 시간
+    //강의 후기 개수
+    private GetLectureDetailResponse(
             String title,
             String description,
             String recommend,
@@ -38,7 +40,7 @@ public class LectureDetailResponse {
         this.modified_at=modified_at;
     }
 
-    public static LectureDetailResponse of(
+    public static GetLectureDetailResponse of(
             String title,
             String description,
             String recommend,
@@ -48,7 +50,7 @@ public class LectureDetailResponse {
             LocalDateTime created_at,
             LocalDateTime modified_at
     ){
-        return new LectureDetailResponse(
+        return new GetLectureDetailResponse(
                 title,
                 description,
                 recommend,

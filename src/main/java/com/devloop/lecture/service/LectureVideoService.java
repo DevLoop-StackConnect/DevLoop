@@ -1,14 +1,18 @@
 package com.devloop.lecture.service;
 
 import com.amazonaws.AmazonServiceException;
+import com.devloop.attachment.s3.S3Service;
 import com.devloop.common.AuthUser;
 import com.devloop.common.apipayload.status.ErrorStatus;
+import com.devloop.common.enums.Approval;
 import com.devloop.common.exception.ApiException;
 import com.devloop.lecture.entity.Lecture;
 import com.devloop.lecture.entity.LectureVideo;
 import com.devloop.lecture.enums.VideoStatus;
 import com.devloop.lecture.repository.LectureRepository;
 import com.devloop.lecture.repository.LectureVideoRepository;
+import com.devloop.lecture.response.GetLectureVideoDetailResponse;
+import com.devloop.lecture.response.GetLectureVideoListResponse;
 import com.devloop.user.entity.User;
 import com.devloop.user.enums.UserRole;
 import com.devloop.user.service.UserService;
@@ -34,12 +38,21 @@ public class LectureVideoService {
     private final LectureRepository lectureRepository;
     private final LectureVideoRepository lectureVideoRepository;
     private final UserService userService;
+    private final S3Service s3Service;
 
     @Value("${cloud.aws.s3.bucketName}")
     private String bucketName;
 
-    //멀티 파트 파일 업로드
-    public String uploadVideo(AuthUser authUser,Long lectureId, MultipartFile multipartFile) throws IOException {
+    /**
+     * 멀티파트 파일 업로드
+     * @param authUser
+     * @param lectureId
+     * @param multipartFile
+     * @param title
+     * @return
+     * @throws IOException
+     */
+    public String uploadLectureVideo(AuthUser authUser,Long lectureId, MultipartFile multipartFile, String title) throws IOException {
         //유저가 존재하는 지 확인
         User user= userService.findByUserId(authUser.getId());
 
@@ -48,7 +61,7 @@ public class LectureVideoService {
                 new ApiException(ErrorStatus._NOT_FOUND_LECTURE));
 
         //유저가 강의 등록한 유저인지 확인
-        if(user.getId().equals(lecture.getUser().getId())){
+        if(!user.getId().equals(lecture.getUser().getId())){
             throw new ApiException(ErrorStatus._HAS_NOT_ACCESS_PERMISSION);
         }
 
@@ -109,9 +122,11 @@ public class LectureVideoService {
             //강의 영상 첨부파일 DB 저장
             String s3Url = "https://" + bucketName + ".s3.amazonaws.com/" + fileName;
 
+            //새로운 강의 영상 객체 생성
             LectureVideo lectureVideo=LectureVideo.of(
                     new URL(s3Url),
                     fileName,
+                    title,
                     VideoStatus.COMPLETED,
                     lecture
             );
@@ -159,14 +174,81 @@ public class LectureVideoService {
         return response.uploadId();
     }
 
+    /**
+     * 강의 영상 다건 조회
+     * @param authUser
+     * @param lectureId
+     * @return
+     */
+    public List<GetLectureVideoListResponse> getLectureVideoList(AuthUser authUser, Long lectureId) {
+        //강의가 존재하는 지 확인
+        Lecture lecture=lectureRepository.findById(lectureId).orElseThrow(()->
+                new ApiException(ErrorStatus._NOT_FOUND_LECTURE));
+
+        //강의가 승인이 되었는 지 확인
+        if(!lecture.getApproval().equals(Approval.APPROVED)){
+            throw new ApiException(ErrorStatus._ACCESS_PERMISSION_DENIED);
+        }
+
+        List<LectureVideo> lectureVideos=lectureVideoRepository.findAllByLectureId(lectureId);
+
+        return lectureVideos.stream().map(lectureVideo -> {
+            return GetLectureVideoListResponse.of(
+                    lectureVideo.getId(),
+                    lectureVideo.getTitle()
+            );
+        }).toList();
+    }
+
+    /**
+     * 강의 영상 단건 조회 (수강 유저만 조회 가능)
+     * @param authUser
+     * @param videoId
+     * @return
+     */
+    public GetLectureVideoDetailResponse getLectureVideo(AuthUser authUser, Long videoId) {
+        //수강 유저인지 확인
+
+        //해당 영상이 있는 지 확인
+        LectureVideo lectureVideo=lectureVideoRepository.findById(videoId).orElseThrow(()->
+                new ApiException(ErrorStatus._NOT_FOUND_LECTURE_VIDEO));
+
+        return GetLectureVideoDetailResponse.of(
+                lectureVideo.getTitle(),
+                lectureVideo.getVideoURL()
+        );
+    }
+
+    /**
+     * 강의 영상 삭제
+     * @param authUser
+     * @param videoId
+     * @return
+     */
+    public String deleteVideo(AuthUser authUser, Long videoId) {
+        //해당 영상이 있는 지 확인
+        LectureVideo lectureVideo=lectureVideoRepository.findById(videoId).orElseThrow(()->
+                new ApiException(ErrorStatus._NOT_FOUND_LECTURE_VIDEO));
+
+        //영상을 등록한 유저가 맞는 지 확인
+
+        deleteLectureVideo(lectureVideo);
+
+        return String.format("%s 강의를 삭제하였습니다.", lectureVideo.getTitle());
+    }
 
     //Util
-    public Optional<List<LectureVideo>> findLectureVideoByLectureId(Long lectureId){
+    public List<LectureVideo> findLectureVideoByLectureId(Long lectureId){
        return lectureVideoRepository.findAllByLectureId(lectureId);
     }
 
+    //영상 삭제
     public void deleteLectureVideo(LectureVideo lectureVideo){
+        //S3 영상 파일 삭제
+        s3Service.delete(lectureVideo.getFileName());
         lectureVideoRepository.delete(lectureVideo);
     }
+
+
 
 }

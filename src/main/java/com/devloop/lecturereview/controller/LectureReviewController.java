@@ -2,8 +2,8 @@ package com.devloop.lecturereview.controller;
 
 import com.devloop.common.AuthUser;
 import com.devloop.common.apipayload.ApiResponse;
-import com.devloop.lecturereview.request.LectureReviewRequest;
-import com.devloop.lecturereview.response.LectureReviewResponse;
+import com.devloop.lecturereview.request.SaveLectureReviewRequest;
+import com.devloop.lecturereview.response.GetLectureReviewResponse;
 import com.devloop.lecturereview.service.LectureReviewService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +22,7 @@ public class LectureReviewController {
     public ApiResponse<String> saveLectureReview(
             @AuthenticationPrincipal AuthUser authUser,
             @PathVariable("lectureId") Long lectureId,
-            @Valid @RequestBody LectureReviewRequest saveLectureReviewRequest
+            @Valid @RequestBody SaveLectureReviewRequest saveLectureReviewRequest
     ){
         return ApiResponse.ok(lectureReviewService.saveLectureReview(authUser,lectureId,saveLectureReviewRequest));
     }
@@ -33,14 +33,14 @@ public class LectureReviewController {
             @AuthenticationPrincipal AuthUser authUser,
             @PathVariable("lectureId") Long lectureId,
             @PathVariable("reviewId") Long reviewId,
-            @Valid @RequestBody LectureReviewRequest lectureReviewRequest
+            @Valid @RequestBody SaveLectureReviewRequest lectureReviewRequest
     ){
         return ApiResponse.ok(lectureReviewService.updateLectureReview(authUser,lectureId,reviewId,lectureReviewRequest));
     }
 
     //강의 후기 다건 조회
     @GetMapping("/v2/search/lectures/{lectureId}/reviews")
-    public ApiResponse<Page<LectureReviewResponse>> getLectureReviewList(
+    public ApiResponse<Page<GetLectureReviewResponse>> getLectureReviewList(
             @PathVariable("lectureId") Long lectureId,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size
