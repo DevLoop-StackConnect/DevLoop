@@ -19,8 +19,6 @@ public class UserResponse {
     @Nullable
     private final String tutorRequestSubUrl;
 
-
-
     private UserResponse( String userName,
                           String userEmail,
                           String userRole,

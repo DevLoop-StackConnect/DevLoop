@@ -29,9 +29,4 @@ public class UserController {
         userService.updateProfileImg(files, authUser);
         return ApiResponse.ok("프로필 이미지가 변경 되었습니다.");
     }
-
-    @GetMapping("/v1/users/profiles/image/s3")
-    public  ApiResponse<S3Object>getProfileImgFromS3(@AuthenticationPrincipal AuthUser authUser){
-        return ApiResponse.ok(userService.getProfileImgFromS3(authUser));
-    }
 }
