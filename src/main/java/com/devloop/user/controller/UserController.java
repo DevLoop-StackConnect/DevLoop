@@ -1,9 +1,8 @@
 package com.devloop.user.controller;
 
-import com.amazonaws.services.s3.model.S3Object;
 import com.devloop.common.AuthUser;
 import com.devloop.common.apipayload.ApiResponse;
-import com.devloop.user.dto.response.UserResponse;
+import com.devloop.user.response.UserResponse;
 import com.devloop.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
