@@ -1,6 +1,5 @@
 package com.devloop.lecture.service;
 
-import com.amazonaws.AmazonServiceException;
 import com.devloop.attachment.s3.S3Service;
 import com.devloop.common.AuthUser;
 import com.devloop.common.apipayload.status.ErrorStatus;
@@ -14,16 +13,15 @@ import com.devloop.lecture.repository.LectureVideoRepository;
 import com.devloop.lecture.response.GetLectureVideoDetailResponse;
 import com.devloop.lecture.response.GetLectureVideoListResponse;
 import com.devloop.user.entity.User;
-import com.devloop.user.enums.UserRole;
 import com.devloop.user.service.UserService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.*;
-import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -33,6 +31,7 @@ import java.util.*;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class LectureVideoService {
     private final S3Client s3Client;
     private final LectureRepository lectureRepository;
@@ -84,6 +83,7 @@ public class LectureVideoService {
             for(int i=1;filePosition<fileSize;i++){
                 //마지막 파트 크기가 partSize 미만일 경우 조정
                 long currentPartSize=Math.min(partSize,(fileSize-filePosition));
+                log.info("currentPartSize={}",currentPartSize);
 
                 //각 파트에 대한 객체 생성
                 UploadPartRequest uploadPartRequest=UploadPartRequest.builder()
