@@ -145,17 +145,4 @@ public class S3Service {
             throw new ApiException(ErrorStatus._ATTACHMENT_NOT_FOUND);
         }
     }
-    public S3Object getProfileImgFromS3(String fileName) {
-        if (amazonS3Client.doesObjectExist(bucketName, fileName)) {
-            try (S3Object s3Object = amazonS3Client.getObject(bucketName, fileName)) {
-                return s3Object; // The s3Object will be closed automatically after this block
-            } catch (AmazonServiceException e) {
-                throw new ApiException(ErrorStatus._HAS_NOT_ACCESS_PERMISSION);
-            } catch (IOException e) {
-                throw new ApiException(ErrorStatus._RESOURCE_CLOSING_FAILED);
-            }
-        } else {
-            throw new ApiException(ErrorStatus._ATTACHMENT_NOT_FOUND);
-        }
-    }
 }
