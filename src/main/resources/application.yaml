@@ -19,3 +19,7 @@ cloud:
       static: ${AWS_REGION}
     stack:
       auto: false
+    cloudfront:
+      cloudFrontUrl: ${CLOUD_FRONT_URL}
+      keyPairId: ${CLOUDFRONT_KEY_PAIR_ID}
+      privateKeyPath: ${CLOUDFRONT_PRIVATE_KEY_PATH}
