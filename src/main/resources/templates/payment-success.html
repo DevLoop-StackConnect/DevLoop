@@ -37,7 +37,7 @@
         if (!response.ok) {
             // 결제 실패 비즈니스 로직을 구현하세요.
             console.log(json);
-            window.location.href = `/fail?message=${json.message}&code=${json.code}`;
+            window.location.href = `/api/v2/orders-fail?orderRequestId=${orderId}&message=${json.message}&code=${json.code}`;
         }
 
         // 결제 성공 비즈니스 로직을 구현하세요.
