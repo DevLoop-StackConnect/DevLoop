@@ -14,6 +14,7 @@ import com.devloop.scheduleTodo.entity.ScheduleTodo;
 import com.devloop.scheduleTodo.repository.ScheduleTodoRepository;
 import com.devloop.user.entity.User;
 import com.devloop.user.service.UserService;
+import jakarta.persistence.OptimisticLockException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -43,6 +44,7 @@ public class ScheduleTodoService {
             // 별도 권한 확인 없이 일정 생성 허용
             ScheduleTodo scheduleTodo = ScheduleTodo.of(
                     scheduleBoard,
+                    currentUser, //작성자를 currentuser로 설정
                     scheduleTodoRequest.getTitle(),
                     scheduleTodoRequest.getContent(),
                     scheduleTodoRequest.getStartDate(),
@@ -52,6 +54,7 @@ public class ScheduleTodoService {
             scheduleTodoRepository.save(scheduleTodo);
             return ScheduleTodoResponse.of(
                     scheduleTodo.getId(),
+                    currentUser.getUsername(),
                     scheduleTodo.getTitle(),
                     scheduleTodo.getContent(),
                     scheduleTodo.getStartDate(),
@@ -68,6 +71,7 @@ public class ScheduleTodoService {
         //접근권한이 있으면 scheduleTodo 생성
         ScheduleTodo scheduleTodo = ScheduleTodo.of(
                 scheduleBoard,
+                currentUser,
                 scheduleTodoRequest.getTitle(),
                 scheduleTodoRequest.getContent(),
                 scheduleTodoRequest.getStartDate(),
@@ -77,6 +81,7 @@ public class ScheduleTodoService {
         scheduleTodoRepository.save(scheduleTodo);
         return ScheduleTodoResponse.of(
                 scheduleTodo.getId(),
+                currentUser.getUsername(),
                 scheduleTodo.getTitle(),
                 scheduleTodo.getContent(),
                 scheduleTodo.getStartDate(),
@@ -101,6 +106,7 @@ public class ScheduleTodoService {
 
         return ScheduleTodoResponse.of(
                 scheduleTodo.getId(),
+                scheduleTodo.getCreatedBy().getUsername(),
                 scheduleTodo.getTitle(),
                 scheduleTodo.getContent(),
                 scheduleTodo.getStartDate(),
@@ -111,49 +117,56 @@ public class ScheduleTodoService {
     //수정
     @Transactional
     public ScheduleTodoResponse updateScheduleTodo(AuthUser authUser, Long scheduleTodoId, ScheduleTodoRequest scheduleTodoRequest) {
-        ScheduleTodo scheduleTodo = scheduleTodoRepository.findById(scheduleTodoId)
-                .orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_SCHEDULE_TODO));
+        try {
+            ScheduleTodo scheduleTodo = scheduleTodoRepository.findById(scheduleTodoId)
+                    .orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_SCHEDULE_TODO));
 
-        ScheduleBoard scheduleBoard = scheduleTodo.getScheduleBoard();
-        ProjectWithTutor projectWithTutor = scheduleBoard.getProjectWithTutor();
-        User currentUser = userService.findByUserId(authUser.getId());
+            ScheduleBoard scheduleBoard = scheduleTodo.getScheduleBoard();
+            ProjectWithTutor projectWithTutor = scheduleBoard.getProjectWithTutor();
+            User currentUser = userService.findByUserId(authUser.getId());
 
 
-        //튜터는 모든 scheduleTodo수정가능
-        if (currentUser.equals(projectWithTutor.getUser())) {
+            //튜터는 모든 scheduleTodo수정가능
+            if (currentUser.equals(projectWithTutor.getUser())) {
+                scheduleTodo.updateScheduleTodo(
+                        scheduleTodoRequest.getTitle(),
+                        scheduleTodoRequest.getContent(),
+                        scheduleTodoRequest.getStartDate(),
+                        scheduleTodoRequest.getEndDate()
+                );
+
+                return ScheduleTodoResponse.of(
+                        scheduleTodo.getId(),
+                        scheduleTodo.getCreatedBy().getUsername(),
+                        scheduleTodo.getTitle(),
+                        scheduleTodo.getContent(),
+                        scheduleTodo.getStartDate(),
+                        scheduleTodo.getEndDate()
+                );
+            }
+            //일반 유저 권한 확인: 본인이 쓴 일정인지 확인
+            if(!scheduleTodo.getCreatedBy().equals(currentUser)){
+                throw new ApiException(ErrorStatus._PERMISSION_DENIED);
+            }
+            //권한 확인 후에 수정로직
             scheduleTodo.updateScheduleTodo(
                     scheduleTodoRequest.getTitle(),
                     scheduleTodoRequest.getContent(),
                     scheduleTodoRequest.getStartDate(),
                     scheduleTodoRequest.getEndDate()
             );
-
             return ScheduleTodoResponse.of(
                     scheduleTodo.getId(),
+                    scheduleTodo.getCreatedBy().getUsername(),
                     scheduleTodo.getTitle(),
                     scheduleTodo.getContent(),
                     scheduleTodo.getStartDate(),
                     scheduleTodo.getEndDate()
             );
+        } catch (OptimisticLockException e) {
+            //낙관적 락 예외처리
+            throw new ApiException(ErrorStatus._CONFLICT);
         }
-        boolean hasAcess = boardAssignmentRepository.existsByScheduleBoardAndUserId(scheduleBoard, currentUser.getId());
-        if (!hasAcess) {
-            throw new ApiException(ErrorStatus._PERMISSION_DENIED);
-        }
-        //권한 확인 후에 수정로직
-        scheduleTodo.updateScheduleTodo(
-                scheduleTodoRequest.getTitle(),
-                scheduleTodoRequest.getContent(),
-                scheduleTodoRequest.getStartDate(),
-                scheduleTodoRequest.getEndDate()
-        );
-        return ScheduleTodoResponse.of(
-                scheduleTodo.getId(),
-                scheduleTodo.getTitle(),
-                scheduleTodo.getContent(),
-                scheduleTodo.getStartDate(),
-                scheduleTodo.getEndDate()
-        );
     }
 
     @Transactional
@@ -171,9 +184,8 @@ public class ScheduleTodoService {
             scheduleTodoRepository.delete(scheduleTodo);
             return;
         }
-        // 일반 유저의 권한 확인: BoardAssignment 통해 권한 확인
-        boolean hasAccess = boardAssignmentRepository.existsByScheduleBoardAndUserId(scheduleBoard, currentUser.getId());
-        if (!hasAccess) {
+        // 일반 유저의 권한 확인
+        if (!scheduleTodo.getCreatedBy().equals(currentUser)) {
             throw new ApiException(ErrorStatus._PERMISSION_DENIED);
         }
 
