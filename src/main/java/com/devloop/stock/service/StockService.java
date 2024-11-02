@@ -16,6 +16,7 @@ public class StockService {
     private final StockRepository stockRepository;
     private final ProductService productService;
 
+    @Transactional
     public void createStock(Long productId, Integer quantity) {
 
         // 상품 객체 찾기

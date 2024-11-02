@@ -69,6 +69,15 @@ public class OrderService {
         orderRepository.delete(order);
     }
 
+    @Transactional
+    public void orderApproved(String orderRequestId) {
+        // orderRequestId(UUID : orderId)로 Order 객체 찾기
+        Order order = findByOrderRequestId(orderRequestId);
+
+        // 주문 상태 "REQUESTED("주문 요청됨")"으로 변경
+        order.updateStatus(OrderStatus.APPROVED);
+    }
+
     public Order findByOrderId(Long orderId) {
         return orderRepository.findById(orderId)
                 .orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_ORDER));
