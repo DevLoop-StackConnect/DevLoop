@@ -51,11 +51,14 @@ public class LectureAdminService {
         //후기 평균 별점 - 필요x, 영상 총 수
         return GetLectureDetailResponse.of(
                 lecture.getTitle(),
+                lecture.getUser().getUsername(),
                 lecture.getDescription(),
                 lecture.getRecommend(),
                 lecture.getCategory().getDescription(),
                 lecture.getLevel().getLevel(),
                 lecture.getPrice(),
+                lecture.getLectureVideos().size(),
+                lecture.getLectureReviews().size(),
                 lecture.getCreatedAt(),
                 lecture.getModifiedAt()
         );

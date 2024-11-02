@@ -1,8 +1,10 @@
 package com.devloop.lecture.service;
 
 import com.devloop.attachment.cloudfront.CloudFrontService;
+import com.devloop.attachment.enums.FileFormat;
 import com.devloop.attachment.s3.S3Service;
 import com.devloop.common.AuthUser;
+import com.devloop.common.Validator.FileValidator;
 import com.devloop.common.apipayload.status.ErrorStatus;
 import com.devloop.common.enums.Approval;
 import com.devloop.common.exception.ApiException;
@@ -39,6 +41,7 @@ public class LectureVideoService {
     private final S3Service s3Service;
     private final CloudFrontService cloudFrontService;
     private final LectureService lectureService;
+    private final FileValidator fileValidator;
 
     @Value("${cloud.aws.s3.bucketName}")
     private String bucketName;
@@ -63,6 +66,13 @@ public class LectureVideoService {
         if(!user.getId().equals(lecture.getUser().getId())){
             throw new ApiException(ErrorStatus._HAS_NOT_ACCESS_PERMISSION);
         }
+
+        //파일 타입 확인
+        fileValidator.fileTypeValidator(multipartFile,lecture);
+        FileFormat fileType=fileValidator.mapStringToFileFormat(Objects.requireNonNull(multipartFile.getContentType()));
+
+        //파일 사이즈 확인 (임시로 1GB까지 가능)
+        fileValidator.fileSizeValidator(multipartFile,1L*1024*1024*1024);
 
         //MultipartFile을 File로 변환
         File file=convertMultipartFileToFile(multipartFile);
@@ -127,6 +137,7 @@ public class LectureVideoService {
                     fileName,
                     title,
                     VideoStatus.COMPLETED,
+                    fileType,
                     lecture
             );
             lectureVideoRepository.save(lectureVideo);
