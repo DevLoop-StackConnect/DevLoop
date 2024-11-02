@@ -86,11 +86,14 @@ public class LectureService {
         //후기 평균 별점, 영상 총 수 포함
         return GetLectureDetailResponse.of(
                 lecture.getTitle(),
+                lecture.getUser().getUsername(),
                 lecture.getDescription(),
                 lecture.getRecommend(),
                 lecture.getCategory().getDescription(),
                 lecture.getLevel().getLevel(),
                 lecture.getPrice(),
+                lecture.getLectureVideos().size(),
+                lecture.getLectureReviews().size(),
                 lecture.getCreatedAt(),
                 lecture.getModifiedAt()
         );
