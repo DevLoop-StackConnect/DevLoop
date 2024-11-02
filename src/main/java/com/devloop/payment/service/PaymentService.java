@@ -21,6 +21,7 @@ public class PaymentService {
     private final PaymentRepository paymentRepository;
     private final OrderService orderService;
 
+    @Transactional
     public void createPayment(JSONObject jsonObject){
 
         // 주문 객체 가져오기
@@ -29,7 +30,7 @@ public class PaymentService {
         // totalAmount를 BigDecimal로 변환
         BigDecimal amount = new BigDecimal(jsonObject.get("totalAmount").toString());
 
-        // requestedAt과 approvedAt을 LocalDateTime으로 변환 (ISO-8601 형식일 경우)
+        // requestedAt과 approvedAt을 LocalDateTime으로 변환
         LocalDateTime requestedAt = LocalDateTime.parse(jsonObject.get("requestedAt").toString());
         LocalDateTime approvedAt = LocalDateTime.parse(jsonObject.get("approvedAt").toString());
 
