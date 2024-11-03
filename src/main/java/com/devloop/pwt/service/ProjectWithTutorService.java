@@ -112,9 +112,12 @@ public class ProjectWithTutorService {
         Pageable pageable = PageRequest.of(page - 1, size);
 
 
-        Page<ProjectWithTutorResponseDto> projectWithTutors = projectWithTutorRepository.findAllApprovedProjectWithTutor(Approval.APPROVED, pageable)
-                .filter(p -> !p.isEmpty())
-                .orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_PROJECT_WITH_TUTOR));
+        Page<ProjectWithTutorResponseDto> projectWithTutors = projectWithTutorRepository.findAllApprovedProjectWithTutor(Approval.APPROVED, pageable);
+
+        // 값이 비어있을때 예외 처리
+        if(projectWithTutors.isEmpty()) {
+            throw new ApiException(ErrorStatus._NOT_FOUND_PROJECT_WITH_TUTOR);
+        }
 
         return projectWithTutors.map(p -> ProjectWithTutorListResponse.of(
                 p.getId(),
@@ -161,7 +164,6 @@ public class ProjectWithTutorService {
             }
 
         }
-
 
         // 변경사항 업데이트
         projectWithTutor.update(

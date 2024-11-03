@@ -11,6 +11,7 @@ import com.devloop.pwt.entity.ProjectWithTutor;
 import com.devloop.pwt.repository.ProjectWithTutorRepository;
 import com.devloop.pwt.response.ProjectWithTutorDetailAdminResponse;
 import com.devloop.pwt.response.ProjectWithTutorListAdminResponse;
+import com.devloop.stock.service.StockService;
 import com.devloop.scheduleBoard.service.ScheduleBoardService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -26,6 +27,7 @@ public class ProjectWithTutorAdminService {
 
     private final ProjectWithTutorRepository projectWithTutorRepository;
     private final PWTAttachmentService pwtAttachmentService;
+    private final StockService stockService;
     private final ScheduleBoardService scheduleBoardService;
 
     // PWT 게시글 승인 (ADMIN)
@@ -38,6 +40,9 @@ public class ProjectWithTutorAdminService {
 
         // PWT 게시글 승인여부 상태 변경
         projectWithTutor.changeApproval(Approval.APPROVED);
+
+        // Stock 객체 생성
+        stockService.createStock(projectWithTutor.getId(), projectWithTutor.getMaxParticipants());
 
         //ScheduleBoard 생성
         scheduleBoardService.createScheduleBoard(projectWithTutor);
@@ -53,6 +58,11 @@ public class ProjectWithTutorAdminService {
 
         // PWT 첨부파일 객체 가져오기
         PWTAttachment pwtAttachment = pwtAttachmentService.findPwtAttachmentByPwtId(projectWithTutor.getId());
+
+        // null 예외 처리
+        if(pwtAttachment == null) {
+            throw new ApiException(ErrorStatus._ATTACHMENT_NOT_FOUND);
+        }
 
         UserResponseDto userResponseDto = UserResponseDto.of(
                 projectWithTutor.getUser().getUsername(),
@@ -76,10 +86,12 @@ public class ProjectWithTutorAdminService {
     public Page<ProjectWithTutorListAdminResponse> getAllProjectWithTutors(int page, int size) {
         Pageable pageable = PageRequest.of(page - 1, size);
 
+        Page<ProjectWithTutorResponseDto> projectWithTutors = projectWithTutorRepository.findAllWaiteProjectWithTutor(Approval.WAITE, pageable);
 
-        Page<ProjectWithTutorResponseDto> projectWithTutors = projectWithTutorRepository.findAllWaiteProjectWithTutor(Approval.WAITE, pageable)
-                .filter(p -> !p.isEmpty())
-                .orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_PROJECT_WITH_TUTOR));
+        // 값이 비어있을때 예외 처리
+        if(projectWithTutors.isEmpty()) {
+            throw new ApiException(ErrorStatus._NOT_FOUND_PROJECT_WITH_TUTOR);
+        }
 
         return projectWithTutors.map(p -> ProjectWithTutorListAdminResponse.of(
                 p.getId(),

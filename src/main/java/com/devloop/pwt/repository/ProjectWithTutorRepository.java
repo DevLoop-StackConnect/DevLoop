@@ -21,7 +21,7 @@ public interface ProjectWithTutorRepository extends JpaRepository<ProjectWithTut
             "WHERE p.approval = :approval " +
             "ORDER BY p.modifiedAt DESC"
     )
-    Optional<Page<ProjectWithTutorResponseDto>> findAllApprovedProjectWithTutor(@Param("approval") Approval approval, Pageable pageable);
+    Page<ProjectWithTutorResponseDto> findAllApprovedProjectWithTutor(@Param("approval") Approval approval, Pageable pageable);
 
 
     @Query(
@@ -30,5 +30,5 @@ public interface ProjectWithTutorRepository extends JpaRepository<ProjectWithTut
                     "WHERE p.approval = :approval " +
                     "ORDER BY p.modifiedAt ASC"
     )
-    Optional<Page<ProjectWithTutorResponseDto>> findAllWaiteProjectWithTutor(@Param("approval") Approval approval, Pageable pageable);
+    Page<ProjectWithTutorResponseDto> findAllWaiteProjectWithTutor(@Param("approval") Approval approval, Pageable pageable);
 }
