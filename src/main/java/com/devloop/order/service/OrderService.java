@@ -12,6 +12,7 @@ import com.devloop.user.entity.User;
 import com.devloop.user.repository.UserRepository;
 import com.devloop.user.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,6 +26,7 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final UserService userService;
     private final CartService cartService;
+    private final OrderItemService orderItemService;
 
     // 주문 하기 (주문 요청, 주문 객체 생성)
     @Transactional
@@ -69,13 +71,17 @@ public class OrderService {
         orderRepository.delete(order);
     }
 
+    // 주문 완료됨 (주문 승인됨)
     @Transactional
     public void orderApproved(String orderRequestId) {
         // orderRequestId(UUID : orderId)로 Order 객체 찾기
         Order order = findByOrderRequestId(orderRequestId);
 
-        // 주문 상태 "REQUESTED("주문 요청됨")"으로 변경
+        // 주문 상태 "APPROVED("주문 승인됨")"으로 변경
         order.updateStatus(OrderStatus.APPROVED);
+
+        // 주문 항목 저장
+        orderItemService.saveOrderItem(orderRequestId);
     }
 
     public Order findByOrderId(Long orderId) {
