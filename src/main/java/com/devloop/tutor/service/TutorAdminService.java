@@ -30,9 +30,12 @@ public class TutorAdminService {
         // 페이징 지정
         Pageable pageable = PageRequest.of(page - 1, size);
 
-        Page<TutorRequest> requests = requestRepository.findAllByStatus(pageable, Approval.WAITE)
-                .filter(r -> !r.isEmpty())
-                .orElseThrow(() -> new ApiException(ErrorStatus._TUTOR_REQUEST_NOT_EXIST));
+        Page<TutorRequest> requests = requestRepository.findAllByStatus(pageable, Approval.WAITE);
+
+        // 값이 비어있을때 예외 처리
+        if(requests.isEmpty()){
+            throw new ApiException(ErrorStatus._TUTOR_REQUEST_NOT_EXIST);
+        }
 
         return requests.map(r -> TutorRequestListAdminResponse.of(
                 r.getName(),
