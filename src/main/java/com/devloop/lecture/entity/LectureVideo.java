@@ -32,9 +32,6 @@ public class LectureVideo extends Timestamped {
     @Enumerated(EnumType.STRING)
     private FileFormat fileFormat;
 
-//    @NotNull
-//    private Integer sequence;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="lecture_id")
     private Lecture lecture;
