@@ -55,29 +55,33 @@ public class LectureVideoController {
     /**
      * 강의 단건 조회 (수강 유저와 어드민만 접근)
      * @param authUser
+     * @param lectureId
      * @param videoId
      * @return
      */
-    @GetMapping("/v2/videos/{videoId}")
+    @GetMapping("/v2/lectures/{lectureId}/videos/{videoId}")
     public ApiResponse<GetLectureVideoDetailResponse> getLectureVideo(
             @AuthenticationPrincipal AuthUser authUser,
+            @PathVariable("lectureId")Long lectureId,
             @PathVariable("videoId") Long videoId
     ) throws Exception {
-        return ApiResponse.ok(lectureVideoService.getLectureVideo(authUser,videoId));
+        return ApiResponse.ok(lectureVideoService.getLectureVideo(authUser,lectureId,videoId));
     }
 
     /**
      * 강의 영상 삭제
      * @param authUser
+     * @param lectureId
      * @param videoId
      * @return
      */
-    @DeleteMapping("/v2/videos/{videoId}")
+    @DeleteMapping("/v2/lectures/{lectureId}/videos/{videoId}")
     public ApiResponse<String> deleteVideo(
             @AuthenticationPrincipal AuthUser authUser,
+            @PathVariable("lectureId")Long lectureId,
             @PathVariable("videoId") Long videoId
     ){
-        return ApiResponse.ok(lectureVideoService.deleteVideo(authUser,videoId));
+        return ApiResponse.ok(lectureVideoService.deleteVideo(authUser,lectureId,videoId));
     }
 
 

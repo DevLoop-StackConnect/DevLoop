@@ -67,9 +67,10 @@ public class LectureVideoService {
             throw new ApiException(ErrorStatus._HAS_NOT_ACCESS_PERMISSION);
         }
 
-        //파일 타입 확인
-        fileValidator.fileTypeValidator(multipartFile,lecture);
+        //파일 타입 확인 (사진으로 테스트하기 위해 임시로 주석 처리)
+        //fileValidator.fileTypeValidator(multipartFile,lecture);
         FileFormat fileType=fileValidator.mapStringToFileFormat(Objects.requireNonNull(multipartFile.getContentType()));
+
 
         //파일 사이즈 확인 (임시로 1GB까지 가능)
         fileValidator.fileSizeValidator(multipartFile,1L*1024*1024*1024);
@@ -212,11 +213,21 @@ public class LectureVideoService {
     /**
      * 강의 영상 단건 조회 (수강 유저만 조회 가능)
      * @param authUser
+     * @param lectureId
      * @param videoId
      * @return
      */
-    public GetLectureVideoDetailResponse getLectureVideo(AuthUser authUser, Long videoId) throws Exception {
+    public GetLectureVideoDetailResponse getLectureVideo(AuthUser authUser, Long lectureId,Long videoId) throws Exception {
+
         //수강 유저인지 확인
+
+        //강의가 존재하는 지 확인
+        Lecture lecture=lectureService.findById(lectureId);
+
+        //강의가 승인이 되었는 지 확인
+        if(!lecture.getApproval().equals(Approval.APPROVED)){
+            throw new ApiException(ErrorStatus._ACCESS_PERMISSION_DENIED);
+        }
 
         //해당 영상이 있는 지 확인
         LectureVideo lectureVideo=lectureVideoRepository.findById(videoId).orElseThrow(()->
@@ -234,15 +245,22 @@ public class LectureVideoService {
     /**
      * 강의 영상 삭제
      * @param authUser
+     * @param lectureId
      * @param videoId
      * @return
      */
-    public String deleteVideo(AuthUser authUser, Long videoId) {
+    public String deleteVideo(AuthUser authUser,Long lectureId, Long videoId) {
+        //강의가 존재하는 지 확인
+        Lecture lecture=lectureService.findById(lectureId);
+
         //해당 영상이 있는 지 확인
         LectureVideo lectureVideo=lectureVideoRepository.findById(videoId).orElseThrow(()->
                 new ApiException(ErrorStatus._NOT_FOUND_LECTURE_VIDEO));
 
         //영상을 등록한 유저가 맞는 지 확인
+        if(!authUser.getId().equals(lecture.getUser().getId())){
+            throw new ApiException(ErrorStatus._ACCESS_PERMISSION_DENIED);
+        }
 
         deleteLectureVideo(lectureVideo);
 
