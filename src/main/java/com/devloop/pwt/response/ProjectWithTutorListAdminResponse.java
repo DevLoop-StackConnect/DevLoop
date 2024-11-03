@@ -2,6 +2,7 @@ package com.devloop.pwt.response;
 
 import lombok.Getter;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Getter
@@ -9,7 +10,7 @@ public class ProjectWithTutorListAdminResponse {
 
     private final Long id;
     private final String title;
-    private final Integer price;
+    private final BigDecimal price;
     private final String status;
     private final LocalDateTime deadline;
     private final Integer maxParticipants;
@@ -19,7 +20,7 @@ public class ProjectWithTutorListAdminResponse {
     private ProjectWithTutorListAdminResponse(
             Long id,
             String title,
-            Integer price,
+            BigDecimal price,
             String status,
             LocalDateTime deadline,
             Integer maxParticipants,
@@ -39,7 +40,7 @@ public class ProjectWithTutorListAdminResponse {
     public static ProjectWithTutorListAdminResponse of(
             Long id,
             String title,
-            Integer price,
+            BigDecimal price,
             String status,
             LocalDateTime deadline,
             Integer maxParticipants,

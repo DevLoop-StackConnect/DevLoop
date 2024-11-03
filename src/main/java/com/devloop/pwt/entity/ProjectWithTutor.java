@@ -4,40 +4,33 @@ import com.devloop.common.Timestamped;
 import com.devloop.common.enums.Approval;
 import com.devloop.common.enums.BoardType;
 import com.devloop.common.enums.Category;
+import com.devloop.product.entity.Product;
 import com.devloop.pwt.enums.Level;
 import com.devloop.pwt.enums.ProjectWithTutorStatus;
 import com.devloop.scheduleBoard.entity.ScheduleBoard;
 import com.devloop.user.entity.User;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Getter
 @Entity
-@RequiredArgsConstructor
-@Table
-public class ProjectWithTutor extends Timestamped {
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+public class ProjectWithTutor extends Product {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
 
     @Enumerated(EnumType.STRING)
     private BoardType boardType = BoardType.PWT;
 
     @NotNull
-    @Column(length = 255)
-    private String title;
-
-    @NotNull
     @Column(columnDefinition = "TEXT")
     private String description;
-
-    @NotNull
-    private Integer price;
 
     @NotNull
     @Enumerated(EnumType.STRING)
@@ -62,7 +55,7 @@ public class ProjectWithTutor extends Timestamped {
     private Category category;
 
     @ManyToOne
-    @JoinColumn(name="user_id")
+    @JoinColumn(name = "user_id")
     private User user;
 
     @OneToOne(mappedBy = "projectWithTutor",cascade=CascadeType.ALL)
@@ -72,16 +65,15 @@ public class ProjectWithTutor extends Timestamped {
     private ProjectWithTutor(
             String title,
             String description,
-            Integer price,
+            BigDecimal price,
             LocalDateTime deadline,
             Integer maxParticipants,
             Level level,
             Category category,
             User user
     ) {
-        this.title = title;
+        super(title, price);
         this.description = description;
-        this.price = price;
         this.deadline = deadline;
         this.maxParticipants = maxParticipants;
         this.level = level;
@@ -92,13 +84,13 @@ public class ProjectWithTutor extends Timestamped {
     public static ProjectWithTutor of(
             String title,
             String description,
-            Integer price,
+            BigDecimal price,
             LocalDateTime deadline,
             Integer maxParticipants,
             Level level,
             Category category,
             User user
-    ){
+    ) {
         return new ProjectWithTutor(
                 title,
                 description,
@@ -114,16 +106,15 @@ public class ProjectWithTutor extends Timestamped {
     public void update(
             String title,
             String description,
-            Integer price,
+            BigDecimal price,
             LocalDateTime deadline,
             Integer maxParticipants,
             Level level,
             User user,
             Category category
     ) {
-        this.title = title;
+        super.update(title, price);
         this.description = description;
-        this.price = price;
         this.deadline = deadline;
         this.maxParticipants = maxParticipants;
         this.level = level;
@@ -134,4 +125,5 @@ public class ProjectWithTutor extends Timestamped {
     public void changeApproval(Approval approval) {
         this.approval = approval;
     }
+
 }

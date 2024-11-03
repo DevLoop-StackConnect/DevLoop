@@ -5,13 +5,14 @@ import com.devloop.common.enums.Approval;
 import com.devloop.user.entity.User;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 
 @Entity
 @Getter
-@RequiredArgsConstructor
-@Table
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class TutorRequest extends Timestamped {
 
     @Id
