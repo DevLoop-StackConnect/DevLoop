@@ -17,7 +17,7 @@ public interface TutorRequestRepository extends JpaRepository<TutorRequest, Long
     @Query("SELECT tr FROM TutorRequest tr " +
             "WHERE tr.status = :status " +
             "ORDER BY tr.createdAt DESC")
-    Optional<Page<TutorRequest>> findAllByStatus(
+    Page<TutorRequest> findAllByStatus(
             Pageable pageable,
             @Param("status") Approval approval);
 
