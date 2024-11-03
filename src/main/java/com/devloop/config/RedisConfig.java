@@ -16,6 +16,8 @@ import org.springframework.data.redis.serializer.RedisSerializationContext;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 import java.time.Duration;
+import java.util.HashMap;
+import java.util.Map;
 
 @Configuration
 public class RedisConfig {
@@ -28,59 +30,53 @@ public class RedisConfig {
         return objectMapper;
     }
 
-    @Bean
-    public RedisTemplate<String, Object> redisTemplate(
-            RedisConnectionFactory connectionFactory,
-            ObjectMapper redisObjectMapper) {
-
-        RedisTemplate<String, Object> template = new RedisTemplate<>();
+    private <T> RedisTemplate<String, T> createRedisTemplate(
+            RedisConnectionFactory connectionFactory, ObjectMapper objectMapper) {
+        RedisTemplate<String, T> template = new RedisTemplate<>();
         template.setConnectionFactory(connectionFactory);
-
-        GenericJackson2JsonRedisSerializer serializer =
-                new GenericJackson2JsonRedisSerializer(redisObjectMapper);
+        GenericJackson2JsonRedisSerializer serializer = new GenericJackson2JsonRedisSerializer(objectMapper);
 
         template.setKeySerializer(new StringRedisSerializer());
         template.setValueSerializer(serializer);
         template.setHashKeySerializer(new StringRedisSerializer());
         template.setHashValueSerializer(serializer);
+        template.setEnableTransactionSupport(true);
 
         template.afterPropertiesSet();
         return template;
     }
 
     @Bean
-    public RedisTemplate<String, NotificationMessage> notificationRedisTemplate(
-            RedisConnectionFactory connectionFactory,
-            ObjectMapper redisObjectMapper) {
+    public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory connectionFactory, ObjectMapper redisObjectMapper) {
+        return createRedisTemplate(connectionFactory, redisObjectMapper);
+    }
 
-        RedisTemplate<String, NotificationMessage> template = new RedisTemplate<>();
-        template.setConnectionFactory(connectionFactory);
-
-        GenericJackson2JsonRedisSerializer serializer =
-                new GenericJackson2JsonRedisSerializer(redisObjectMapper);
-
-        template.setKeySerializer(new StringRedisSerializer());
-        template.setValueSerializer(serializer);
-        template.setHashKeySerializer(new StringRedisSerializer());
-        template.setHashValueSerializer(serializer);
-
-        template.afterPropertiesSet();
-        return template;
+    @Bean
+    public RedisTemplate<String, NotificationMessage> notificationRedisTemplate(RedisConnectionFactory connectionFactory, ObjectMapper redisObjectMapper) {
+        return createRedisTemplate(connectionFactory, redisObjectMapper);
     }
 
     @Bean
     public CacheManager cacheManager(RedisConnectionFactory redisConnectionFactory) {
-        RedisCacheConfiguration configuration = RedisCacheConfiguration.defaultCacheConfig()
-                .entryTtl(Duration.ofDays(3))
-                .serializeKeysWith(RedisSerializationContext.SerializationPair.fromSerializer(new StringRedisSerializer()))
-                .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(new GenericJackson2JsonRedisSerializer()));
+        RedisCacheConfiguration defaultConfig = RedisCacheConfiguration.defaultCacheConfig()
+                .entryTtl(Duration.ofHours(24))
+                .disableCachingNullValues()
+                .serializeKeysWith(RedisSerializationContext.SerializationPair
+                        .fromSerializer(new StringRedisSerializer()))
+                .serializeValuesWith(RedisSerializationContext.SerializationPair
+                        .fromSerializer(new GenericJackson2JsonRedisSerializer()));
+
+        Map<String, RedisCacheConfiguration> configurations = new HashMap<>();
+        configurations.put("searchPreview", RedisCacheConfiguration.defaultCacheConfig()
+                .entryTtl(Duration.ofHours(24))
+                .disableCachingNullValues());
+        configurations.put("searchDetail", RedisCacheConfiguration.defaultCacheConfig()
+                .entryTtl(Duration.ofHours(12))
+                .disableCachingNullValues());
 
         return RedisCacheManager.builder(redisConnectionFactory)
-                .cacheDefaults(configuration)
-                .withCacheConfiguration("searchPreview",
-                        RedisCacheConfiguration.defaultCacheConfig().entryTtl(Duration.ofDays(3)))
-                .withCacheConfiguration("searchDetail",
-                        RedisCacheConfiguration.defaultCacheConfig().entryTtl(Duration.ofDays(3)))
+                .cacheDefaults(defaultConfig)
+                .withInitialCacheConfigurations(configurations)
                 .build();
     }
 }

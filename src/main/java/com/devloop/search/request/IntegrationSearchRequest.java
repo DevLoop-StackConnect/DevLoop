@@ -3,6 +3,9 @@ package com.devloop.search.request;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 @Setter
 @Getter
 public class IntegrationSearchRequest {
@@ -12,12 +15,13 @@ public class IntegrationSearchRequest {
     private String username;
     private String category;
 
-    public String generateCacheKey(){
-        StringBuilder key = new StringBuilder();
-        if(boardType != null) key.append(":type").append(boardType);
-        if(title != null) key.append(":title").append(title);
-        if(username != null) key.append(":uesr").append(username);
-        if(category != null) key.append(":category").append(category);
-        return key.toString();
+    public String generateCacheKey() {
+        return Stream.of(
+                        boardType != null ? "type:" + boardType : "",
+                        title != null ? "title:" + title : "",
+                        username != null ? "user:" + username : "",
+                        category != null ? "category:" + category : ""
+                ).filter(key -> !key.isEmpty())
+                .collect(Collectors.joining(":"));
     }
 }
