@@ -79,7 +79,6 @@ public enum ErrorStatus implements BaseCode {
     _CATEGORY_NOT_EXSIST(HttpStatus.BAD_REQUEST, "400", "잘못된 카테고리 입력값입니다. 오타 및 카테고리 종류를 확인하세요");
 
 
-
     private HttpStatus httpStatus;
     private String statusCode;
     private String message;

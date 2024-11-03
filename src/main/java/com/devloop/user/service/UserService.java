@@ -4,7 +4,6 @@ import com.devloop.attachment.entity.ProfileAttachment;
 import com.devloop.attachment.repository.ProfileATMRepository;
 import com.devloop.attachment.s3.S3Service;
 import com.devloop.common.AuthUser;
-import com.devloop.common.Validator.FileValidator;
 import com.devloop.common.apipayload.status.ErrorStatus;
 import com.devloop.common.exception.ApiException;
 import com.devloop.community.dto.response.CommunitySimpleResponse;
@@ -15,7 +14,7 @@ import com.devloop.party.repository.PartyRepository;
 import com.devloop.party.response.GetPartyListResponse;
 import com.devloop.tutor.entity.TutorRequest;
 import com.devloop.tutor.repository.TutorRequestRepository;
-import com.devloop.user.dto.response.UserResponse;
+import com.devloop.user.response.UserResponse;
 import com.devloop.user.entity.User;
 import com.devloop.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -41,7 +40,6 @@ public class UserService {
     private final CommunityRepository communityRepository;
     private final TutorRequestRepository tutorRequestRepository;
     private final S3Service s3Service;
-    private final FileValidator fileValidator;
 
     public UserResponse getUser(AuthUser authUser) throws MalformedURLException {
 
@@ -59,54 +57,27 @@ public class UserService {
         /*
         * 유저 개인 프로필에 보여줄 참여중인 스터디 리스트
         * */
+        List<GetPartyListResponse> userPartyList = userPartyResponses(user);
 
-        List<Party> partys = partyRepository.findAllByUserId(user.getId())
-                .orElseThrow(()->new ApiException(ErrorStatus._INVALID_REQUEST));
-        List<GetPartyListResponse> GetPartyListResponses = new ArrayList<>();
-        for (Party party : partys) {
-            GetPartyListResponse getPartyListResponses = GetPartyListResponse.of(
-                    party.getId(),
-                    party.getTitle(),
-                    party.getContents(),
-                    party.getStatus().getStatus(),
-                    party.getCategory().getDescription()
-            );
-            GetPartyListResponses.add(getPartyListResponses);
-        }
-        log.info(partys.toString());
         /*
         * 유저 개인 프로필에 보여줄 작성한 커뮤니티 게시글 리스트
         * */
-
-        List<Community> communities = communityRepository.findAllByUserId(user.getId())
-                .orElseThrow(()->new ApiException(ErrorStatus._INVALID_REQUEST));
-        log.info(communities.toString());
-        List<CommunitySimpleResponse> communitySimpleResponses = new ArrayList<>();
-        for (Community community : communities) {
-            CommunitySimpleResponse communitySimpleResponse = CommunitySimpleResponse.of(
-                    community.getId(),
-                    community.getTitle(),
-                    community.getResolveStatus(),
-                    community.getCategory()
-            );
-            communitySimpleResponses.add(communitySimpleResponse);
-        }
-        log.info(communities.toString());
+        List<CommunitySimpleResponse> userCommunityPost = userCommunityResponses(user);
 
         /*
          * 유저 개인 프로필에 보여줄 튜터 신청서 url
          * */
         TutorRequest tutorRequest = tutorRequestRepository.findByUserId(user.getId())
-                .orElseThrow(()-> new ApiException(ErrorStatus._UNSUPPORTED_OBJECT_TYPE));
+                .orElse(null);
 
         return UserResponse.of(
                 user.getUsername(),
                 user.getEmail(),
                 user.getUserRole().toString(),
                 imageURL,
-                GetPartyListResponses,
-                communitySimpleResponses,
-                tutorRequest.getSubUrl());
+                userPartyList,
+                userCommunityPost,
+                tutorRequest != null ? tutorRequest.getSubUrl() : null);
     }
 
     @Transactional
@@ -128,8 +99,49 @@ public class UserService {
         }
         s3Service.uploadFile(file,user,user);
     }
+
+
     //----------------------------------------------------util---------------------------------------------------//
     public User findByUserId(Long userId) {
         return userRepository.findById(userId).orElseThrow(()->new ApiException(ErrorStatus._NOT_FOUND_USER));
     }
+
+    /*
+     * 유저 개인 프로필에 보여줄 참여중인 스터디 리스트
+     * */
+    public List<GetPartyListResponse> userPartyResponses(User user){
+
+        List<Party> partys = partyRepository.findAllByUserId(user.getId())
+                .orElseThrow(()->new ApiException(ErrorStatus._INVALID_REQUEST));
+        List<GetPartyListResponse> getPartyListResponses = new ArrayList<>();
+        for (Party party : partys) {
+            GetPartyListResponse getPartyListResponse = GetPartyListResponse.of(
+                    party.getId(),
+                    party.getTitle(),
+                    party.getContents(),
+                    party.getStatus().getStatus(),
+                    party.getCategory().getDescription()
+            );
+            getPartyListResponses.add(getPartyListResponse);
+        }
+        return getPartyListResponses;
+    }
+
+    public List<CommunitySimpleResponse> userCommunityResponses(User user){
+        List<Community> communities = communityRepository.findAllByUserId(user.getId())
+                .orElseThrow(()->new ApiException(ErrorStatus._INVALID_REQUEST));
+        log.info(communities.toString());
+        List<CommunitySimpleResponse> communitySimpleResponses = new ArrayList<>();
+        for (Community community : communities) {
+            CommunitySimpleResponse communitySimpleResponse = CommunitySimpleResponse.of(
+                    community.getId(),
+                    community.getTitle(),
+                    community.getResolveStatus(),
+                    community.getCategory()
+            );
+            communitySimpleResponses.add(communitySimpleResponse);
+        }
+        return communitySimpleResponses;
+    }
+
 }
