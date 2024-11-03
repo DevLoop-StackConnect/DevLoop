@@ -30,13 +30,10 @@ public class SlackAccountService {
     private final SlackUserService slackUserService;
     private final NotificationHandler notificationHandler;
 
-    // === 1. Slack 이벤트 처리 관련 메서드 ===
-
-    /**
-     * Slack 이벤트를 처리하는 메서드
-     */
+    //Slack  이벤트 처리하는 메서드
     public void handleSlackEvent(JsonNode event) {
         try {
+            //이벤트, 타입에 따른 분기 처리
             String eventType = event.get("event").get("type").asText();
             switch (eventType) {
                 case "team_join" -> handleTeamJoin(event.get("event"));
@@ -48,12 +45,11 @@ public class SlackAccountService {
             throw new ApiException(ErrorStatus._SLACK_EVENT_HANDLING_ERROR);
         }
     }
-
-    /**
-     * 팀 가입 이벤트 처리
-     */
+    ///팀 가입 이벤트 처리
     private void handleTeamJoin(JsonNode event) {
+        //가입한 사용자 이름 추출
         String username = event.get("user").get("name").asText();
+        //워크스페이스 가입 알림 메시지ㅣ 생성
         NotificationMessage message = NotificationMessage.builder()
                 .type(NotificationType.WORKSPACE_JOIN)
                 .notificationTarget("#general")
@@ -66,13 +62,11 @@ public class SlackAccountService {
 
         notificationHandler.sendNotification(message);
     }
-
-    /**
-     * 채널 가입 이벤트 처리
-     */
+    //채널 가입 이벤트 처리
     private void handleChannelJoin(JsonNode event) {
         String slackUserId = event.get("user").asText();
         try {
+            //Slack 사용자 정보 조회 및 이메일 추출
             SlackUserResponse slackUser = slackUserService.findByEmail(slackUserId);
             String userEmail = slackUser.getUser().getProfile().getEmail();
             handleSlackJoin(userEmail);
@@ -80,12 +74,7 @@ public class SlackAccountService {
             log.warn("채널 입장 처리 실패: {}", slackUserId, e);
         }
     }
-
-    // === 2. 계정 연동 관련 메서드 ===
-
-    /**
-     * Slack 계정 검증 및 연동
-     */
+    //Slack 계정 검증 및 연동 처리
     @Transactional
     public void verifyAndLinkAccount(Long userId, String slackId, String slackEmail) {
         try {
@@ -93,10 +82,8 @@ public class SlackAccountService {
             if (!slackUserService.verifySlackUser(slackId)) {
                 throw new ApiException(ErrorStatus._INVALID_SLACK_USER);
             }
-
             // 매핑 생성
             createMapping(userId, slackId, slackEmail);
-
             // 연동 완료 알림
             NotificationMessage message = NotificationMessage.builder()
                     .type(NotificationType.GENERAL)
@@ -112,10 +99,7 @@ public class SlackAccountService {
             throw new ApiException(ErrorStatus._SLACK_LINK_ERROR);
         }
     }
-
-    /**
-     * Slack 매핑 정보 생성
-     */
+    //Slack 매핑 정보 생성 메서드
     @Transactional
     public void createMapping(Long userId, String slackId, String slackEmail) {
         User user = userRepository.findById(userId)
@@ -134,10 +118,7 @@ public class SlackAccountService {
         mappingRepository.save(mapping);
         user.updateSlackInfo(slackId, slackEmail);
     }
-
-    /**
-     * Slack 채널 가입 처리
-     */
+    //Slack 채널 가입 메서드
     @Transactional
     public void handleSlackJoin(String slackEmail) {
         try {
@@ -153,12 +134,7 @@ public class SlackAccountService {
             log.warn("Slack 자동 매핑 실패: {}", slackEmail, e);
         }
     }
-
-    // === 3. 계정 연동 해제 및 상태 확인 메서드 ===
-
-    /**
-     * Slack 계정 연동 해제
-     */
+    //Slack 계정 연동해제 메서드
     @Transactional
     public void unlinkSlackAccount(Long userId) {
         try {
@@ -178,10 +154,7 @@ public class SlackAccountService {
             throw new ApiException(ErrorStatus._SLACK_UNLINK_ERROR);
         }
     }
-
-    /**
-     * Slack 계정 연동 상태 확인
-     */
+    //Slack 계정 연동 상태 확인 메서드
     public boolean isSlackLinked(Long userId) {
         try {
             User user = userRepository.findById(userId)
@@ -193,25 +166,5 @@ public class SlackAccountService {
             log.error("Slack 연동 상태 확인 실패. userId: {}", userId);
             return false;
         }
-    }
-
-    // === 4. 유틸리티 메서드 ===
-
-    /**
-     * 연동된 Slack ID 조회
-     */
-    public String getSlackId(Long userId) {
-        return mappingRepository.findByUserIdAndActiveTrue(userId)
-                .map(SlackUserMapping::getSlackId)
-                .orElseThrow(() -> new ApiException(ErrorStatus._SLACK_NOT_LINKED));
-    }
-
-    /**
-     * 연동된 Slack 이메일 조회
-     */
-    public String getSlackEmail(Long userId) {
-        return mappingRepository.findByUserIdAndActiveTrue(userId)
-                .map(SlackUserMapping::getSlackEmail)
-                .orElseThrow(() -> new ApiException(ErrorStatus._SLACK_NOT_LINKED));
     }
 }

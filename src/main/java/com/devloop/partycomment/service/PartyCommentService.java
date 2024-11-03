@@ -43,52 +43,62 @@ public class PartyCommentService {
     //스터디 파티 게시글 댓글 등록
     @Transactional
     public SavePartyCommentResponse savePartyComment(AuthUser authUser, Long partyId, SavePartyCommentRequest savePartyCommentRequest) {
-        //유저가 존재하는 지 확인
-        User user = userRepository.findById(authUser.getId()).orElseThrow(() ->
-                new ApiException(ErrorStatus._NOT_FOUND_USER));
+        try {
+            //유저가 존재하는 지 확인
+            User user = userRepository.findById(authUser.getId()).orElseThrow(() ->
+                    new ApiException(ErrorStatus._NOT_FOUND_USER));
 
-        //스터디 파티 게시글이 존재하는 지 확인
-        Party party = partyService.findById(partyId);
+            //스터디 파티 게시글이 존재하는 지 확인
+            Party party = partyService.findById(partyId);
 
-        User postAuthor = party.getUser();
+            User postAuthor = party.getUser();
 
-        //새로운 댓글 생성 및 저장
-        PartyComment newPartyComment = PartyComment.from(savePartyCommentRequest, user, party);
-        partyCommentRepository.save(newPartyComment);
+            //새로운 댓글 생성 및 저장
+            PartyComment newPartyComment = PartyComment.from(savePartyCommentRequest, user, party);
+            partyCommentRepository.save(newPartyComment);
 
-        if(!Objects.equals(user.getId(),postAuthor.getId())){
-           notifyNewComment(newPartyComment);
+            if (!Objects.equals(user.getId(), postAuthor.getId())) {
+                notifyNewComment(newPartyComment);
+            }
+
+            return SavePartyCommentResponse.of(
+                    partyId,
+                    newPartyComment.getId(),
+                    newPartyComment.getComment()
+            );
+        } catch (Exception e) {
+            notifyErrorCreatioin(partyId, authUser.getId(), e.getMessage());
+            throw e;
         }
-
-        return SavePartyCommentResponse.of(
-                partyId,
-                newPartyComment.getId(),
-                newPartyComment.getComment()
-        );
     }
 
     //스터디 파티 게시글 댓글 수정
     @Transactional
     public UpdatePartyCommentResponse updatePartyComment(AuthUser authUser, Long partyId, Long commentId, UpdatePartyCommentRequest updatePartyCommentRequest) {
-        //스터디 파티 게시글이 존재하는 지 확인
-        Party party = partyService.findById(partyId);
+        try {
+            //스터디 파티 게시글이 존재하는 지 확인
+            Party party = partyService.findById(partyId);
 
-        //댓글이 존재하는 지 확인
-        PartyComment partyComment = partyCommentRepository.findById(commentId).orElseThrow(() ->
-                new ApiException(ErrorStatus._NOT_FOUND_COMMENT));
+            //댓글이 존재하는 지 확인
+            PartyComment partyComment = partyCommentRepository.findById(commentId).orElseThrow(() ->
+                    new ApiException(ErrorStatus._NOT_FOUND_COMMENT));
 
-        //댓글을 작성한 유저가 맞는 지 확인
-        if (!authUser.getId().equals(partyComment.getUser().getId())) {
-            throw new ApiException(ErrorStatus._PERMISSION_DENIED);
+            //댓글을 작성한 유저가 맞는 지 확인
+            if (!authUser.getId().equals(partyComment.getUser().getId())) {
+                throw new ApiException(ErrorStatus._PERMISSION_DENIED);
+            }
+
+            partyComment.update(updatePartyCommentRequest);
+
+            return UpdatePartyCommentResponse.of(
+                    partyId,
+                    partyComment.getId(),
+                    partyComment.getComment()
+            );
+        } catch (Exception e) {
+            notifyErrorCommentUpdate(partyId, commentId, authUser.getId(), e.getMessage());
+            throw e;
         }
-
-        partyComment.update(updatePartyCommentRequest);
-
-        return UpdatePartyCommentResponse.of(
-                partyId,
-                partyComment.getId(),
-                partyComment.getComment()
-        );
     }
 
     //스터디 파티 게시글 댓글 다건 조회
@@ -112,31 +122,35 @@ public class PartyCommentService {
     //스터디 파티 게시글 댓글 삭제
     @Transactional
     public void deletePartyComment(AuthUser authUser, Long partyId, Long commentId) {
-        //스터디 파티 게시글이 존재하는 지 확인
-        Party party = partyService.findById(partyId);
+        try {
+            //스터디 파티 게시글이 존재하는 지 확인
+            Party party = partyService.findById(partyId);
 
-        //댓글이 존재하는 지 확인
-        PartyComment partyComment = partyCommentRepository.findById(commentId).orElseThrow(() ->
-                new ApiException(ErrorStatus._NOT_FOUND_COMMENT));
+            //댓글이 존재하는 지 확인
+            PartyComment partyComment = partyCommentRepository.findById(commentId).orElseThrow(() ->
+                    new ApiException(ErrorStatus._NOT_FOUND_COMMENT));
 
-        //댓글을 작성한 유저가 맞는 지 확인
-        if (!authUser.getId().equals(partyComment.getUser().getId())) {
-            throw new ApiException(ErrorStatus._PERMISSION_DENIED);
+            //댓글을 작성한 유저가 맞는 지 확인
+            if (!authUser.getId().equals(partyComment.getUser().getId())) {
+                throw new ApiException(ErrorStatus._PERMISSION_DENIED);
+            }
+
+            partyCommentRepository.delete(partyComment);
+        } catch(Exception e){
+            notifyErrorCommentDeletion(partyId,commentId, authUser.getId(), e.getMessage());
         }
-
-        partyCommentRepository.delete(partyComment);
     }
 
-    private void notifyNewComment(PartyComment partyComment){
-        try{
+    private void notifyNewComment(PartyComment partyComment) {
+        try {
             User postAuthor = partyComment.getParty().getUser();
             User commentAuthor = partyComment.getUser();
             Party party = partyComment.getParty();
 
             String targetSlackId = postAuthor.getSlackId();
-            if(targetSlackId == null || targetSlackId.isEmpty()){
+            if (targetSlackId == null || targetSlackId.isEmpty()) {
                 log.debug("Slack 연동되지 않은 사용자 : {}", postAuthor.getId());
-                return ;
+                return;
             }
             NotificationMessage message = NotificationMessage.builder()
                     .type(NotificationType.PARTY_COMMENT)
@@ -153,9 +167,21 @@ public class PartyCommentService {
                     .timestamp(LocalDateTime.now())
                     .build();
             notificationHandler.sendNotification(message);
-            log.debug("댓글 알림 전송 완료 - 게시글 : {}", party.getId(),partyComment.getId());
-        } catch(Exception e ){
+            log.debug("댓글 알림 전송 완료 - 게시글 : {}", party.getId(), partyComment.getId());
+        } catch (Exception e) {
             log.warn("댓글 알림 전송 실패 - 댓글 ID : {}, 사유 - {}", partyComment.getId(), e.getMessage());
         }
+    }
+
+    public void notifyErrorCreatioin(Long partyId, Long userId, String errorMessage) {
+        log.error("스터디 파티 모집 게시글 댓글 생성 실패 - partyId : {}, userId : {}, error : {}", partyId, userId, errorMessage);
+    }
+
+    public void notifyErrorCommentUpdate(Long partyId, Long commentId, Long userId, String errorMessage) {
+        log.error("스터디 파티 모집 댓글 수정 실패 - partyId : {}, commentId : {}, userId : {}, error : {}", partyId, commentId, userId, errorMessage);
+    }
+
+    public void notifyErrorCommentDeletion(Long partyId, Long commentId, Long userId, String errorMessage) {
+        log.error("스터디 파티 댓글 삭제 실패  - communityId : {}, commentId : {}, userId : {}, error : {}", partyId, commentId, userId, errorMessage);
     }
 }

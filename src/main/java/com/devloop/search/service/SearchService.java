@@ -97,6 +97,5 @@ public class SearchService {
         Specification<ProjectWithTutor> spec = SearchSpecificationUtil.buildSpecification(integrationSearchRequest);
         Page<IntegrationSearchResponse> result = projectWithTutorService.getProjectWithTutorPage(spec, pageable);
         return result;
-        //파샤드 패턴
     }
 }
