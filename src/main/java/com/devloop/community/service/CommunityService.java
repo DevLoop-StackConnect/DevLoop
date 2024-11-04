@@ -11,24 +11,21 @@ import com.devloop.common.enums.BoardType;
 import com.devloop.common.enums.Category;
 import com.devloop.common.exception.ApiException;
 import com.devloop.common.utils.SearchResponseUtil;
-import com.devloop.community.dto.request.CommunitySaveRequest;
-import com.devloop.community.dto.request.CommunityUpdateRequest;
-import com.devloop.community.dto.response.CommunityDetailResponse;
-import com.devloop.community.dto.response.CommunitySaveResponse;
-import com.devloop.community.dto.response.CommunitySimpleResponse;
+import com.devloop.community.request.CommunitySaveRequest;
+import com.devloop.community.request.CommunityUpdateRequest;
+import com.devloop.community.response.CommunityDetailResponse;
+import com.devloop.community.response.CommunitySaveResponse;
+import com.devloop.community.response.CommunitySimpleResponse;
 import com.devloop.community.entity.Community;
 import com.devloop.community.entity.ResolveStatus;
 import com.devloop.community.repository.CommunityRepository;
-import com.devloop.communitycomment.repository.CommunityCommentRepository;
 import com.devloop.search.response.IntegrationSearchResponse;
 import com.devloop.user.entity.User;
-import com.devloop.user.repository.UserRepository;
 import com.devloop.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -36,9 +33,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor

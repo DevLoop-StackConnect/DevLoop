@@ -1,4 +1,4 @@
-package com.devloop.community.dto.response;
+package com.devloop.community.response;
 
 import lombok.Getter;
 

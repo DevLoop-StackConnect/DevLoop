@@ -2,9 +2,9 @@ package com.devloop.scheduleTodo.controller;
 
 import com.devloop.common.AuthUser;
 import com.devloop.common.apipayload.ApiResponse;
-import com.devloop.scheduleTodo.dto.request.ScheduleTodoRequest;
-import com.devloop.scheduleTodo.dto.response.ScheduleTodoResponse;
-import com.devloop.scheduleTodo.dto.response.ScheduleTodoSimpleResponse;
+import com.devloop.scheduleTodo.request.ScheduleTodoRequest;
+import com.devloop.scheduleTodo.response.ScheduleTodoResponse;
+import com.devloop.scheduleTodo.response.ScheduleTodoSimpleResponse;
 import com.devloop.scheduleTodo.service.ScheduleTodoService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
