@@ -1,5 +1,6 @@
 package com.devloop.scheduleBoard.entity;
 
+import com.devloop.purchase.entity.Purchase;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -16,21 +17,19 @@ public class BoardAssignment {
     @JoinColumn(name = "schedule_board_id", nullable = false)
     private ScheduleBoard scheduleBoard;
 
-    //PWT purchase가 아직 없으니 purcahseId 대신 우선은 직접 User가져오기.
-    @Column(name = "user_id", nullable = false) // 직접 User ID를 저장
-    private Long userId;
-//    @Column(name="purchase_id",nullable = false)//임시로 구매pk
-//    private Long purchaseId; //추후에 구매 테이블이 구현되면 연관관계로 수정
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="purchase_id",nullable = false)
+    private Purchase purchase;
 
-    private BoardAssignment(ScheduleBoard scheduleBoard, Long userId){
+    private BoardAssignment(ScheduleBoard scheduleBoard, Purchase purchase){
         this.scheduleBoard=scheduleBoard;
-        this.userId=userId;
+        this.purchase=purchase;
     }
 
     public static BoardAssignment of(
             ScheduleBoard scheduleBoard,
-            Long userId) {
-        return new BoardAssignment(scheduleBoard,userId);
+            Purchase purchase) {
+        return new BoardAssignment(scheduleBoard,purchase);
     }
 
 
