@@ -13,7 +13,7 @@ import com.devloop.partycomment.response.GetPartyCommentListResponse;
 import com.devloop.partycomment.response.SavePartyCommentResponse;
 import com.devloop.partycomment.response.UpdatePartyCommentResponse;
 import com.devloop.user.entity.User;
-import com.devloop.user.repository.UserRepository;
+import com.devloop.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -27,15 +27,14 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class PartyCommentService {
     private final PartyCommentRepository partyCommentRepository;
-    private final UserRepository userRepository;
+    private final UserService userService;
     private final PartyService partyService;
 
     //스터디 파티 게시글 댓글 등록
     @Transactional
     public SavePartyCommentResponse savePartyComment(AuthUser authUser, Long partyId, SavePartyCommentRequest savePartyCommentRequest) {
         //유저가 존재하는 지 확인
-        User user=userRepository.findById(authUser.getId()).orElseThrow(()->
-            new ApiException(ErrorStatus._NOT_FOUND_USER));
+        User user=userService.findByUserId(authUser.getId());
 
         //스터디 파티 게시글이 존재하는 지 확인
         Party party=partyService.findById(partyId);
@@ -95,7 +94,7 @@ public class PartyCommentService {
 
     //스터디 파티 게시글 댓글 삭제
     @Transactional
-    public void deletePartyComment(AuthUser authUser, Long partyId, Long commentId) {
+    public String deletePartyComment(AuthUser authUser, Long partyId, Long commentId) {
         //스터디 파티 게시글이 존재하는 지 확인
         Party party=partyService.findById(partyId);
 
@@ -109,5 +108,6 @@ public class PartyCommentService {
         }
 
         partyCommentRepository.delete(partyComment);
+        return String.format("댓글을 삭제하였습니다.");
     }
 }

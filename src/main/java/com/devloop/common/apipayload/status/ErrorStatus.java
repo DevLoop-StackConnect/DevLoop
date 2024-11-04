@@ -73,7 +73,15 @@ public enum ErrorStatus implements BaseCode {
     //Community
     _NOT_FOUND_COMMUNITY(HttpStatus.NOT_FOUND, "404", "존재하지 않는 게시글입니다"),
 
+    //Lecture
+    _NOT_FOUND_LECTURE(HttpStatus.NOT_FOUND, "404", "존재하지 않는 강의입니다"),
+    _NOT_FOUND_LECTURE_REVIEW(HttpStatus.NOT_FOUND,"404","존재하지 않는 강의 후기 입니다"),
+    _NOT_FOUND_LECTURE_VIDEO(HttpStatus.NOT_FOUND,"404","존재하지 않는 영상 입니다"),
+    _INVALID_LECTURE_VIDEO(HttpStatus.BAD_REQUEST,"400","영상이 존재하는 강의만 승인이 가능합니다"),
+
+
     //S3
+    _S3_UPLOAD_ERROR(HttpStatus.INTERNAL_SERVER_ERROR,"500","영상 업로드 중 실패하였습니다"),
     _UNSUPPORTED_OBJECT_TYPE(HttpStatus.BAD_REQUEST,"400","지원하지 않는 객체입니다."),
     _STATUS_NOT_EXSIST(HttpStatus.BAD_REQUEST, "400", "잘못된 해결 상태 입력값입니다. 오타 및 해결상태 종류를 확인하세요"),
     _CATEGORY_NOT_EXSIST(HttpStatus.BAD_REQUEST, "400", "잘못된 카테고리 입력값입니다. 오타 및 카테고리 종류를 확인하세요"),
