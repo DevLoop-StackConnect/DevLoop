@@ -12,6 +12,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.format.DateTimeFormatter;
 
 @Service
 @RequiredArgsConstructor
@@ -31,8 +33,9 @@ public class PaymentService {
         BigDecimal amount = new BigDecimal(jsonObject.get("totalAmount").toString());
 
         // requestedAt과 approvedAt을 LocalDateTime으로 변환
-        LocalDateTime requestedAt = LocalDateTime.parse(jsonObject.get("requestedAt").toString());
-        LocalDateTime approvedAt = LocalDateTime.parse(jsonObject.get("approvedAt").toString());
+        LocalDateTime requestedAt = OffsetDateTime.parse(jsonObject.get("requestedAt").toString(), DateTimeFormatter.ISO_OFFSET_DATE_TIME).toLocalDateTime();
+        LocalDateTime approvedAt = OffsetDateTime.parse(jsonObject.get("approvedAt").toString(), DateTimeFormatter.ISO_OFFSET_DATE_TIME).toLocalDateTime();
+
 
         // Payment 객체 생성
         Payment payment = Payment.of(

@@ -114,9 +114,23 @@ public class CartService {
         return String.format("상품 [ %s ]가 장바구니에서 삭제되었습니다.", cartItem.getProduct().getTitle());
     }
 
+    // 장바구니 삭제
+    @Transactional
+    public void deleteCart(Long cartId){
+        // Cart 객체 가져오기
+        Cart cart = findById(cartId);
+        // Cart 삭제
+        cartRepository.delete(cart);
+    }
+
     // Utile method
     public Cart findByUserId(Long userId) {
         return cartRepository.findByUserId(userId)
+                .orElseThrow(()->new ApiException(ErrorStatus._NOT_FOUND_CART));
+    }
+
+    public Cart findById(Long cartId) {
+        return cartRepository.findById(cartId)
                 .orElseThrow(()->new ApiException(ErrorStatus._NOT_FOUND_CART));
     }
 }
