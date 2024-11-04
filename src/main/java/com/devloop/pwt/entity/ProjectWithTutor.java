@@ -7,6 +7,7 @@ import com.devloop.common.enums.Category;
 import com.devloop.product.entity.Product;
 import com.devloop.pwt.enums.Level;
 import com.devloop.pwt.enums.ProjectWithTutorStatus;
+import com.devloop.scheduleBoard.entity.ScheduleBoard;
 import com.devloop.user.entity.User;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -56,6 +57,10 @@ public class ProjectWithTutor extends Product {
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
+
+    @OneToOne(mappedBy = "projectWithTutor",cascade=CascadeType.ALL)
+    private ScheduleBoard scheduleBoard;
+
 
     private ProjectWithTutor(
             String title,

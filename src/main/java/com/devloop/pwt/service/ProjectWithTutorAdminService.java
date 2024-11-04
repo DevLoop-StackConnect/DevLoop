@@ -12,6 +12,7 @@ import com.devloop.pwt.repository.ProjectWithTutorRepository;
 import com.devloop.pwt.response.ProjectWithTutorDetailAdminResponse;
 import com.devloop.pwt.response.ProjectWithTutorListAdminResponse;
 import com.devloop.stock.service.StockService;
+import com.devloop.scheduleBoard.service.ScheduleBoardService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -27,6 +28,7 @@ public class ProjectWithTutorAdminService {
     private final ProjectWithTutorRepository projectWithTutorRepository;
     private final PWTAttachmentService pwtAttachmentService;
     private final StockService stockService;
+    private final ScheduleBoardService scheduleBoardService;
 
     // PWT 게시글 승인 (ADMIN)
     @Transactional
@@ -41,6 +43,9 @@ public class ProjectWithTutorAdminService {
 
         // Stock 객체 생성
         stockService.createStock(projectWithTutor.getId(), projectWithTutor.getMaxParticipants());
+
+        //ScheduleBoard 생성
+        scheduleBoardService.createScheduleBoard(projectWithTutor);
 
         return String.format("%s 게시글이 승인 되었습니다.", projectWithTutor.getTitle());
     }

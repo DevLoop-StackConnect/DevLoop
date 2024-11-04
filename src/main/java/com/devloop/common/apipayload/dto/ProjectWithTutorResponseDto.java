@@ -1,6 +1,5 @@
 package com.devloop.common.apipayload.dto;
 
-import com.devloop.common.enums.Approval;
 import com.devloop.pwt.enums.Level;
 import com.devloop.pwt.enums.ProjectWithTutorStatus;
 import com.devloop.user.entity.User;
