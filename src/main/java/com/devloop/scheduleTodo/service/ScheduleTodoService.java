@@ -35,6 +35,7 @@ public class ScheduleTodoService {
     @Transactional
     public ScheduleTodoResponse createScheduleTodo(Long scheduleBoardId, ScheduleTodoRequest scheduleTodoRequest, AuthUser authUser) {
 
+        //존재하는 스케줄보드,유저인지 확인
         ScheduleBoard scheduleBoard = scheduleBoardService.findByScheduleBoardId(scheduleBoardId);
         User currentUser = userService.findByUserId(authUser.getId());
 
@@ -63,7 +64,7 @@ public class ScheduleTodoService {
         }
 
         // 현재 유저가 해당 스케줄 보드에 속한 PWT 게시글의 유저인지 확인 BoardAssignment로 접근 권한 확인
-        boolean hasAccess = boardAssignmentRepository.existsByScheduleBoardAndUserId(scheduleBoard, currentUser.getId());
+        boolean hasAccess = boardAssignmentRepository.existsByScheduleBoardAndPurchase_User(scheduleBoard, currentUser);
         if (!hasAccess) {
             throw new ApiException(ErrorStatus._PERMISSION_DENIED);
         }
@@ -89,7 +90,7 @@ public class ScheduleTodoService {
         );
     }
 
-    //스케줄보드에 속한 scheduleTodo목록 조회
+    //스케줄보드에 속한 scheduleTodo목록 다건조회
     public List<ScheduleTodoSimpleResponse> getTodoByScheduleBoard(Long scheduleBoardId) {
         ScheduleBoard scheduleBoard = scheduleBoardService.findByScheduleBoardId(scheduleBoardId);
 
@@ -145,7 +146,7 @@ public class ScheduleTodoService {
                 );
             }
             //일반 유저 권한 확인: 본인이 쓴 일정인지 확인
-            if(!scheduleTodo.getCreatedBy().equals(currentUser)){
+            if (!scheduleTodo.getCreatedBy().equals(currentUser)) {
                 throw new ApiException(ErrorStatus._PERMISSION_DENIED);
             }
             //권한 확인 후에 수정로직
@@ -169,6 +170,7 @@ public class ScheduleTodoService {
         }
     }
 
+    //삭제기능
     @Transactional
     public void deleteScheduleTodo(Long scheduleTodoId, AuthUser authUser) {
         ScheduleTodo scheduleTodo = scheduleTodoRepository.findById(scheduleTodoId)
@@ -192,11 +194,4 @@ public class ScheduleTodoService {
         scheduleTodoRepository.delete(scheduleTodo);
     }
 
-    //Util
-    public List<ScheduleTodoSimpleResponse> getSimpleResponsesByScheduleBoard(ScheduleBoard scheduleBoard) {
-        return scheduleTodoRepository.findByScheduleBoard(scheduleBoard)
-                .stream()
-                .map(todo -> ScheduleTodoSimpleResponse.of(todo.getTitle(), todo.getStartDate(), todo.getEndDate()))
-                .collect(Collectors.toList());
-    }
 }
