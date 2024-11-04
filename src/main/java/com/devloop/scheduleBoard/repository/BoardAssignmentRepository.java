@@ -6,5 +6,5 @@ import com.devloop.user.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface BoardAssignmentRepository extends JpaRepository<BoardAssignment,Long> {
-    boolean existsByScheduleBoardAndUserId(ScheduleBoard scheduleBoard, Long userId);
+    boolean existsByScheduleBoardAndPurchase_User(ScheduleBoard scheduleBoard, User user);
 }
