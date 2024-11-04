@@ -136,8 +136,8 @@ public class UserService {
             CommunitySimpleResponse communitySimpleResponse = CommunitySimpleResponse.of(
                     community.getId(),
                     community.getTitle(),
-                    community.getResolveStatus(),
-                    community.getCategory()
+                    community.getResolveStatus().getDescription(), //.getDescription 추가
+                    community.getCategory().getDescription() //.getDescription 추가
             );
             communitySimpleResponses.add(communitySimpleResponse);
         }
