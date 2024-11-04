@@ -3,6 +3,7 @@ package com.devloop.lecture.response;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Getter
@@ -14,15 +15,12 @@ public class GetLectureDetailResponse {
     private String recommend;
     private String category;
     private String level;
-    private Integer price;
+    private BigDecimal price;
     private Integer videoCount;
     private Integer reviewCount;
     private LocalDateTime created_at;
     private LocalDateTime modified_at;
 
-    //강의 총 개수
-    //강의 총 시간
-    //강의 후기 개수
     private GetLectureDetailResponse(
             String title,
             String tutorName,
@@ -30,7 +28,7 @@ public class GetLectureDetailResponse {
             String recommend,
             String category,
             String level,
-            Integer price,
+            BigDecimal price,
             Integer videoCount,
             Integer reviewCount,
             LocalDateTime created_at,
@@ -56,7 +54,7 @@ public class GetLectureDetailResponse {
             String recommend,
             String category,
             String level,
-            Integer price,
+            BigDecimal price,
             Integer videoCount,
             Integer reviewCount,
             LocalDateTime created_at,

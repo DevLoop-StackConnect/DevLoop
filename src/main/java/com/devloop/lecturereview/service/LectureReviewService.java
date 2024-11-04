@@ -10,6 +10,7 @@ import com.devloop.lecturereview.entity.LectureReview;
 import com.devloop.lecturereview.repository.LectureReviewRepository;
 import com.devloop.lecturereview.request.SaveLectureReviewRequest;
 import com.devloop.lecturereview.response.GetLectureReviewResponse;
+import com.devloop.purchase.service.PurchaseService;
 import com.devloop.user.entity.User;
 import com.devloop.user.service.UserService;
 import jakarta.validation.Valid;
@@ -28,12 +29,20 @@ public class LectureReviewService {
     private final LectureReviewRepository lectureReviewRepository;
     private final UserService userService;
     private final LectureService lectureService;
+    private final PurchaseService purchaseService;
 
     //강의 후기 등록
     @Transactional
     public String saveLectureReview(AuthUser authUser, Long lectureId, @Valid SaveLectureReviewRequest saveLectureReviewRequest) {
         //유저가 존재하는 지 확인
         User user=userService.findByUserId(authUser.getId());
+
+        //수강 여부 확인
+        boolean isPurchased=purchaseService.exitsByUserIdAndProductId(authUser.getId(),lectureId);
+        //수강 유저 또는 어드민이 아닌 경우 권한 없음
+        if(!isPurchased){
+            throw new ApiException(ErrorStatus._ACCESS_PERMISSION_DENIED);
+        }
 
         //강의가 존재하는 지 확인
         Lecture lecture=lectureService.findById(lectureId);
