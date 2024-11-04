@@ -1,6 +1,7 @@
 package com.devloop.order.service;
 
 import com.devloop.cart.entity.Cart;
+import com.devloop.cart.entity.CartItem;
 import com.devloop.cart.service.CartService;
 import com.devloop.common.AuthUser;
 import com.devloop.common.apipayload.status.ErrorStatus;
@@ -8,25 +9,32 @@ import com.devloop.common.exception.ApiException;
 import com.devloop.order.entity.Order;
 import com.devloop.order.enums.OrderStatus;
 import com.devloop.order.repository.OrderRepository;
+import com.devloop.product.entity.Product;
+import com.devloop.pwt.entity.ProjectWithTutor;
+import com.devloop.stock.entity.Stock;
+import com.devloop.stock.service.StockService;
 import com.devloop.user.entity.User;
-import com.devloop.user.repository.UserRepository;
 import com.devloop.user.service.UserService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.Lazy;
+import lombok.extern.slf4j.Slf4j;
+import org.hibernate.Hibernate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
+@Slf4j
 public class OrderService {
 
     private final OrderRepository orderRepository;
     private final UserService userService;
     private final CartService cartService;
     private final OrderItemService orderItemService;
+    private final StockService stockService;
 
     // 주문 하기 (주문 요청, 주문 객체 생성)
     @Transactional
@@ -79,6 +87,16 @@ public class OrderService {
 
         // 주문 상태 "APPROVED("주문 승인됨")"으로 변경
         order.updateStatus(OrderStatus.APPROVED);
+
+        List<CartItem> cartItems = order.getCart().getItems();
+        Product product = (Product) Hibernate.unproxy(cartItems.get(0).getProduct());
+        log.info(product.getClass().getSimpleName());
+        if(product.getClass().getSimpleName().equals("ProjectWithTutor")) {
+            // 각 PWT의 Stock 업데이트
+            for (CartItem cartItem : cartItems) {
+                stockService.updateStock(cartItem.getProduct().getId());
+            }
+        }
 
         // 주문 항목 저장
         orderItemService.saveOrderItem(orderRequestId);
