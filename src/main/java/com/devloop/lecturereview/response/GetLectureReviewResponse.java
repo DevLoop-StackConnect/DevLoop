@@ -1,14 +1,12 @@
 package com.devloop.lecturereview.response;
 
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 @Getter
-@NoArgsConstructor
 public class GetLectureReviewResponse {
-    private String userName;
-    private String review;
-    private Integer rating;
+    private final String userName;
+    private final String review;
+    private final Integer rating;
 
     private GetLectureReviewResponse(String userName, String review, Integer rating){
         this.userName=userName;

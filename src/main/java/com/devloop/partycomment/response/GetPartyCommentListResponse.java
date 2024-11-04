@@ -1,14 +1,12 @@
 package com.devloop.partycomment.response;
 
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 @Getter
-@NoArgsConstructor
 public class GetPartyCommentListResponse {
-    private String userName;
-    private Long commentId;
-    private String comment;
+    private final String userName;
+    private final Long commentId;
+    private final String comment;
 
     private GetPartyCommentListResponse(String userName,Long commentId,String comment){
         this.userName=userName;

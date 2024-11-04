@@ -44,6 +44,7 @@ public class Lecture extends Product {
     @Enumerated(EnumType.STRING)
     private Approval approval=Approval.WAITE;
 
+    @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="user_id")
     private User user;
