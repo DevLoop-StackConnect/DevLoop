@@ -1,14 +1,12 @@
 package com.devloop.partycomment.response;
 
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 @Getter
-@NoArgsConstructor
 public class SavePartyCommentResponse {
-    private Long partyId;
-    private Long commentId;
-    private String comment;
+    private final Long partyId;
+    private final Long commentId;
+    private final String comment;
 
     private SavePartyCommentResponse(Long partyId,Long commentId,String comment){
         this.partyId=partyId;
