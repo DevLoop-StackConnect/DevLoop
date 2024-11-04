@@ -2,17 +2,15 @@ package com.devloop.communitycomment.controller;
 
 import com.devloop.common.AuthUser;
 import com.devloop.common.apipayload.ApiResponse;
-import com.devloop.communitycomment.dto.CommentResponse;
-import com.devloop.communitycomment.dto.request.CommentSaveRequest;
-import com.devloop.communitycomment.dto.request.CommentUpdateRequest;
-import com.devloop.communitycomment.dto.response.CommentSaveResponse;
-import com.devloop.communitycomment.dto.response.CommentUpdateResponse;
+import com.devloop.communitycomment.response.CommentResponse;
+import com.devloop.communitycomment.request.CommentSaveRequest;
+import com.devloop.communitycomment.request.CommentUpdateRequest;
+import com.devloop.communitycomment.response.CommentSaveResponse;
+import com.devloop.communitycomment.response.CommentUpdateResponse;
 import com.devloop.communitycomment.service.CommunityCommentService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 

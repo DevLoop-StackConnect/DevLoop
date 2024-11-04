@@ -6,7 +6,7 @@ import com.devloop.attachment.s3.S3Service;
 import com.devloop.common.AuthUser;
 import com.devloop.common.apipayload.status.ErrorStatus;
 import com.devloop.common.exception.ApiException;
-import com.devloop.community.dto.response.CommunitySimpleResponse;
+import com.devloop.community.response.CommunitySimpleResponse;
 import com.devloop.community.entity.Community;
 import com.devloop.community.repository.CommunityRepository;
 import com.devloop.party.entity.Party;

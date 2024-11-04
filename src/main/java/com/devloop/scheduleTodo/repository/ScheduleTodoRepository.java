@@ -1,7 +1,6 @@
 package com.devloop.scheduleTodo.repository;
 
 import com.devloop.scheduleBoard.entity.ScheduleBoard;
-import com.devloop.scheduleTodo.dto.response.ScheduleTodoSimpleResponse;
 import com.devloop.scheduleTodo.entity.ScheduleTodo;
 import org.springframework.data.jpa.repository.JpaRepository;
 

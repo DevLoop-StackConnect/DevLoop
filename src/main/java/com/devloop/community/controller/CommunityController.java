@@ -2,11 +2,11 @@ package com.devloop.community.controller;
 
 import com.devloop.common.AuthUser;
 import com.devloop.common.apipayload.ApiResponse;
-import com.devloop.community.dto.request.CommunitySaveRequest;
-import com.devloop.community.dto.request.CommunityUpdateRequest;
-import com.devloop.community.dto.response.CommunityDetailResponse;
-import com.devloop.community.dto.response.CommunitySaveResponse;
-import com.devloop.community.dto.response.CommunitySimpleResponse;
+import com.devloop.community.request.CommunitySaveRequest;
+import com.devloop.community.request.CommunityUpdateRequest;
+import com.devloop.community.response.CommunityDetailResponse;
+import com.devloop.community.response.CommunitySaveResponse;
+import com.devloop.community.response.CommunitySimpleResponse;
 import com.devloop.community.service.CommunityService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
