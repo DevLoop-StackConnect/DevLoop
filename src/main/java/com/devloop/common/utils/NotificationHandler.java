@@ -70,13 +70,13 @@ public class NotificationHandler {
             if (isInstantNotification(message.getType())) {
                 sendInstantNotification(message);
             }
-
             log.info("알림 큐 추가됨: {}", message.getType());
         } catch (Exception e) {
             log.error("알림 전송 실패", e);
             throw new ApiException(ErrorStatus._NOTIFICATION_SEND_ERROR);
         }
     }
+
     //에러 발생 시 알림 처리 메서드
     @AfterThrowing(pointcut = "allNotificationPointcut()", throwing = "exception")
     public void handleError(JoinPoint joinPoint, Exception exception) {
@@ -120,7 +120,7 @@ public class NotificationHandler {
     public void processNotifications() {
         //redis 큐에서 알림 메시지 추출
         NotificationMessage notification = redisTemplate.opsForList()
-                .leftPop(NOTIFICATION_QUEUE, 0, TimeUnit.SECONDS);
+                .leftPop(NOTIFICATION_QUEUE, 5, TimeUnit.SECONDS);
 
         if (notification != null) {
             try {
@@ -141,7 +141,8 @@ public class NotificationHandler {
     public void processFailedNotifications() {
         //실패 큐에서 메시지 추출
         NotificationMessage failedNotification =
-                redisTemplate.opsForList().leftPop(FAILED_QUEUE, 0, TimeUnit.SECONDS);
+                redisTemplate.opsForList().leftPop(FAILED_QUEUE, 5, TimeUnit.SECONDS);
+
 
         if (failedNotification != null) {
             try {

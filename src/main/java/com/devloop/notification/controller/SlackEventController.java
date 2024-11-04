@@ -23,13 +23,13 @@ public class SlackEventController {
     @PostMapping
     // ? : wildcard - 어느 타입이든 반환할 수 있다는 의미
     public ResponseEntity<?> handleSlackEvent(
-            @RequestBody String requestBody,
+            @RequestBody String requestBody, //Slack의 서명 방식 때문에 HTTP 본문 요청 requestBody 값을 가져옴
             @RequestHeader("X-Slack-Signature") String signature, //요청 헤더에 Slack 서명 값을 가져옴
             @RequestHeader("X-Slack-Request-Timestamp") String timestamp // 요청 해더이서 Slack 요청 타임스탬프 가져옴
     ) throws Exception {
         // 요청 검증
         if (!isValidSlackRequest(requestBody, signature, timestamp)) {
-            log.warn("Invalid Slack request detected");
+            log.warn("유효하지 않은 Slack 요청이 감지되었습니다.");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
         //요청 본문 Json으로 파싱
@@ -37,6 +37,7 @@ public class SlackEventController {
 
         // Challenge 요청 처리 - Slack에서 서버의 URL이 유효한지 확인하는 보안 검증
         if (event.has("challenge")) {
+            //Json으로 challenge 키값을 문자열로 가져옴
             return ResponseEntity.ok(event.get("challenge").asText());
         }
 
@@ -67,16 +68,11 @@ public class SlackEventController {
                     slackProperties.getApp().getSigningSecret(),
                     baseString
             );
-            //요청 서명과 생서된 서명을 비교하여 검증
+            //요청 서명과 생성된 서명을 비교하여 검증
             return mySignature.equals(signature);
         } catch (Exception e) {
             log.error("Signature 검증 실패", e);
             return false;
         }
-    }
-    // 컨트롤러의 상태를 확인하는 엔드포인트
-    @GetMapping("/health")
-    public ResponseEntity<String> healthCheck() {
-        return ResponseEntity.ok("Slack Event Endpoint is healthy");
     }
 }

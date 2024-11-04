@@ -1,9 +1,9 @@
 package com.devloop.notification.controller;
 
+import com.devloop.common.utils.NotificationHandler;
 import com.devloop.notification.dto.NotificationMessage;
 import com.devloop.notification.enums.NotificationType;
 import com.devloop.notification.service.SlackAccountService;
-import com.devloop.notification.service.SlackNotificationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +21,7 @@ import java.util.Map;
 @RequestMapping("/api/v1/slack/test")
 public class SlackTestController {
 
-    private final SlackNotificationService notificationService;
+    private final NotificationHandler notificationHandler;
     private final SlackAccountService slackAccountService;
 
     @PostMapping("/notification")
@@ -37,7 +37,7 @@ public class SlackTestController {
                     .timestamp(LocalDateTime.now())
                     .build();
 
-            notificationService.sendNotification(message);
+            notificationHandler.sendNotification(message);
             return ResponseEntity.ok("알림 전송 성공!");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -59,7 +59,7 @@ public class SlackTestController {
                     .timestamp(LocalDateTime.now())
                     .build();
 
-            notificationService.sendNotification(message);
+            notificationHandler.sendNotification(message);
             return ResponseEntity.ok("에러 알림 전송 성공!");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -80,7 +80,7 @@ public class SlackTestController {
                     .timestamp(LocalDateTime.now())
                     .build();
 
-            notificationService.sendNotification(message);
+            notificationHandler.sendNotification(message);
             return ResponseEntity.ok("워크스페이스 참여 알림 전송 성공!");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -102,7 +102,7 @@ public class SlackTestController {
                     .timestamp(LocalDateTime.now())
                     .build();
 
-            notificationService.sendNotification(message);
+            notificationHandler.sendNotification(message);
             return ResponseEntity.ok("댓글 알림 전송 성공!");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)

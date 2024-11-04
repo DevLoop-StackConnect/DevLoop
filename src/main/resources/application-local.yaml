@@ -5,6 +5,20 @@ spring:
     password: ${LOCAL_DB_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
 
+  data:
+    redis:
+      host: localhost        # Redis 서버 호스트
+      port: 6379            # Redis 포트
+      password:             # 비밀번호가 있다면 설정
+      database: 0           # 사용할 데이터베이스 번호
+      timeout: 60000        # 커넥션 타임아웃 (ms)
+      lettuce:
+        pool:
+          max-active: 8     # 풀에서 관리하는 최대 커넥션 개수
+          max-idle: 8       # 풀에서 관리하는 최대 유휴 커넥션 개수
+          min-idle: 0       # 풀에서 관리하는 최소 유휴 커넥션 개수
+          max-wait: 5000    # 커넥션 풀이 바닥났을 때 예외 발생까지 대기 시간 (ms)
+
 
   servlet:
     multipart:

@@ -24,7 +24,7 @@ public class SlackConnectionController {
     //Slack 연동 메서드
     public ApiResponse linkSlackAccount(
             @AuthenticationPrincipal Long userId, //인증된 사용자의 Id 주입
-            @RequestBody SlackLinkRequest request //클라이언트 요청에서 Slakc 연동 요청 데이터 주입
+            @RequestBody SlackLinkRequest request //클라이언트 요청에서 Slack 연동 요청 데이터 주입
     ) {
         try {
             //Slack 계정을 검증하고 연동하는 메서드 호출

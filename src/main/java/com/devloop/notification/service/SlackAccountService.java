@@ -65,11 +65,33 @@ public class SlackAccountService {
     //채널 가입 이벤트 처리
     private void handleChannelJoin(JsonNode event) {
         String slackUserId = event.get("user").asText();
+        String channelId = event.get("channel").asText();  // 채널 ID 추가
+
         try {
-            //Slack 사용자 정보 조회 및 이메일 추출
+            // Slack 사용자 정보 조회 및 이메일 추출
             SlackUserResponse slackUser = slackUserService.findByEmail(slackUserId);
             String userEmail = slackUser.getUser().getProfile().getEmail();
+            String username = slackUser.getUser().getName();  // 사용자 이름 추가
+
+            // 1. 매핑 처리
             handleSlackJoin(userEmail);
+
+            // 2. 채널 참여 알림 전송 추가
+            NotificationMessage message = NotificationMessage.builder()
+                    .type(NotificationType.WORKSPACE_JOIN)  // 또는 새로운 타입 CHANNEL_JOIN 추가 가능
+                    .notificationTarget(channelId)  // 해당 채널에 알림
+                    .data(Map.of(
+                            "username", username,
+                            "channelId", channelId,
+                            "action", "channel_join",
+                            "timestamp", LocalDateTime.now().toString()
+                    ))
+                    .timestamp(LocalDateTime.now())
+                    .build();
+
+            notificationHandler.sendNotification(message);
+            log.info("채널 입장 알림 전송 완료 - user: {}, channel: {}", username, channelId);
+
         } catch (Exception e) {
             log.warn("채널 입장 처리 실패: {}", slackUserId, e);
         }
