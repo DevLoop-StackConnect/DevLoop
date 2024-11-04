@@ -42,6 +42,10 @@ public class WebSecurityConfig {
                                 "/api/v1/auth/login",
                                 "/api/v1/auth/kakao/login",
                                 "/api/v1/main/search/**",
+                                "/api/v2/search/**",
+                                "/api/v1/search/**",
+                                "/api/v2/videos/**",
+                                "/api/v2/lectures/**",
                                 "api/v1/pwts/**",
                                 // payments test 위해 열어두는 API
                                 "/payments/**",
@@ -57,11 +61,13 @@ public class WebSecurityConfig {
                         )
                         .permitAll()
                         .requestMatchers(
-                                "/api/v1/tutor/**"
+                                "/api/v1/tutor/**",
+                                "/api/v2/tutor/**"
                         )
                         .hasAnyAuthority(UserRole.authority.TUTOR, UserRole.authority.ADMIN)
                         .requestMatchers(
-                                "/api/v1/admin/**"
+                                "/api/v1/admin/**",
+                                "/api/v2/admin/**"
                         )
                         .hasAuthority(UserRole.authority.ADMIN)
                         .anyRequest().authenticated()

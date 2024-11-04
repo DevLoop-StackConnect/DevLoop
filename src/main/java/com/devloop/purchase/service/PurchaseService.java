@@ -39,4 +39,10 @@ public class PurchaseService {
         boardAssignmentService.createBoardAssignment(purchases);
 
     }
+
+    //Util
+    //유저가 수강한 강의인지 확인
+    public boolean exitsByUserIdAndProductId(Long userId,Long productId){
+        return purchaseRepository.existsByUserIdAndProductId(userId,productId);
+    }
 }
