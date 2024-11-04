@@ -8,8 +8,6 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.net.URL;
-
 @Entity
 @NoArgsConstructor
 @Getter

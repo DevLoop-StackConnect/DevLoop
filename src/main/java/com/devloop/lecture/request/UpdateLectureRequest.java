@@ -3,6 +3,8 @@ package com.devloop.lecture.request;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+import java.math.BigDecimal;
+
 @Getter
 @AllArgsConstructor
 public class UpdateLectureRequest {
@@ -11,5 +13,5 @@ public class UpdateLectureRequest {
     private String recommend;
     private String category;
     private String level;
-    private Integer price;
+    private BigDecimal price;
 }

@@ -21,8 +21,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -30,13 +28,13 @@ public class LectureService {
     private final LectureRepository lectureRepository;
     private final UserService userService;
 
-    //강의 등록 (유저의 권한이 TUTOR일 경우에만 가능)
+    //강의 등록 (유저의 권한이 TUTOR 일 경우에만 가능)
     @Transactional
     public SaveLectureResponse saveLecture(AuthUser authUser, SaveLectureRequest saveLectureRequest) {
         //유저가 존재하는 지 확인
         User user= userService.findByUserId(authUser.getId());
 
-        //요청한 유저의 권한이 TUTOR인지 확인
+        //요청한 유저의 권한이 TUTOR 인지 확인
         if(user.getUserRole().equals(UserRole.ROLE_USER)){
             throw new ApiException(ErrorStatus._HAS_NOT_ACCESS_PERMISSION);
         }

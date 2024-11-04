@@ -14,7 +14,9 @@ import com.devloop.lecture.enums.VideoStatus;
 import com.devloop.lecture.repository.LectureVideoRepository;
 import com.devloop.lecture.response.GetLectureVideoDetailResponse;
 import com.devloop.lecture.response.GetLectureVideoListResponse;
+import com.devloop.purchase.service.PurchaseService;
 import com.devloop.user.entity.User;
+import com.devloop.user.enums.UserRole;
 import com.devloop.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -42,6 +44,7 @@ public class LectureVideoService {
     private final CloudFrontService cloudFrontService;
     private final LectureService lectureService;
     private final FileValidator fileValidator;
+    private final PurchaseService purchaseService;
 
     @Value("${cloud.aws.s3.bucketName}")
     private String bucketName;
@@ -72,8 +75,8 @@ public class LectureVideoService {
         FileFormat fileType=fileValidator.mapStringToFileFormat(Objects.requireNonNull(multipartFile.getContentType()));
 
 
-        //파일 사이즈 확인 (임시로 1GB까지 가능)
-        fileValidator.fileSizeValidator(multipartFile,1L*1024*1024*1024);
+        //파일 사이즈 확인 (5GB까지 가능)
+        fileValidator.fileSizeValidator(multipartFile,5L*1024*1024*1024);
 
         //MultipartFile을 File로 변환
         File file=convertMultipartFileToFile(multipartFile);
@@ -211,15 +214,24 @@ public class LectureVideoService {
     }
 
     /**
-     * 강의 영상 단건 조회 (수강 유저만 조회 가능)
+     * 강의 영상 단건 조회 (수강 유저와 어드민만 조회 가능)
      * @param authUser
      * @param lectureId
      * @param videoId
      * @return
      */
     public GetLectureVideoDetailResponse getLectureVideo(AuthUser authUser, Long lectureId,Long videoId) throws Exception {
+        //유저가 존재하는 지 확인
+        User user= userService.findByUserId(authUser.getId());
 
-        //수강 유저인지 확인
+        //수강 여부 확인
+        boolean isPurchased=purchaseService.exitsByUserIdAndProductId(authUser.getId(),lectureId);
+        boolean isAdminUser=user.getUserRole().equals(UserRole.ROLE_ADMIN);
+
+        //수강 유저 또는 어드민이 아닌 경우 권한 없음
+        if(!isPurchased && !isAdminUser){
+            throw new ApiException(ErrorStatus._ACCESS_PERMISSION_DENIED);
+        }
 
         //강의가 존재하는 지 확인
         Lecture lecture=lectureService.findById(lectureId);
