@@ -4,6 +4,7 @@ import com.devloop.attachment.enums.FileFormat;
 import com.devloop.common.apipayload.status.ErrorStatus;
 import com.devloop.common.exception.ApiException;
 import com.devloop.community.entity.Community;
+import com.devloop.lecture.entity.Lecture;
 import com.devloop.party.entity.Party;
 import com.devloop.pwt.entity.ProjectWithTutor;
 import com.devloop.user.entity.User;
@@ -31,6 +32,12 @@ public class FileValidator {
             return FileFormat.PDF;
         } else if (fileType.contains("gif")) {
             return FileFormat.GIF;
+        } else if(fileType.contains("mp4")){
+            return FileFormat.MP4;
+        } else if(fileType.contains("mv4")){
+            return FileFormat.MV4;
+        } else if(fileType.contains("mov")){
+            return FileFormat.MOV;
         }
         throw new ApiException(ErrorStatus._UNSUPPORTED_FILE_TYPE);
     }
@@ -46,6 +53,8 @@ public class FileValidator {
             acceptedTypes = Arrays.asList("jpg", "png", "jpeg");
         } else if (object instanceof ProjectWithTutor) {
             acceptedTypes = Arrays.asList("jpg", "png", "jpeg", "gif", "pdf");
+        } else if(object instanceof Lecture) {
+            acceptedTypes = Arrays.asList("mp4","mov","mv4");
         }
 
         String fileName = file.getOriginalFilename();
