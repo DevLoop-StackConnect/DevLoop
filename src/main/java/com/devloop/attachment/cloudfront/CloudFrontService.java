@@ -7,6 +7,8 @@ import software.amazon.awssdk.services.cloudfront.CloudFrontUtilities;
 import software.amazon.awssdk.services.cloudfront.model.CannedSignerRequest;
 import software.amazon.awssdk.services.cloudfront.url.SignedUrl;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 
@@ -26,6 +28,7 @@ public class CloudFrontService {
     public String generateSignedUrl(String resourcePath, long expirationMinutes) throws Exception {
         CloudFrontUtilities cloudFrontUtilities = CloudFrontUtilities.create();
         Instant expirationDate = Instant.now().plus(expirationMinutes, ChronoUnit.MINUTES);
+        resourcePath = URLEncoder.encode(resourcePath, StandardCharsets.UTF_8);
 
         CannedSignerRequest request = CannedSignerRequest.builder()
                 .resourceUrl(CLOUD_FRONT_URL+resourcePath)
