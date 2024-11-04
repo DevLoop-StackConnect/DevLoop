@@ -13,7 +13,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
-import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -29,7 +29,7 @@ public class PartyController {
     @PostMapping("/v1/parties")
     public ApiResponse<SavePartyResponse> saveParty(
             @AuthenticationPrincipal AuthUser authUser,
-            @RequestParam("file") MultipartFile file,
+            @RequestParam(value = "file", required = false) MultipartFile file,
             @Valid @ModelAttribute SavePartyRequest savePartyRequest
     ){
         return ApiResponse.ok(partyService.saveParty(authUser,file,savePartyRequest));
@@ -40,9 +40,10 @@ public class PartyController {
     public ApiResponse<UpdatePartyResponse> updateParty(
             @AuthenticationPrincipal AuthUser authUser,
             @PathVariable Long partyId,
+            @RequestParam(value = "file", required = false) MultipartFile file,
             @Valid @ModelAttribute UpdatePartyRequest updatePartyRequest
     ){
-        return ApiResponse.ok(partyService.updateParty(authUser,partyId,updatePartyRequest));
+        return ApiResponse.ok(partyService.updateParty(authUser,partyId,file,updatePartyRequest));
     }
 
     //스터디 파티 모집 다건 조회
@@ -65,12 +66,11 @@ public class PartyController {
 
     //파티모집 게시글 삭제
     @DeleteMapping("/v1/parties/{partyId}")
-    public ResponseEntity<Void> deleteParty(
+    public ApiResponse<String> deleteParty(
             @AuthenticationPrincipal AuthUser authUser,
             @PathVariable Long partyId) {
 
-        partyService.deleteParty(authUser,partyId);
-        return ResponseEntity.noContent().build();
+        return ApiResponse.ok(partyService.deleteParty(authUser,partyId));
     }
 
 }
