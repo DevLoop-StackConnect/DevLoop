@@ -1,6 +1,6 @@
 package com.devloop.user.response;
 
-import com.devloop.community.dto.response.CommunitySimpleResponse;
+import com.devloop.community.response.CommunitySimpleResponse;
 import com.devloop.party.response.GetPartyListResponse;
 import jakarta.annotation.Nullable;
 import lombok.Getter;
