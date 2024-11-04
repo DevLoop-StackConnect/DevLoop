@@ -34,8 +34,8 @@ public class Order extends Timestamped {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @OneToOne
-    @JoinColumn(name = "cart_id", nullable = false)
+    @OneToOne(cascade = CascadeType.DETACH)
+    @JoinColumn(name = "cart_id", nullable = true)
     private Cart cart;
 
     @Enumerated(EnumType.STRING)
@@ -75,5 +75,10 @@ public class Order extends Timestamped {
     // 주문 상태 변경
     public void updateStatus(OrderStatus orderStatus) {
         this.status = orderStatus;
+    }
+
+    // Cart 와 관계 해재
+    public void preRemoveCart() {
+        this.cart = null;
     }
 }
