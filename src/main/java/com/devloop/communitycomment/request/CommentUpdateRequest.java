@@ -1,4 +1,4 @@
-package com.devloop.communitycomment.dto.request;
+package com.devloop.communitycomment.request;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
