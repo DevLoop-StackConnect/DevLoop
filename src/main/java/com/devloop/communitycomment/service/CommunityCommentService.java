@@ -43,7 +43,6 @@ public class CommunityCommentService {
     private final CommunityCommentRepository communityCommentRepository;
     private final CommunityService communityService;
     private final UserService userService;
-    private final UserRepository userRepository; //서비스에서 가져오게 바꿔야함
     private final NotificationHandler notificationHandler;
 
     //댓글 작성
@@ -53,17 +52,8 @@ public class CommunityCommentService {
             //커뮤니티 게시글 조회
             Community community = communityService.getCommunityId(communityId);
 
-        //사용자 조회
-        User user = userService.findByUserId(authUser.getId());
-        //댓글 생성..?생성자가 프라이빗이고..?
-        CommunityComment communityComment = CommunityComment.of(commentSaveRequest.getContent(), community, user);
-        //댓글 저장
-        CommunityComment savedComment = communityCommentRepository.save(communityComment);
-        //응답으로 변환
-        return CommentSaveResponse.of(savedComment.getId(), savedComment.getContent(), savedComment.getCreatedAt());
             //사용자 조회
-            User user = userRepository.findById(authUser.getId())
-                    .orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_USER));
+            User user = userService.findByUserId(authUser.getId());
 
             //게시글 작성자 가져오기
             User postAuthor = community.getUser();
@@ -72,7 +62,7 @@ public class CommunityCommentService {
             CommunityComment communityComment = CommunityComment.of(commentSaveRequest.getContent(), community, user);
             //댓글 저장
             CommunityComment savedComment = communityCommentRepository.save(communityComment);
-            //응답으로 변환
+
 
             //알림 전송 - 작성자가 댓글 작성자와 다른 경우만 전송
             if (!Objects.equals(user.getId(), postAuthor.getId())) {
@@ -106,7 +96,7 @@ public class CommunityCommentService {
             CommunityComment updatedComment = communityCommentRepository.save(communityComment);
             //응답으로 반환
             return CommentUpdateResponse.of(updatedComment.getId(), updatedComment.getContent(), updatedComment.getModifiedAt());
-        } catch(Exception e){
+        } catch (Exception e) {
             notifyErrorCommentUpdate(communityId, commentId, authUser.getId(), e.getMessage());
             throw e;
         }
@@ -129,15 +119,15 @@ public class CommunityCommentService {
             }
             //삭제
             communityCommentRepository.delete(communityComment);
-        } catch (Exception e){
-            notifyErrorCommentDeletion(communityId,commentId, authUser.getId(), e.getMessage());
+        } catch (Exception e) {
+            notifyErrorCommentDeletion(communityId, commentId, authUser.getId(), e.getMessage());
             throw e;
         }
     }
 
     //댓글 다건 조회
     public Page<CommentResponse> getComments(Long communityId, int page, int size) {
-        Pageable pageable = PageRequest.of(page-1,size);
+        Pageable pageable = PageRequest.of(page - 1, size);
         //페이지네이션된 댓글 조회
         Page<CommunityComment> comments = communityCommentRepository.findByCommunityId(communityId, pageable);
 

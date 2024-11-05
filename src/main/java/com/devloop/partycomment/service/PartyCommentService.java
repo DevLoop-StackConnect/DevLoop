@@ -45,9 +45,6 @@ public class PartyCommentService {
     public SavePartyCommentResponse savePartyComment(AuthUser authUser, Long partyId, SavePartyCommentRequest savePartyCommentRequest) {
         try {
             //유저가 존재하는 지 확인
-            User user = userRepository.findById(authUser.getId()).orElseThrow(() ->
-                    new ApiException(ErrorStatus._NOT_FOUND_USER));
-            //유저가 존재하는 지 확인
             User user = userService.findByUserId(authUser.getId());
 
             //스터디 파티 게시글이 존재하는 지 확인

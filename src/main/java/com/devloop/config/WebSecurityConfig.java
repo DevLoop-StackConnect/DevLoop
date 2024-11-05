@@ -69,7 +69,7 @@ public class WebSecurityConfig {
                         )
                         .hasAnyAuthority(UserRole.authority.TUTOR, UserRole.authority.ADMIN)
                         .requestMatchers(
-                                "/actuator/**"
+                                "/actuator/**",
                                 "/api/v1/admin/**",
                                 "/api/v2/admin/**"
                         )
