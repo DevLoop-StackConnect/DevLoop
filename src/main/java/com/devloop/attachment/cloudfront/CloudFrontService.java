@@ -16,8 +16,8 @@ import java.time.temporal.ChronoUnit;
 @RequiredArgsConstructor
 public class CloudFrontService {
 
-    @Value("${cloud.aws.cloudfront.attachmentsCloudFrontUrl}")
-    private String ATTACHMENTS_CLOUD_FRONT_URL;
+    @Value("${cloud.aws.cloudfront.cloudFrontUrl}")
+    private String CLOUD_FRONT_URL;
 
     @Value("${cloud.aws.cloudfront.keyPairId}")
     private String KEY_PAIR_ID;
@@ -31,7 +31,7 @@ public class CloudFrontService {
         resourcePath = URLEncoder.encode(resourcePath, StandardCharsets.UTF_8);
 
         CannedSignerRequest request = CannedSignerRequest.builder()
-                .resourceUrl(ATTACHMENTS_CLOUD_FRONT_URL+resourcePath)
+                .resourceUrl(CLOUD_FRONT_URL+resourcePath)
                 .privateKey(new java.io.File(PRIVATE_KEY_PATH).toPath())
                 .keyPairId(KEY_PAIR_ID)
                 .expirationDate(expirationDate)
