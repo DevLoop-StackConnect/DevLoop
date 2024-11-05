@@ -5,8 +5,8 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 
-@Builder
 @Getter
+@Builder
 @RequiredArgsConstructor
 public class ReasonDto {
 

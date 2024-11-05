@@ -21,9 +21,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+@Slf4j
 @Aspect
 @Component
-@Slf4j
 @RequiredArgsConstructor
 public class NotificationHandler {
     //redisTemplate 메시지 큐 저장 용도
