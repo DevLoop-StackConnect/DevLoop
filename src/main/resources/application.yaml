@@ -7,16 +7,16 @@ spring:
 #  level:
 #    root: INFO
 
-management:
-  endpoints:
-    web:
-      exposure:
-        include: health,prometheus  # prometheus 추가
-  endpoint:
-    health:
-      show-details: always
-    prometheus:
-      enabled: true
+#management:
+#  endpoints:
+#    web:
+#      exposure:
+#        include: health,prometheus  # prometheus 추가
+#  endpoint:
+#    health:
+#      show-details: always
+#    prometheus:
+#      enabled: true
 
 jwt:
   secret:

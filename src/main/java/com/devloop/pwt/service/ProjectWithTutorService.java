@@ -7,8 +7,8 @@ import com.devloop.common.AuthUser;
 import com.devloop.common.apipayload.dto.ProjectWithTutorResponseDto;
 import com.devloop.common.apipayload.status.ErrorStatus;
 import com.devloop.common.enums.Approval;
-import com.devloop.common.enums.Category;
 import com.devloop.common.enums.BoardType;
+import com.devloop.common.enums.Category;
 import com.devloop.common.exception.ApiException;
 import com.devloop.common.utils.SearchResponseUtil;
 import com.devloop.pwt.entity.ProjectWithTutor;
@@ -21,7 +21,6 @@ import com.devloop.pwt.response.ProjectWithTutorListResponse;
 import com.devloop.search.response.IntegrationSearchResponse;
 import com.devloop.user.entity.User;
 import com.devloop.user.enums.UserRole;
-import com.devloop.user.repository.UserRepository;
 import com.devloop.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -210,6 +209,12 @@ public class ProjectWithTutorService {
         projectWithTutorRepository.delete(projectWithTutor);
 
         return String.format("%s 게시글을 삭제하였습니다.", projectWithTutor.getTitle());
+    }
+
+    //Util
+    public ProjectWithTutor findByPwtId(Long pwtId) {
+        return projectWithTutorRepository.findById(pwtId)
+                .orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_PROJECT_WITH_TUTOR));
     }
 
     /**
