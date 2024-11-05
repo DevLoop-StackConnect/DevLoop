@@ -3,31 +3,31 @@ package com.devloop.attachment.entity;
 import com.devloop.attachment.enums.FileFormat;
 import com.devloop.common.Timestamped;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.net.URL;
 
 @Getter
-@NoArgsConstructor
 @Entity
 @DiscriminatorColumn
 @Inheritance(strategy = InheritanceType.JOINED)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public abstract class Attachment extends Timestamped {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotNull
+    @Column(nullable = false)
     private URL imageURL;
 
-    @NotNull
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private FileFormat fileFormat;
 
-    @NotNull
+    @Column(nullable = false)
     private String fileName;
 
     public Attachment(URL imageURL, FileFormat fileFormat,String fileName) {

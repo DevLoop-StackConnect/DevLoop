@@ -2,6 +2,7 @@ package com.devloop.attachment.service;
 
 import com.devloop.attachment.entity.PWTAttachment;
 import com.devloop.attachment.repository.PWTATMRepository;
+import com.devloop.attachment.repository.PartyAMTRepository;
 import com.devloop.common.apipayload.status.ErrorStatus;
 import com.devloop.common.exception.ApiException;
 import lombok.RequiredArgsConstructor;
@@ -21,5 +22,9 @@ public class PWTAttachmentService {
 
     public void deletePwtAttachment(PWTAttachment pwtAttachment) {
         PWTATMRepository.delete(pwtAttachment);
+    }
+
+    public PWTATMRepository getCommunityATMRepository() {
+        return PWTATMRepository;
     }
 }
