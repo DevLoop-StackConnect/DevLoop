@@ -1,14 +1,14 @@
 package com.devloop.common.apipayload.status;
 
-
 import com.devloop.common.apipayload.BaseCode;
 import com.devloop.common.apipayload.dto.ReasonDto;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
 @Getter
-@AllArgsConstructor
+@AllArgsConstructor(access = AccessLevel.PROTECTED)
 public enum SuccessStatus implements BaseCode {
 
     _OK(HttpStatus.OK, "200", "Ok");

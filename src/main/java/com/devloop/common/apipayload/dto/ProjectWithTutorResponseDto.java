@@ -3,6 +3,7 @@ package com.devloop.common.apipayload.dto;
 import com.devloop.pwt.enums.Level;
 import com.devloop.pwt.enums.ProjectWithTutorStatus;
 import com.devloop.user.entity.User;
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -12,7 +13,7 @@ import java.time.LocalDateTime;
 
 @Builder
 @Getter
-@RequiredArgsConstructor
+@RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 public class ProjectWithTutorResponseDto {
     private final Long id;
     private final String title;

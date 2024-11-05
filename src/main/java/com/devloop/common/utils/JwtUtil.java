@@ -17,8 +17,8 @@ import java.util.Base64;
 import java.util.Date;
 import java.util.NoSuchElementException;
 
-@Slf4j(topic = "JwtUtil")
 @Component
+@Slf4j(topic = "JwtUtil")
 public class JwtUtil {
 
     private static final String BEARER_PREFIX = "Bearer ";
