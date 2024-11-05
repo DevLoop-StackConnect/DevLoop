@@ -1,10 +1,14 @@
 package com.devloop.purchase.service;
 
+import com.devloop.cart.entity.CartItem;
 import com.devloop.order.entity.Order;
 import com.devloop.order.service.OrderService;
+import com.devloop.product.entity.Product;
 import com.devloop.purchase.entity.Purchase;
 import com.devloop.purchase.repository.PurchaseRepository;
+import com.devloop.pwt.entity.ProjectWithTutor;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.proxy.HibernateProxy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,10 +32,17 @@ public class PurchaseService {
 
         // Purchase 객체 생성
         List<Purchase> purchases = order.getCart().getItems().stream()
-                .map(p->Purchase.from(p.getProduct(), order.getUser()))
+                .map(p -> Purchase.from(p.getProduct(), order.getUser()))
                 .collect(Collectors.toList());
+
+//        if(((HibernateProxy) purchases.get(0).getProduct()).getHibernateLazyInitializer().getImplementationClass() == ProjectWithTutor.class) {
+//            System.out.println("이거 PWT 야~~~~~~~~~~~~~~~~~~~~~~~");
+//        }else{
+//            System.out.println("PWT 아닙니다.......................");
+//        }
 
         // Purchase 객체 저장
         purchaseRepository.saveAll(purchases);
+
     }
 }
