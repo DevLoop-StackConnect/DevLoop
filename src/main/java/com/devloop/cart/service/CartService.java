@@ -96,7 +96,7 @@ public class CartService {
 
     // 장바구니에 담긴 상품 삭제
     @Transactional
-    public String deleteItemFromCart(AuthUser authUser, Long productId) {
+    public void deleteItemFromCart(AuthUser authUser, Long productId) {
         // Cart 객체 가져오기
         Cart cart = cartRepository.findByUserId(authUser.getId())
                 .orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_CART_ITEM));
@@ -110,8 +110,6 @@ public class CartService {
         if(cart.getItems().isEmpty()) {
             cartRepository.delete(cart);
         }
-
-        return String.format("상품 [ %s ]가 장바구니에서 삭제되었습니다.", cartItem.getProduct().getTitle());
     }
 
     // 장바구니 삭제
