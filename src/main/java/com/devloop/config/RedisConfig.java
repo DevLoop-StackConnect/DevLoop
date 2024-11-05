@@ -59,7 +59,7 @@ public class RedisConfig {
     @Bean
     public CacheManager cacheManager(RedisConnectionFactory redisConnectionFactory) {
         RedisCacheConfiguration defaultConfig = RedisCacheConfiguration.defaultCacheConfig()
-                .entryTtl(Duration.ofHours(24))
+                .entryTtl(Duration.ofHours(1))
                 .disableCachingNullValues()
                 .serializeKeysWith(RedisSerializationContext.SerializationPair
                         .fromSerializer(new StringRedisSerializer()))
@@ -68,15 +68,25 @@ public class RedisConfig {
 
         Map<String, RedisCacheConfiguration> configurations = new HashMap<>();
         configurations.put("searchPreview", RedisCacheConfiguration.defaultCacheConfig()
-                .entryTtl(Duration.ofHours(24))
+                .entryTtl(Duration.ofHours(1))
                 .disableCachingNullValues());
         configurations.put("searchDetail", RedisCacheConfiguration.defaultCacheConfig()
-                .entryTtl(Duration.ofHours(12))
+                .entryTtl(Duration.ofHours(1))
                 .disableCachingNullValues());
 
         return RedisCacheManager.builder(redisConnectionFactory)
                 .cacheDefaults(defaultConfig)
                 .withInitialCacheConfigurations(configurations)
                 .build();
+    }
+
+    @Bean
+    public RedisTemplate<String, String> rankingRedisTemplate(RedisConnectionFactory redisConnectionFactory){
+        RedisTemplate<String, String> template = new RedisTemplate<>();
+        template.setConnectionFactory(redisConnectionFactory);
+        template.setKeySerializer(new StringRedisSerializer());
+        template.setValueSerializer(new StringRedisSerializer());
+        template.afterPropertiesSet();
+        return template;
     }
 }

@@ -12,16 +12,17 @@ public class IntegrationSearchRequest {
 
     private String boardType;
     private String title;
+    private String content;
     private String username;
     private String category;
 
-    public String generateCacheKey() {
+    public String generateCompositeKey() {
         return Stream.of(
-                        boardType != null ? "type:" + boardType : "",
                         title != null ? "title:" + title : "",
                         username != null ? "user:" + username : "",
+                        content != null ? "content:" + content : "",
                         category != null ? "category:" + category : ""
                 ).filter(key -> !key.isEmpty())
-                .collect(Collectors.joining(":"));
+                .collect(Collectors.joining("|"));
     }
 }

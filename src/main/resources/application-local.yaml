@@ -7,18 +7,17 @@ spring:
 
   data:
     redis:
-      host: localhost        # Redis 서버 호스트
-      port: 6379            # Redis 포트
-      password:             # 비밀번호가 있다면 설정
-      database: 0           # 사용할 데이터베이스 번호
-      timeout: 60000        # 커넥션 타임아웃 (ms)
-      lettuce:
+      host: localhost        # Redis 서버 호스트 (Docker Desktop에서 실행 중)
+      port: 6379            # Redis 포트 (Docker Desktop에서 설정한 포트)
+      password:             # Docker Desktop에서 설정한 비밀번호 (설정한 경우)
+      database: 0           # Redis DB 번호
+      timeout: 60000        # 작업 타임아웃 (ms)
+      lettuce: # Redis 클라이언트 설정
         pool:
-          max-active: 8     # 풀에서 관리하는 최대 커넥션 개수
-          max-idle: 8       # 풀에서 관리하는 최대 유휴 커넥션 개수
-          min-idle: 0       # 풀에서 관리하는 최소 유휴 커넥션 개수
-          max-wait: 5000    # 커넥션 풀이 바닥났을 때 예외 발생까지 대기 시간 (ms)
-
+          max-active: 10    # 최대 활성 연결 수
+          max-idle: 10      # 최대 유휴 연결 수
+          min-idle: 2       # 최소 유휴 연결 수
+          max-wait: -1      # 연결 대기 시간 (-1: 무한 대기)
 
   servlet:
     multipart:

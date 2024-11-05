@@ -15,14 +15,20 @@ import com.devloop.search.response.IntegratedSearchPreview;
 import com.devloop.search.response.IntegrationSearchResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ZSetOperations;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Set;
 
 @Slf4j
 @Service
@@ -33,8 +39,12 @@ public class SearchService {
     private final PartyService partyService;
     private final CommunityService communityService;
     private final ProjectWithTutorService projectWithTutorService;
+    private final RedisTemplate<String, String> rankingRedisTemplate;
+    private static final String SEARCH_RANKING_KEY = "search:ranking";
 
     private static final int PREVIEW_SIZE = 5;
+    @Value("${search.ranking.soze:10}")
+    private int rankingSize;
 
     @Cacheable(
             value = "searchPreview",
@@ -44,6 +54,11 @@ public class SearchService {
     )
     public IntegratedSearchPreview integratedSearchPreview(IntegrationSearchRequest request) {
         log.debug("Cache miss for search preview: {}", request);
+
+        String searchKey = request.generateCompositeKey();
+        if(!searchKey.isEmpty()){
+            incrementSearchCount(searchKey);
+        }
 
         try {
             Specification<Party> partySpec = SearchSpecificationUtil.buildSpecification(request);
@@ -81,6 +96,8 @@ public class SearchService {
     )
     public Page<IntegrationSearchResponse> searchByCategory(
             IntegrationSearchRequest request, String category, int page, int size) {
+        incrementSearchCount(request.getTitle());
+
         log.debug("Cache miss for category search: {} - page: {}", category, page);
 
         PageRequest pageable = PageRequest.of(page - 1, size, Sort.by("createdAt").descending());
@@ -92,9 +109,19 @@ public class SearchService {
         };
     }
 
-    @CacheEvict(value = {"searchPreview", "searchDetail"}, allEntries = true)
-    public void clearSearchCache() {
-        log.info("Clearing all search caches");
+    public void incrementSearchCount(String keyword){
+        ZSetOperations<String, String> zSetOps = rankingRedisTemplate.opsForZSet();
+        zSetOps.incrementScore(SEARCH_RANKING_KEY, keyword, 1);
+    }
+
+    public Set<ZSetOperations.TypedTuple<String>> getTopSearchKeywords(){
+        ZSetOperations<String, String> zSetOps = rankingRedisTemplate.opsForZSet();
+        return zSetOps.reverseRangeWithScores(SEARCH_RANKING_KEY, 0, rankingSize - 1);
+    }
+
+    @Scheduled(cron = "0 0 0 * * ?")
+    public void resetSearchRanking() {
+        rankingRedisTemplate.delete(SEARCH_RANKING_KEY); // 랭킹 초기화
     }
 
     private Page<IntegrationSearchResponse> searchParty(IntegrationSearchRequest request, PageRequest pageable) {
