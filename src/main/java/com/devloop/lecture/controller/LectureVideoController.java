@@ -6,6 +6,7 @@ import com.devloop.lecture.response.GetLectureVideoDetailResponse;
 import com.devloop.lecture.response.GetLectureVideoListResponse;
 import com.devloop.lecture.service.LectureVideoService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -27,6 +28,7 @@ public class LectureVideoController {
      * @throws IOException
      */
     @PostMapping("/v2/lectures/{lectureId}/videos/multipart-upload")
+    @PreAuthorize("hasRole('ROLE_TUTOR')")
     public ApiResponse<String> uploadLectureVideo(
             @AuthenticationPrincipal AuthUser authUser,
             @PathVariable("lectureId") Long lectureId,
@@ -45,6 +47,7 @@ public class LectureVideoController {
      * @return
      */
     @GetMapping("/v2/lectures/{lectureId}/videos")
+    @PreAuthorize("permitAll()")
     public ApiResponse<List<GetLectureVideoListResponse>> getLectureVideoList(
             @AuthenticationPrincipal AuthUser authUser,
             @PathVariable("lectureId") Long lectureId
@@ -76,6 +79,7 @@ public class LectureVideoController {
      * @return
      */
     @DeleteMapping("/v2/lectures/{lectureId}/videos/{videoId}")
+    @PreAuthorize("#authUser.id == authentication.principal.id or hasRole('ROLE_ADMIN')")
     public ApiResponse<String> deleteVideo(
             @AuthenticationPrincipal AuthUser authUser,
             @PathVariable("lectureId")Long lectureId,
@@ -83,6 +87,4 @@ public class LectureVideoController {
     ){
         return ApiResponse.ok(lectureVideoService.deleteVideo(authUser,lectureId,videoId));
     }
-
-
 }

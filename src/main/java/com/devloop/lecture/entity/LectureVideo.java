@@ -9,17 +9,19 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
-@NoArgsConstructor
 @Getter
+@NoArgsConstructor
 public class LectureVideo extends Timestamped {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @NotNull
+    @Column(nullable = false)
     private String fileName;
 
     @NotNull
+    @Column(nullable = false)
     private String title;
 
     @NotNull
@@ -27,12 +29,13 @@ public class LectureVideo extends Timestamped {
     private VideoStatus status=VideoStatus.PENDING;
 
     @NotNull
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private FileFormat fileFormat;
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="lecture_id")
+    @JoinColumn(name="lecture_id", nullable = false)
     private Lecture lecture;
 
     private LectureVideo(String fileName,String title,VideoStatus status, FileFormat fileFormat, Lecture lecture){
@@ -42,6 +45,7 @@ public class LectureVideo extends Timestamped {
         this.fileFormat=fileFormat;
         this.lecture=lecture;
     }
+
     public static LectureVideo of(String fileName,String title,VideoStatus status,FileFormat fileFormat, Lecture lecture){
         return new LectureVideo(
                 fileName,

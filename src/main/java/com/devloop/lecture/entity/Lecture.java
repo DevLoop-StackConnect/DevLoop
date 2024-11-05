@@ -10,6 +10,7 @@ import com.devloop.pwt.enums.Level;
 import com.devloop.user.entity.User;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -17,26 +18,28 @@ import java.math.BigDecimal;
 import java.util.List;
 
 @Entity
-@NoArgsConstructor
 @Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Lecture extends Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @NotNull
-    @Column(columnDefinition = "TEXT")
+    @Column(columnDefinition = "TEXT", nullable = false)
     private String description;
 
     @NotNull
-    @Column(length = 20)
+    @Column(length = 20, nullable = false)
     private String recommend;
 
     @NotNull
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private Category category;
 
     @NotNull
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private Level level;
 
@@ -46,7 +49,7 @@ public class Lecture extends Product {
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="user_id")
+    @JoinColumn(name="user_id", nullable = false)
     private User user;
 
     @OneToMany(mappedBy = "lecture", cascade = CascadeType.REMOVE, orphanRemoval = true)
@@ -69,8 +72,8 @@ public class Lecture extends Product {
                 request.getTitle(),
                 request.getDescription(),
                 request.getRecommend(),
-                Category.of(request.getCategory()),
-                Level.of(request.getLevel()),
+                request.getCategory(),
+                request.getLevel(),
                 request.getPrice(),
                 user
         );
@@ -80,8 +83,8 @@ public class Lecture extends Product {
         update(request.getTitle(),request.getPrice());
         this.description= request.getDescription();
         this.recommend= request.getRecommend();
-        this.category=Category.of(request.getCategory());
-        this.level=Level.of(request.getLevel());
+        this.category=request.getCategory();
+        this.level=request.getLevel();
     }
 
     public void changeApproval(Approval approval) {

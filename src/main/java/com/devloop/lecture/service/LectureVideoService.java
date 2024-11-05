@@ -27,15 +27,14 @@ import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.*;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.util.*;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
-@Slf4j
 public class LectureVideoService {
     private final S3Client s3Client;
     private final LectureVideoRepository lectureVideoRepository;
@@ -76,11 +75,7 @@ public class LectureVideoService {
 
         //파일 사이즈 확인 (5GB까지 가능)
         fileValidator.fileSizeValidator(multipartFile,5L*1024*1024*1024);
-
-        //MultipartFile을 File로 변환
-        File file=convertMultipartFileToFile(multipartFile);
-
-        long fileSize=file.length();
+        long fileSize=multipartFile.getSize();
 
         String folderPath="lectures/"+lectureId+"/";
         String fileName = makeFileName(folderPath,multipartFile);
@@ -94,7 +89,7 @@ public class LectureVideoService {
         //파일을 partSize만큼 파트로 나누어 업로드
         long filePosition=0;
 
-        try(FileInputStream inputStream=new FileInputStream(file)){
+        try(InputStream inputStream=multipartFile.getInputStream()){
             for(int i=1;filePosition<fileSize;i++){
                 //마지막 파트 크기가 partSize 미만일 경우 조정
                 long currentPartSize=Math.min(partSize,(fileSize-filePosition));
@@ -108,12 +103,13 @@ public class LectureVideoService {
                         .partNumber(i)
                         .build();
 
-                //파일의 특정 위치에서 InputStream을 읽어 RequestBody 생성
-                byte[] buffer=new byte[(int) currentPartSize];
-                inputStream.read(buffer,0,(int)currentPartSize);
 
                 //각 파트를 업로드하고 ETag를 partETags에 추가
-                UploadPartResponse uploadPartResponse=s3Client.uploadPart(uploadPartRequest, RequestBody.fromBytes(buffer));
+                UploadPartResponse uploadPartResponse=s3Client.uploadPart(
+                        uploadPartRequest,
+                        RequestBody.fromInputStream(inputStream,currentPartSize)
+                );
+
                 CompletedPart part=CompletedPart.builder()
                         .partNumber(i)
                         .eTag(uploadPartResponse.eTag())
@@ -160,14 +156,6 @@ public class LectureVideoService {
 
     }
 
-    // MultipartFile을 File로 변환
-    private File convertMultipartFileToFile(MultipartFile multipartFile) throws IOException {
-        //임시 파일 생성
-        File file = File.createTempFile("temp",multipartFile.getOriginalFilename());
-        multipartFile.transferTo(file);
-        file.deleteOnExit(); //임시 파일 삭제 예약
-        return file;
-    }
     //파일 이름 생성
     public String makeFileName(String folderPath,MultipartFile multipartFile){
         return folderPath+UUID.randomUUID() +"_"+ multipartFile.getOriginalFilename();
@@ -289,7 +277,4 @@ public class LectureVideoService {
         s3Service.delete(lectureVideo.getFileName());
         lectureVideoRepository.delete(lectureVideo);
     }
-
-
-
 }
