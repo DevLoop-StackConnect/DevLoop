@@ -19,11 +19,12 @@ public class PartyAttachment extends Attachment {
     @Column(nullable = false)
     private Long partyId;
 
-    private PartyAttachment(Long partyId, URL imageURL, FileFormat fileFormat , String fileName){
+    private PartyAttachment(Long partyId, URL imageURL, FileFormat fileFormat, String fileName) {
         super(imageURL, fileFormat, fileName);
         this.partyId = partyId;
     }
-    public static PartyAttachment of(Long partyId, URL imageURL, FileFormat fileFormat ,String fileName){
-        return new PartyAttachment(partyId, imageURL, fileFormat,fileName);
+
+    public static PartyAttachment of(Long partyId, URL imageURL, FileFormat fileFormat, String fileName) {
+        return new PartyAttachment(partyId, imageURL, fileFormat, fileName);
     }
 }

@@ -2,14 +2,13 @@ package com.devloop.attachment.service;
 
 import com.devloop.attachment.entity.PWTAttachment;
 import com.devloop.attachment.repository.PWTATMRepository;
-import com.devloop.attachment.repository.PartyAMTRepository;
-import com.devloop.common.apipayload.status.ErrorStatus;
-import com.devloop.common.exception.ApiException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class PWTAttachmentService {
 
     private final PWTATMRepository PWTATMRepository;
@@ -20,6 +19,7 @@ public class PWTAttachmentService {
                 .orElse(null);
     }
 
+    @Transactional
     public void deletePwtAttachment(PWTAttachment pwtAttachment) {
         PWTATMRepository.delete(pwtAttachment);
     }

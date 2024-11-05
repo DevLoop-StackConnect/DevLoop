@@ -35,8 +35,9 @@ import java.util.UUID;
 
 @Slf4j
 @Service
-@Transactional
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
+
 public class S3Service {
 
     @Value("${cloud.aws.s3.attachmentsBucketName}")
@@ -54,6 +55,7 @@ public class S3Service {
         return  UUID.randomUUID() + file.getOriginalFilename();
     }
 
+    @Transactional
     public <T> void uploadFile(MultipartFile file, User user, T object){
 
         fileValidator.fileTypeValidator(file,object);
@@ -120,6 +122,7 @@ public class S3Service {
     }
 
     // 첨부파일 업데이트
+    @Transactional
     public <T extends Attachment, U> void updateUploadFile(MultipartFile file, T attachment, U object) {
         // 기존 S3 첨부파일 삭제
         delete(attachment.getFileName());
