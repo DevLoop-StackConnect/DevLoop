@@ -8,7 +8,6 @@ import com.devloop.order.entity.OrderItem;
 import com.devloop.order.repository.OrderItemRepository;
 import com.devloop.order.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
