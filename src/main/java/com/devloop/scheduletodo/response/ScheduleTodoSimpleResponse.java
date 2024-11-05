@@ -1,4 +1,4 @@
-package com.devloop.scheduleTodo.response;
+package com.devloop.scheduletodo.response;
 
 import lombok.Getter;
 

@@ -1,11 +1,11 @@
-package com.devloop.scheduleTodo.controller;
+package com.devloop.scheduletodo.controller;
 
 import com.devloop.common.AuthUser;
 import com.devloop.common.apipayload.ApiResponse;
-import com.devloop.scheduleTodo.request.ScheduleTodoRequest;
-import com.devloop.scheduleTodo.response.ScheduleTodoResponse;
-import com.devloop.scheduleTodo.response.ScheduleTodoSimpleResponse;
-import com.devloop.scheduleTodo.service.ScheduleTodoService;
+import com.devloop.scheduletodo.request.ScheduleTodoRequest;
+import com.devloop.scheduletodo.response.ScheduleTodoResponse;
+import com.devloop.scheduletodo.response.ScheduleTodoSimpleResponse;
+import com.devloop.scheduletodo.service.ScheduleTodoService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;

@@ -1,7 +1,7 @@
-package com.devloop.scheduleTodo.entity;
+package com.devloop.scheduletodo.entity;
 
 import com.devloop.common.Timestamped;
-import com.devloop.scheduleBoard.entity.ScheduleBoard;
+import com.devloop.scheduleboard.entity.ScheduleBoard;
 import com.devloop.user.entity.User;
 import jakarta.persistence.*;
 import lombok.Getter;

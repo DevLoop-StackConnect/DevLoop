@@ -1,17 +1,17 @@
-package com.devloop.scheduleTodo.service;
+package com.devloop.scheduletodo.service;
 
 import com.devloop.common.AuthUser;
 import com.devloop.common.apipayload.status.ErrorStatus;
 import com.devloop.common.exception.ApiException;
 import com.devloop.pwt.entity.ProjectWithTutor;
-import com.devloop.scheduleBoard.entity.ScheduleBoard;
-import com.devloop.scheduleBoard.repository.BoardAssignmentRepository;
-import com.devloop.scheduleBoard.service.ScheduleBoardService;
-import com.devloop.scheduleTodo.request.ScheduleTodoRequest;
-import com.devloop.scheduleTodo.response.ScheduleTodoResponse;
-import com.devloop.scheduleTodo.response.ScheduleTodoSimpleResponse;
-import com.devloop.scheduleTodo.entity.ScheduleTodo;
-import com.devloop.scheduleTodo.repository.ScheduleTodoRepository;
+import com.devloop.scheduleboard.entity.ScheduleBoard;
+import com.devloop.scheduleboard.repository.BoardAssignmentRepository;
+import com.devloop.scheduleboard.service.ScheduleBoardService;
+import com.devloop.scheduletodo.request.ScheduleTodoRequest;
+import com.devloop.scheduletodo.response.ScheduleTodoResponse;
+import com.devloop.scheduletodo.response.ScheduleTodoSimpleResponse;
+import com.devloop.scheduletodo.entity.ScheduleTodo;
+import com.devloop.scheduletodo.repository.ScheduleTodoRepository;
 import com.devloop.user.entity.User;
 import com.devloop.user.service.UserService;
 import jakarta.persistence.OptimisticLockException;

@@ -1,4 +1,4 @@
-package com.devloop.scheduleTodo.request;
+package com.devloop.scheduletodo.request;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

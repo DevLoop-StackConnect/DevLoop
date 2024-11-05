@@ -1,12 +1,12 @@
-package com.devloop.scheduleBoard.service;
+package com.devloop.scheduleboard.service;
 
 import com.devloop.common.apipayload.status.ErrorStatus;
 import com.devloop.common.exception.ApiException;
 import com.devloop.pwt.entity.ProjectWithTutor;
 import com.devloop.pwt.service.ProjectWithTutorService;
-import com.devloop.scheduleBoard.response.ScheduleBoardResponse;
-import com.devloop.scheduleBoard.entity.ScheduleBoard;
-import com.devloop.scheduleBoard.repository.ScheduleBoardRepository;
+import com.devloop.scheduleboard.response.ScheduleBoardResponse;
+import com.devloop.scheduleboard.entity.ScheduleBoard;
+import com.devloop.scheduleboard.repository.ScheduleBoardRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
