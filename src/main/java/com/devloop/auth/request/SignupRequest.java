@@ -3,6 +3,7 @@ package com.devloop.auth.request;
 import com.devloop.user.enums.UserRole;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -23,6 +24,6 @@ public class SignupRequest {
     @NotBlank(message = "이름은 필수 입력사항입니다.")
     private String username;
 
-    @NotBlank(message = "권한을 입력해주세요  기본값 : [ROLE_USER]")
+    @NotNull(message = "권한을 입력해주세요  기본값 : [ROLE_USER]")
     private UserRole role;
 }
