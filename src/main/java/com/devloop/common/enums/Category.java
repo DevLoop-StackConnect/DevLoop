@@ -12,7 +12,8 @@ import java.util.Arrays;
 public enum Category {
     APP_DEV("앱개발"),
     WEB_DEV("웹개발"),
-    GAME_DEV("게임개발");
+    GAME_DEV("게임개발"),
+    ETC("기타");
 
     private final String description;
 

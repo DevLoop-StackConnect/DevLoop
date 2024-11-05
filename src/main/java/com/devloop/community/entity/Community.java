@@ -1,28 +1,24 @@
 package com.devloop.community.entity;
 
-import com.devloop.attachment.entity.CommunityAttachment;
-import com.devloop.common.Timestamped;
-import com.devloop.common.enums.BoardType;
-import com.devloop.common.enums.Category;
-import com.devloop.communitycomment.entity.CommunityComment;
-import com.devloop.user.entity.User;
-import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.ArrayList;
+
+import jakarta.persistence.*;
+import com.devloop.user.entity.User;
+import com.devloop.common.Timestamped;
+import com.devloop.common.enums.Category;
+import com.devloop.common.enums.BoardType;
+import com.devloop.communitycomment.entity.CommunityComment;
 
 @Entity
 @Getter
 @Builder
-@AllArgsConstructor
-@NoArgsConstructor
+@AllArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Community extends Timestamped {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "community_id")
@@ -31,22 +27,17 @@ public class Community extends Timestamped {
     @Enumerated(EnumType.STRING)
     private BoardType boardType = BoardType.COMMUNITY;
 
-    @NotNull
-    @Column(name = "title", length = 100)
+    @Column(name = "title", length = 50, nullable = false)
     private String title;
 
-    @NotNull
-    @Column(name = "content", columnDefinition = "TEXT")
+    @Column(name = "content", columnDefinition = "TEXT", nullable = false)
     private String content;
 
-    @NotNull
     @Enumerated(EnumType.STRING)
-    @Column(name = "category")
-    private Category category;
+    private Category category = Category.ETC;
 
-    @NotNull
     @Enumerated(EnumType.STRING)
-    @Column(name = "status")
+    @Column(nullable = false, name = "status")
     private ResolveStatus resolveStatus = ResolveStatus.UNSOLVED; //기본값 필드로 설정
 
     @OneToMany(mappedBy = "community", fetch = FetchType.LAZY)
@@ -64,8 +55,6 @@ public class Community extends Timestamped {
         this.user = user;
     }
 
-
-
     public static Community of(String title, String content, Category category, User user) {
         return new Community(
                 title,
@@ -82,5 +71,4 @@ public class Community extends Timestamped {
         this.resolveStatus = resolveStatus;
         this.category = category;
     }
-
 }
