@@ -48,6 +48,7 @@ public enum ErrorStatus implements BaseCode {
     _NOT_FOUND_PROJECT_WITH_TUTOR(HttpStatus.NOT_FOUND, "404", "튜터랑 함께하는 협업 프로젝트 게시글이 존재하지 않습니다."),
     _ACCESS_PERMISSION_DENIED(HttpStatus.BAD_REQUEST, "400", "잘못된 접근입니다."),
     _LEVEL_NOT_EXIST(HttpStatus.BAD_REQUEST, "400", "존재하지 않는 난이도 입니다."),
+    _ALREADY_FULL(HttpStatus.CONFLICT,"409","해당 PWT의 인원이 다 찼습니다."),
 
     // Cart
     _NOT_FOUND_PRODUCT(HttpStatus.NOT_FOUND, "404", "존재하지 않는 상품 입니다."),
@@ -58,6 +59,8 @@ public enum ErrorStatus implements BaseCode {
     // Order
     _NOT_FOUND_ORDER(HttpStatus.NOT_FOUND, "404", "해당 주문을 찾지 못했습니다."),
 
+    //Stock
+    _NOT_FOUND_STOCK(HttpStatus.NOT_FOUND,"404","해당 재고를 찾지 못했습니다."),
 
     //Auth
     _NOT_AUTHENTICATIONPRINCIPAL_USER(HttpStatus.UNAUTHORIZED, "401", "인증되지 않은 유저입니다."),

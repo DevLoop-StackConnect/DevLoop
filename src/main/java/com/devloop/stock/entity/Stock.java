@@ -32,4 +32,7 @@ public class Stock extends Timestamped {
         return new Stock(product, quantity);
     }
 
+    public void updateQuantity(int quantity) {
+        this.quantity = quantity - 1;
+    }
 }

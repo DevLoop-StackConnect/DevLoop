@@ -126,4 +126,7 @@ public class ProjectWithTutor extends Product {
         this.approval = approval;
     }
 
+    public void changeStatus(ProjectWithTutorStatus projectWithTutorStatus) {
+        this.status = projectWithTutorStatus;
+    }
 }
