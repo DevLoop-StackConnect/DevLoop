@@ -38,8 +38,8 @@ import java.util.UUID;
 @Slf4j
 public class S3Service {
 
-    @Value("${cloud.aws.s3.bucketName}")
-    private String bucketName;
+    @Value("${cloud.aws.s3.attachmentsBucketName}")
+    private String attachmentsBucketName;
     private final AmazonS3Client amazonS3Client;
     private final PartyAMTRepository partyAMTRepository;
     private final CommunityATMRepository communityATMRepository;
@@ -65,7 +65,7 @@ public class S3Service {
 
 
         try {
-            amazonS3Client.putObject(bucketName, fileName, file.getInputStream(), metadata);
+            amazonS3Client.putObject(attachmentsBucketName, fileName, file.getInputStream(), metadata);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -130,7 +130,7 @@ public class S3Service {
         metadata.setContentLength(file.getSize());
 
         try {
-            amazonS3Client.putObject(bucketName, fileName, file.getInputStream(), metadata);
+            amazonS3Client.putObject(attachmentsBucketName, fileName, file.getInputStream(), metadata);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -143,9 +143,9 @@ public class S3Service {
     }
 
     public void delete(String fileName){
-        if(amazonS3Client.doesObjectExist(bucketName, fileName)) {
+        if(amazonS3Client.doesObjectExist(attachmentsBucketName, fileName)) {
             try {
-                amazonS3Client.deleteObject(new DeleteObjectRequest(bucketName,fileName));
+                amazonS3Client.deleteObject(new DeleteObjectRequest(attachmentsBucketName,fileName));
             } catch (AmazonServiceException e) {
                 throw new ApiException(ErrorStatus._HAS_NOT_ACCESS_PERMISSION);
             }
