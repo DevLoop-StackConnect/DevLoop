@@ -45,7 +45,7 @@ public class S3Service {
     private final ProfileATMRepository profileATMRepository;
     private final PWTATMRepository pwtATMRepository;
     @Value("${cloud.aws.cloudfront.attachmentsCloudFrontUrl}")
-    private String CLOUD_FRONT_URL;
+    private String ATTACHMENTS_CLOUD_FRONT_URL;
 
     public String makeFileName(MultipartFile file){
         return  UUID.randomUUID() + file.getOriginalFilename();
@@ -69,7 +69,7 @@ public class S3Service {
         }
 
         try{
-            URL url = new URL(CLOUD_FRONT_URL + fileName);
+            URL url = new URL(ATTACHMENTS_CLOUD_FRONT_URL + fileName);
             if (object instanceof Party) {
                 PartyAttachment partyAttachment = PartyAttachment.of(
                         ((Party) object).getId(),
@@ -133,7 +133,7 @@ public class S3Service {
             throw new RuntimeException(e);
         }
         try{
-            URL url = new URL(CLOUD_FRONT_URL+fileName);
+            URL url = new URL(ATTACHMENTS_CLOUD_FRONT_URL+fileName);
 
             // 업로드한 S3파일을 기존 첨부파일 로컬 DB에 업데이트
             attachment.updateAttachment(url, fileType, fileName);
