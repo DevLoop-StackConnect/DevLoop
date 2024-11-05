@@ -31,14 +31,14 @@ public class CommunityController {
 
     //게시글 다건 조회
     @GetMapping("/v1/communities")
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("permitAll()")
     public ApiResponse<Page<CommunitySimpleResponse>> getCommunities(@RequestParam(defaultValue = "1") int page, @RequestParam(defaultValue = "10") int size) {
         return ApiResponse.ok(communityService.getCommunities(page, size));
     }
 
     //게시글 단건 조회
     @GetMapping("/v1/communities/{communityId}")
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("permitAll()")
     public ApiResponse<CommunityDetailResponse> getCommunity(@PathVariable Long communityId) {
         return ApiResponse.ok(communityService.getCommunity(communityId));
     }
@@ -51,7 +51,7 @@ public class CommunityController {
 
     //게시글 삭제
     @DeleteMapping("/v1/communities/{communityId}")
-    @PreAuthorize("#id == authentication.principal.id or hasRole('ROLE_ADMIN')")
+    @PreAuthorize("#authUser.id == authentication.principal.id or hasRole('ROLE_ADMIN')")
     public ResponseEntity<Void> deleteCommunity(@AuthenticationPrincipal AuthUser authUser, @PathVariable Long communityId) {
         communityService.deleteCommunity(authUser, communityId);
         return ResponseEntity.noContent().build();
