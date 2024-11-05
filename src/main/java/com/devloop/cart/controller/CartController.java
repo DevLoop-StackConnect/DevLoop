@@ -5,6 +5,7 @@ import com.devloop.cart.service.CartService;
 import com.devloop.common.AuthUser;
 import com.devloop.common.apipayload.ApiResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -36,11 +37,12 @@ public class CartController {
 
     // 장바구니에 담긴 상품 삭제
     @DeleteMapping("/v2/carts/products/{productId}")
-    public ApiResponse<String> deleteItemFromCart(
+    public ResponseEntity<Void> deleteItemFromCart(
             @AuthenticationPrincipal AuthUser authUser,
             @PathVariable("productId") Long productId
-    ){
-        return ApiResponse.ok(cartService.deleteItemFromCart(authUser, productId));
+    ) {
+        cartService.deleteItemFromCart(authUser, productId);
+        return ResponseEntity.noContent().build();
     }
 
 }
