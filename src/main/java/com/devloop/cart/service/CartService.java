@@ -20,8 +20,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
-
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -56,7 +54,7 @@ public class CartService {
             newCart.addItem(cartItem);
         } else {
             CartItem cartItem = CartItem.from(cart, product);
-            if(cartItemRepository.findByCartIdAndProductId(cart.getId(), productId).isPresent()){
+            if (cartItemRepository.findByCartIdAndProductId(cart.getId(), productId).isPresent()) {
                 throw new ApiException(ErrorStatus._PRODUCT_ALREADY_EXIST);
             }
             cart.addItem(cartItem);
@@ -101,20 +99,20 @@ public class CartService {
         Cart cart = cartRepository.findByUserId(authUser.getId())
                 .orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_CART_ITEM));
 
-        CartItem cartItem = cartItemRepository.findByCartIdAndProductId(cart.getId(), productId).orElseThrow(()->new ApiException(ErrorStatus._NOT_FOUND_CART_ITEM));
+        CartItem cartItem = cartItemRepository.findByCartIdAndProductId(cart.getId(), productId).orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_CART_ITEM));
 
         cart.deleteItem(cartItem);
         cart.updateTotalPrice(cart.getTotalPrice().subtract(cartItem.getProduct().getPrice()));
 
         // 장바구니에 담긴 상품이 없으면 장바구니 삭제
-        if(cart.getItems().isEmpty()) {
+        if (cart.getItems().isEmpty()) {
             cartRepository.delete(cart);
         }
     }
 
     // 장바구니 삭제
     @Transactional
-    public void deleteCart(Long cartId){
+    public void deleteCart(Long cartId) {
         // Cart 객체 가져오기
         Cart cart = findById(cartId);
         // Cart 삭제
@@ -124,11 +122,11 @@ public class CartService {
     // Utile method
     public Cart findByUserId(Long userId) {
         return cartRepository.findByUserId(userId)
-                .orElseThrow(()->new ApiException(ErrorStatus._NOT_FOUND_CART));
+                .orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_CART));
     }
 
     public Cart findById(Long cartId) {
         return cartRepository.findById(cartId)
-                .orElseThrow(()->new ApiException(ErrorStatus._NOT_FOUND_CART));
+                .orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_CART));
     }
 }
