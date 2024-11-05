@@ -5,10 +5,10 @@ import org.springframework.util.StringUtils;
 
 public class CacheKeyGenerator {
 
-    public static String generateKey(IntegrationSearchRequest request){
+    public static String generateKey(IntegrationSearchRequest request) {
         StringBuilder keyBuilder = new StringBuilder();
 
-        if(StringUtils.hasText(request.getTitle())){
+        if (StringUtils.hasText(request.getTitle())) {
             keyBuilder.append("title:").append(request.getTitle());
         }
         if (StringUtils.hasText(request.getUsername())) {
