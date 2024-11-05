@@ -3,7 +3,6 @@ package com.devloop.cart.entity;
 import com.devloop.common.Timestamped;
 import com.devloop.user.entity.User;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,8 +11,9 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
-@Entity
+
 @Getter
+@Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Cart extends Timestamped {
 

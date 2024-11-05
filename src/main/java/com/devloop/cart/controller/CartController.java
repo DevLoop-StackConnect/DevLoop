@@ -40,7 +40,7 @@ public class CartController {
     public ResponseEntity<Void> deleteItemFromCart(
             @AuthenticationPrincipal AuthUser authUser,
             @PathVariable("productId") Long productId
-    ){
+    ) {
         cartService.deleteItemFromCart(authUser, productId);
         return ResponseEntity.noContent().build();
     }
