@@ -30,7 +30,7 @@ public class CartResponse {
             BigDecimal totalPrice,
             Long quantity,
             Page<CartItemListResponse> cartItemList
-    ){
+    ) {
         return new CartResponse(userName, totalPrice, quantity, cartItemList);
     }
 
