@@ -31,7 +31,6 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-@Slf4j
 public class UserService {
 
     private final UserRepository userRepository;
@@ -131,7 +130,6 @@ public class UserService {
     public List<CommunitySimpleResponse> userCommunityResponses(User user){
         List<Community> communities = communityRepository.findAllByUserId(user.getId())
                 .orElseThrow(()->new ApiException(ErrorStatus._INVALID_REQUEST));
-        log.info(communities.toString());
         List<CommunitySimpleResponse> communitySimpleResponses = new ArrayList<>();
         for (Community community : communities) {
             CommunitySimpleResponse communitySimpleResponse = CommunitySimpleResponse.of(
