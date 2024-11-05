@@ -1,5 +1,7 @@
 package com.devloop.lecture.service;
 
+import com.amazonaws.services.s3.AmazonS3Client;
+import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.devloop.attachment.cloudfront.CloudFrontService;
 import com.devloop.attachment.enums.FileFormat;
 import com.devloop.attachment.s3.S3Service;
@@ -30,6 +32,7 @@ import software.amazon.awssdk.services.s3.model.*;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.util.*;
 
@@ -48,7 +51,53 @@ public class LectureVideoService {
 
     @Value("${cloud.aws.s3.bucketName}")
     private String bucketName;
+    private final AmazonS3Client amazonS3Client;
 
+    //일반 업로드
+    public String uploadVideo(AuthUser authUser, Long lectureId, MultipartFile multipartFile, String title) throws IOException {
+        //유저가 존재하는 지 확인
+        User user= userService.findByUserId(authUser.getId());
+
+        //강의가 존재하는 지 확인
+        Lecture lecture=lectureService.findById(lectureId);
+
+        //유저가 강의 등록한 유저인지 확인
+        if(!user.getId().equals(lecture.getUser().getId())){
+            throw new ApiException(ErrorStatus._HAS_NOT_ACCESS_PERMISSION);
+        }
+
+        FileFormat fileType=fileValidator.mapStringToFileFormat(Objects.requireNonNull(multipartFile.getContentType()));
+
+        //파일 사이즈 확인 (5GB까지 가능)
+        fileValidator.fileSizeValidator(multipartFile,5L*1024*1024*1024);
+
+        String folderPath="lectures/"+lectureId+"/";
+        String fileName = makeFileName(folderPath,multipartFile);
+
+        ObjectMetadata metadata= new ObjectMetadata();
+        metadata.setContentType(multipartFile.getContentType());
+        metadata.setContentLength(multipartFile.getSize());
+
+        long startTime=System.currentTimeMillis(); //시작 시간 기록
+
+        //S3에 업로드
+        amazonS3Client.putObject(bucketName,fileName,multipartFile.getInputStream(),metadata);
+        long endTime = System.currentTimeMillis(); // 종료 시간 기록
+        System.out.println("기본 업로드 소요 시간: " + (endTime - startTime) + " ms");
+
+        //새로운 강의 영상 객체 생성
+        LectureVideo lectureVideo=LectureVideo.of(
+                fileName,
+                title,
+                VideoStatus.COMPLETED,
+                fileType,
+                lecture
+        );
+        lectureVideoRepository.save(lectureVideo);
+
+        return fileName;
+
+    }
     /**
      * 멀티파트 파일 업로드
      * @param authUser
@@ -59,6 +108,7 @@ public class LectureVideoService {
      * @throws IOException
      */
     public String uploadLectureVideo(AuthUser authUser,Long lectureId, MultipartFile multipartFile, String title) throws IOException {
+
         //유저가 존재하는 지 확인
         User user= userService.findByUserId(authUser.getId());
 
@@ -77,10 +127,7 @@ public class LectureVideoService {
         //파일 사이즈 확인 (5GB까지 가능)
         fileValidator.fileSizeValidator(multipartFile,5L*1024*1024*1024);
 
-        //MultipartFile을 File로 변환
-        File file=convertMultipartFileToFile(multipartFile);
-
-        long fileSize=file.length();
+        long fileSize=multipartFile.getSize();
 
         String folderPath="lectures/"+lectureId+"/";
         String fileName = makeFileName(folderPath,multipartFile);
@@ -94,7 +141,11 @@ public class LectureVideoService {
         //파일을 partSize만큼 파트로 나누어 업로드
         long filePosition=0;
 
-        try(FileInputStream inputStream=new FileInputStream(file)){
+        /**
+         * 전체 멀티파트 업로드 시작 시간 기록
+         */
+        long startTime=System.currentTimeMillis(); //시작 시간 기록
+        try(InputStream inputStream=multipartFile.getInputStream()){
             for(int i=1;filePosition<fileSize;i++){
                 //마지막 파트 크기가 partSize 미만일 경우 조정
                 long currentPartSize=Math.min(partSize,(fileSize-filePosition));
@@ -108,18 +159,26 @@ public class LectureVideoService {
                         .partNumber(i)
                         .build();
 
-                //파일의 특정 위치에서 InputStream을 읽어 RequestBody 생성
-                byte[] buffer=new byte[(int) currentPartSize];
-                inputStream.read(buffer,0,(int)currentPartSize);
+                /**
+                 * 각 파트 업로드 시간 비교
+                 */
+                // 각 파트 업로드 시작 시간
+                long partStartTime = System.currentTimeMillis();
 
                 //각 파트를 업로드하고 ETag를 partETags에 추가
-                UploadPartResponse uploadPartResponse=s3Client.uploadPart(uploadPartRequest, RequestBody.fromBytes(buffer));
+                UploadPartResponse uploadPartResponse=s3Client.uploadPart(
+                        uploadPartRequest, RequestBody.fromInputStream(inputStream,currentPartSize)
+                );
+
                 CompletedPart part=CompletedPart.builder()
                         .partNumber(i)
                         .eTag(uploadPartResponse.eTag())
                         .build();
 
                 completedParts.add(part);
+                // 각 파트 업로드 종료 시간 및 출력
+                long partEndTime = System.currentTimeMillis();
+                System.out.println("파트 " + i + " 업로드 소요 시간: " + (partEndTime - partStartTime) + " ms");
 
                 filePosition+=currentPartSize;
             }
@@ -134,6 +193,9 @@ public class LectureVideoService {
 
             s3Client.completeMultipartUpload(completeMultipartUploadRequest);
 
+            // 전체 멀티파트 업로드 종료 시간 및 출력
+            long endTime = System.currentTimeMillis();
+            System.out.println("전체 멀티파트 업로드 소요 시간: " + (endTime - startTime) + " ms");
 
             //새로운 강의 영상 객체 생성
             LectureVideo lectureVideo=LectureVideo.of(
@@ -160,14 +222,6 @@ public class LectureVideoService {
 
     }
 
-    // MultipartFile을 File로 변환
-    private File convertMultipartFileToFile(MultipartFile multipartFile) throws IOException {
-        //임시 파일 생성
-        File file = File.createTempFile("temp",multipartFile.getOriginalFilename());
-        multipartFile.transferTo(file);
-        file.deleteOnExit(); //임시 파일 삭제 예약
-        return file;
-    }
     //파일 이름 생성
     public String makeFileName(String folderPath,MultipartFile multipartFile){
         return folderPath+UUID.randomUUID() +"_"+ multipartFile.getOriginalFilename();
@@ -289,7 +343,6 @@ public class LectureVideoService {
         s3Service.delete(lectureVideo.getFileName());
         lectureVideoRepository.delete(lectureVideo);
     }
-
 
 
 }

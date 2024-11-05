@@ -26,6 +26,7 @@ public class LectureVideoController {
      * @return
      * @throws IOException
      */
+
     @PostMapping("/v2/lectures/{lectureId}/videos/multipart-upload")
     public ApiResponse<String> uploadLectureVideo(
             @AuthenticationPrincipal AuthUser authUser,
@@ -34,6 +35,25 @@ public class LectureVideoController {
             @RequestParam(value = "title") String title
     ) throws IOException {
         return ApiResponse.ok(lectureVideoService.uploadLectureVideo(authUser,lectureId,multipartFile, title));
+    }
+
+    /**
+     * 멀티 파트 파일 적용 x
+     * @param authUser
+     * @param lectureId
+     * @param multipartFile
+     * @param title
+     * @return
+     * @throws IOException
+     */
+    @PostMapping("/v2/lectures/{lectureId}/videos/upload")
+    public ApiResponse<String> uploadVideo(
+            @AuthenticationPrincipal AuthUser authUser,
+            @PathVariable("lectureId") Long lectureId,
+            @RequestParam(value = "file") MultipartFile multipartFile,
+            @RequestParam(value = "title") String title
+    ) throws IOException {
+        return ApiResponse.ok(lectureVideoService.uploadVideo(authUser,lectureId,multipartFile, title));
     }
 
     /**
