@@ -1,12 +1,9 @@
 package com.devloop.auth.request;
 
 import jakarta.validation.constraints.NotNull;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter
-@AllArgsConstructor(access = AccessLevel.PROTECTED)
 public class SignoutRequest {
     @NotNull(message = "비밀번호를 입력해주세요.")
 //    @Pattern(regexp = "^(?=.*?[A-Za-z])(?=.*?[0-9])(?=.*?[#?!@$ %^&*-]).{8,}$",
