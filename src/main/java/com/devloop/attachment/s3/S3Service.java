@@ -50,7 +50,7 @@ public class S3Service {
     private String CLOUD_FRONT_URL;
 
     public String makeFileName(MultipartFile file){
-        return  URLEncoder.encode(UUID.randomUUID() + file.getOriginalFilename(), StandardCharsets.UTF_8);
+        return  UUID.randomUUID() + file.getOriginalFilename();
     }
 
     public <T> void uploadFile(MultipartFile file, User user, T object){
