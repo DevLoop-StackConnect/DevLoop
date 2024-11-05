@@ -1,13 +1,12 @@
 package com.devloop.attachment.entity;
 
-import com.devloop.attachment.enums.FileFormat;
-import com.devloop.common.Timestamped;
-import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-
 import java.net.URL;
+import lombok.Getter;
+import lombok.AccessLevel;
+import jakarta.persistence.*;
+import lombok.NoArgsConstructor;
+import com.devloop.common.Timestamped;
+import com.devloop.attachment.enums.FileFormat;
 
 @Getter
 @Entity
