@@ -6,17 +6,17 @@ import com.devloop.attachment.s3.S3Service;
 import com.devloop.common.AuthUser;
 import com.devloop.common.apipayload.status.ErrorStatus;
 import com.devloop.common.exception.ApiException;
-import com.devloop.community.response.CommunitySimpleResponse;
 import com.devloop.community.entity.Community;
 import com.devloop.community.repository.CommunityRepository;
+import com.devloop.community.response.CommunitySimpleResponse;
 import com.devloop.party.entity.Party;
 import com.devloop.party.repository.PartyRepository;
 import com.devloop.party.response.GetPartyListResponse;
 import com.devloop.tutor.entity.TutorRequest;
 import com.devloop.tutor.repository.TutorRequestRepository;
-import com.devloop.user.response.UserResponse;
 import com.devloop.user.entity.User;
 import com.devloop.user.repository.UserRepository;
+import com.devloop.user.response.UserResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -40,6 +40,7 @@ public class UserService {
     private final CommunityRepository communityRepository;
     private final TutorRequestRepository tutorRequestRepository;
     private final S3Service s3Service;
+
 
     public UserResponse getUser(AuthUser authUser) throws MalformedURLException {
 
