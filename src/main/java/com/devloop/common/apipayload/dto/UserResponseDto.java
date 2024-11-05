@@ -1,8 +1,6 @@
 package com.devloop.common.apipayload.dto;
 
-import lombok.Builder;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 @Getter
 public class UserResponseDto {

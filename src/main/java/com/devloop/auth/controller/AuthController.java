@@ -14,6 +14,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -36,8 +37,9 @@ public class AuthController {
         return ResponseEntity.status(HttpStatus.OK).header("Authorization", authService.login(loginRequest)).build();
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER') or hasRole('ROLE_TUTOR')")
     @PutMapping("/v1/auth/signout")
-    public ResponseEntity<Void> deleteUser(@AuthenticationPrincipal AuthUser authUser, @RequestBody SignoutRequest signoutRequest) {
+    public ResponseEntity<Void> deleteUser(@AuthenticationPrincipal AuthUser authUser, @Valid @RequestBody SignoutRequest signoutRequest) {
         Long id = authUser.getId();
         authService.deleteUser(id, signoutRequest);
         return ResponseEntity.noContent().build();
