@@ -11,8 +11,8 @@ import lombok.RequiredArgsConstructor;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-@Builder
 @Getter
+@Builder
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 public class ProjectWithTutorResponseDto {
     private final Long id;
