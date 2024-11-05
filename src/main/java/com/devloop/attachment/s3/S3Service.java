@@ -116,7 +116,9 @@ public class S3Service {
             else {
                 throw new ApiException(ErrorStatus._UNSUPPORTED_OBJECT_TYPE);
             }
-        } catch (MalformedURLException ignored) {}
+        } catch (MalformedURLException i) {
+            throw new RuntimeException(i);
+        }
 
 
     }
@@ -146,7 +148,9 @@ public class S3Service {
 
             // 업로드한 S3파일을 기존 첨부파일 로컬 DB에 업데이트
             attachment.updateAttachment(url, fileType, fileName);
-        } catch (MalformedURLException ignored) {}
+        } catch (MalformedURLException i) {
+            throw new RuntimeException(i);
+        }
     }
 
     public void delete(String fileName){
