@@ -1,11 +1,12 @@
 package com.devloop.community.entity;
 
-import com.devloop.common.apipayload.status.ErrorStatus;
-import com.devloop.common.exception.ApiException;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 import java.util.Arrays;
+
+import lombok.RequiredArgsConstructor;
+import com.devloop.common.exception.ApiException;
+import com.devloop.common.apipayload.status.ErrorStatus;
 
 @Getter
 @RequiredArgsConstructor
