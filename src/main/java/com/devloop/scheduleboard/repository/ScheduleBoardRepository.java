@@ -1,7 +1,7 @@
-package com.devloop.scheduleBoard.repository;
+package com.devloop.scheduleboard.repository;
 
 import com.devloop.pwt.entity.ProjectWithTutor;
-import com.devloop.scheduleBoard.entity.ScheduleBoard;
+import com.devloop.scheduleboard.entity.ScheduleBoard;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

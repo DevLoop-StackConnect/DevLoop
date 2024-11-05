@@ -1,29 +1,30 @@
 package com.devloop.attachment.entity;
 
-import com.devloop.attachment.enums.FileFormat;
-import jakarta.persistence.DiscriminatorValue;
-import jakarta.persistence.Entity;
-import jakarta.validation.constraints.NotNull;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-
 import java.net.URL;
+import lombok.Getter;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Column;
+import jakarta.persistence.DiscriminatorValue;
+import com.devloop.attachment.enums.FileFormat;
+
 
 @Getter
-@NoArgsConstructor
 @Entity
 @DiscriminatorValue("PARTY")
-
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class PartyAttachment extends Attachment {
 
-    @NotNull
+    @Column(nullable = false)
     private Long partyId;
 
-    private PartyAttachment(Long partyId, URL imageURL, FileFormat fileFormat , String fileName){
+    private PartyAttachment(Long partyId, URL imageURL, FileFormat fileFormat, String fileName) {
         super(imageURL, fileFormat, fileName);
         this.partyId = partyId;
     }
-    public static PartyAttachment of(Long partyId, URL imageURL, FileFormat fileFormat ,String fileName){
-        return new PartyAttachment(partyId, imageURL, fileFormat,fileName);
+
+    public static PartyAttachment of(Long partyId, URL imageURL, FileFormat fileFormat, String fileName) {
+        return new PartyAttachment(partyId, imageURL, fileFormat, fileName);
     }
 }

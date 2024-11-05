@@ -1,9 +1,9 @@
-package com.devloop.scheduleBoard.controller;
+package com.devloop.scheduleboard.controller;
 
 import com.devloop.attachment.service.PWTAttachmentService;
 import com.devloop.common.apipayload.ApiResponse;
-import com.devloop.scheduleBoard.response.ScheduleBoardResponse;
-import com.devloop.scheduleBoard.service.ScheduleBoardService;
+import com.devloop.scheduleboard.response.ScheduleBoardResponse;
+import com.devloop.scheduleboard.service.ScheduleBoardService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
