@@ -29,6 +29,7 @@ cloud:
       secretKey: ${AWS_SECRET_KEY}
     s3:
       bucketName: ${AWS_BUCKET_NAME}
+      attachmentsBucketName: ${AWS_ATTACHMENTS_BUCKET_NAME}
     region:
       static: ${AWS_REGION}
     stack:
@@ -37,7 +38,7 @@ cloud:
       cloudFrontUrl: ${CLOUD_FRONT_URL}
       keyPairId: ${CLOUDFRONT_KEY_PAIR_ID}
       privateKeyPath: ${CLOUDFRONT_PRIVATE_KEY_PATH}
-
+      attachmentsCloudFrontUrl: ${ATTACHMENTS_CLOUD_FRONT_URL}
 
 toss:
   payment:

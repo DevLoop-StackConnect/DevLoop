@@ -25,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Objects;
 import java.util.UUID;
@@ -35,17 +36,19 @@ import java.util.UUID;
 @Slf4j
 public class S3Service {
 
-    @Value("${cloud.aws.s3.bucketName}")
-    private String bucketName;
+    @Value("${cloud.aws.s3.attachmentsBucketName}")
+    private String attachmentsBucketName;
     private final AmazonS3Client amazonS3Client;
     private final PartyAMTRepository partyAMTRepository;
     private final CommunityATMRepository communityATMRepository;
     private final FileValidator fileValidator;
     private final ProfileATMRepository profileATMRepository;
     private final PWTATMRepository pwtATMRepository;
+    @Value("${cloud.aws.cloudfront.attachmentsCloudFrontUrl}")
+    private String ATTACHMENTS_CLOUD_FRONT_URL;
 
     public String makeFileName(MultipartFile file){
-        return UUID.randomUUID() + file.getOriginalFilename();
+        return  UUID.randomUUID() + file.getOriginalFilename();
     }
 
     public <T> void uploadFile(MultipartFile file, User user, T object){
@@ -60,51 +63,54 @@ public class S3Service {
 
 
         try {
-            amazonS3Client.putObject(bucketName, fileName, file.getInputStream(), metadata);
+            amazonS3Client.putObject(attachmentsBucketName, fileName, file.getInputStream(), metadata);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
 
-        URL url = amazonS3Client.getUrl(bucketName,fileName);
+        try{
+            URL url = new URL(ATTACHMENTS_CLOUD_FRONT_URL + fileName);
+            if (object instanceof Party) {
+                PartyAttachment partyAttachment = PartyAttachment.of(
+                        ((Party) object).getId(),
+                        url,
+                        fileType,
+                        fileName
+                );
+                partyAMTRepository.save(partyAttachment);
+            } else if (object instanceof Community) {
+                CommunityAttachment communityAttachment = CommunityAttachment.of(
+                        ((Community) object).getId(),
+                        url,
+                        fileType,
+                        fileName
+                );
+                communityATMRepository.save(communityAttachment);
+            } else if (object instanceof User) {
+                ProfileAttachment profileAttachment = ProfileAttachment.of(
+                        ((User) object).getId(),
+                        url,
+                        fileType,
+                        fileName
+                );
+                profileATMRepository.save(profileAttachment);
+                user.updateProfileImg(profileAttachment.getId());
+            }
+            else if (object instanceof ProjectWithTutor) {
+                PWTAttachment pwtAttachment = PWTAttachment.of(
+                        ((ProjectWithTutor) object).getId(),
+                        url,
+                        fileType,
+                        fileName
+                );
+                pwtATMRepository.save(pwtAttachment);
+            }
+            else {
+                throw new ApiException(ErrorStatus._UNSUPPORTED_OBJECT_TYPE);
+            }
+        } catch (MalformedURLException ignored) {}
 
-        if (object instanceof Party) {
-            PartyAttachment partyAttachment = PartyAttachment.of(
-                    ((Party) object).getId(),
-                    url,
-                    fileType,
-                    fileName
-            );
-            partyAMTRepository.save(partyAttachment);
-        } else if (object instanceof Community) {
-            CommunityAttachment communityAttachment = CommunityAttachment.of(
-                    ((Community) object).getId(),
-                    url,
-                    fileType,
-                    fileName
-            );
-            communityATMRepository.save(communityAttachment);
-        } else if (object instanceof User) {
-            ProfileAttachment profileAttachment = ProfileAttachment.of(
-                    ((User) object).getId(),
-                    url,
-                    fileType,
-                    fileName
-            );
-            profileATMRepository.save(profileAttachment);
-            user.updateProfileImg(profileAttachment.getId());
-        }
-        else if (object instanceof ProjectWithTutor) {
-            PWTAttachment pwtAttachment = PWTAttachment.of(
-                    ((ProjectWithTutor) object).getId(),
-                    url,
-                    fileType,
-                    fileName
-            );
-            pwtATMRepository.save(pwtAttachment);
-        }
-        else {
-            throw new ApiException(ErrorStatus._UNSUPPORTED_OBJECT_TYPE);
-        }
+
     }
 
     // 첨부파일 업데이트
@@ -122,21 +128,22 @@ public class S3Service {
         metadata.setContentLength(file.getSize());
 
         try {
-            amazonS3Client.putObject(bucketName, fileName, file.getInputStream(), metadata);
+            amazonS3Client.putObject(attachmentsBucketName, fileName, file.getInputStream(), metadata);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+        try{
+            URL url = new URL(ATTACHMENTS_CLOUD_FRONT_URL+fileName);
 
-        URL url = amazonS3Client.getUrl(bucketName, fileName);
-
-        // 업로드한 S3파일을 기존 첨부파일 로컬 DB에 업데이트
-        attachment.updateAttachment(url, fileType, fileName);
+            // 업로드한 S3파일을 기존 첨부파일 로컬 DB에 업데이트
+            attachment.updateAttachment(url, fileType, fileName);
+        } catch (MalformedURLException ignored) {}
     }
 
     public void delete(String fileName){
-        if(amazonS3Client.doesObjectExist(bucketName, fileName)) {
+        if(amazonS3Client.doesObjectExist(attachmentsBucketName, fileName)) {
             try {
-                amazonS3Client.deleteObject(new DeleteObjectRequest(bucketName,fileName));
+                amazonS3Client.deleteObject(new DeleteObjectRequest(attachmentsBucketName,fileName));
             } catch (AmazonServiceException e) {
                 throw new ApiException(ErrorStatus._HAS_NOT_ACCESS_PERMISSION);
             }
