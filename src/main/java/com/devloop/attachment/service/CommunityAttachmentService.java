@@ -19,4 +19,8 @@ public class CommunityAttachmentService {
     public void deleteCommunityAttachment(CommunityAttachment communityAttachment){
         communityATMRepository.delete(communityAttachment);
     }
+
+    public CommunityATMRepository getCommunityATMRepository() {
+        return communityATMRepository;
+    }
 }

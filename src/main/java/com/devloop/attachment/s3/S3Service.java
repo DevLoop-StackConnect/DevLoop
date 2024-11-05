@@ -10,9 +10,12 @@ import com.devloop.attachment.repository.CommunityATMRepository;
 import com.devloop.attachment.repository.PWTATMRepository;
 import com.devloop.attachment.repository.PartyAMTRepository;
 import com.devloop.attachment.repository.ProfileATMRepository;
-import com.devloop.common.validator.FileValidator;
+import com.devloop.attachment.service.CommunityAttachmentService;
+import com.devloop.attachment.service.PWTAttachmentService;
+import com.devloop.attachment.service.PartyAttachmentService;
 import com.devloop.common.apipayload.status.ErrorStatus;
 import com.devloop.common.exception.ApiException;
+import com.devloop.common.validator.FileValidator;
 import com.devloop.community.entity.Community;
 import com.devloop.party.entity.Party;
 import com.devloop.pwt.entity.ProjectWithTutor;
@@ -30,22 +33,22 @@ import java.net.URL;
 import java.util.Objects;
 import java.util.UUID;
 
-@Service
-@RequiredArgsConstructor
-@Transactional
 @Slf4j
+@Service
+@Transactional
+@RequiredArgsConstructor
 public class S3Service {
 
     @Value("${cloud.aws.s3.attachmentsBucketName}")
     private String attachmentsBucketName;
-    private final AmazonS3Client amazonS3Client;
-    private final PartyAMTRepository partyAMTRepository;
-    private final CommunityATMRepository communityATMRepository;
-    private final FileValidator fileValidator;
-    private final ProfileATMRepository profileATMRepository;
-    private final PWTATMRepository pwtATMRepository;
     @Value("${cloud.aws.cloudfront.attachmentsCloudFrontUrl}")
     private String ATTACHMENTS_CLOUD_FRONT_URL;
+    private final AmazonS3Client amazonS3Client;
+    private final FileValidator fileValidator;
+    private final ProfileATMRepository profileATMRepository;
+    private final CommunityAttachmentService communityAttachmentService ;
+    private final PartyAttachmentService partyAttachmentService;
+    private final PWTAttachmentService pwtAttachmentService;
 
     public String makeFileName(MultipartFile file){
         return  UUID.randomUUID() + file.getOriginalFilename();
@@ -77,6 +80,7 @@ public class S3Service {
                         fileType,
                         fileName
                 );
+                PartyAMTRepository partyAMTRepository = partyAttachmentService.getCommunityATMRepository();
                 partyAMTRepository.save(partyAttachment);
             } else if (object instanceof Community) {
                 CommunityAttachment communityAttachment = CommunityAttachment.of(
@@ -85,6 +89,7 @@ public class S3Service {
                         fileType,
                         fileName
                 );
+                CommunityATMRepository communityATMRepository = communityAttachmentService.getCommunityATMRepository();
                 communityATMRepository.save(communityAttachment);
             } else if (object instanceof User) {
                 ProfileAttachment profileAttachment = ProfileAttachment.of(
@@ -103,6 +108,7 @@ public class S3Service {
                         fileType,
                         fileName
                 );
+                PWTATMRepository pwtATMRepository = pwtAttachmentService.getCommunityATMRepository();
                 pwtATMRepository.save(pwtAttachment);
             }
             else {
