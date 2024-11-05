@@ -1,10 +1,10 @@
-package com.devloop.scheduleBoard.service;
+package com.devloop.scheduleboard.service;
 
 import com.devloop.purchase.entity.Purchase;
 import com.devloop.pwt.entity.ProjectWithTutor;
-import com.devloop.scheduleBoard.entity.BoardAssignment;
-import com.devloop.scheduleBoard.entity.ScheduleBoard;
-import com.devloop.scheduleBoard.repository.BoardAssignmentRepository;
+import com.devloop.scheduleboard.entity.BoardAssignment;
+import com.devloop.scheduleboard.entity.ScheduleBoard;
+import com.devloop.scheduleboard.repository.BoardAssignmentRepository;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.proxy.HibernateProxy;
 import org.springframework.stereotype.Service;

@@ -1,4 +1,4 @@
-package com.devloop.scheduleBoard.entity;
+package com.devloop.scheduleboard.entity;
 
 import com.devloop.purchase.entity.Purchase;
 import jakarta.persistence.*;
