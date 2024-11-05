@@ -1,7 +1,6 @@
 package com.devloop.tutor.response;
 
 import com.devloop.common.apipayload.dto.UserResponseDto;
-import com.devloop.tutor.entity.TutorRequest;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
