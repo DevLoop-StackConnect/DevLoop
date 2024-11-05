@@ -19,11 +19,12 @@ public class CommunityAttachment extends Attachment {
     @Column(nullable = false)
     private Long communityId;
 
-    private CommunityAttachment(Long communityId, URL imageURL, FileFormat fileFormat, String fileName){
-        super(imageURL, fileFormat,  fileName);
+    private CommunityAttachment(Long communityId, URL imageURL, FileFormat fileFormat, String fileName) {
+        super(imageURL, fileFormat, fileName);
         this.communityId = communityId;
     }
-    public static CommunityAttachment of(Long communityId, URL imageURL, FileFormat fileFormat,String fileName){
-        return new CommunityAttachment(communityId, imageURL, fileFormat,fileName);
+
+    public static CommunityAttachment of(Long communityId, URL imageURL, FileFormat fileFormat, String fileName) {
+        return new CommunityAttachment(communityId, imageURL, fileFormat, fileName);
     }
 }

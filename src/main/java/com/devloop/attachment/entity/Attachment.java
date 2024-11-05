@@ -30,13 +30,13 @@ public abstract class Attachment extends Timestamped {
     @Column(nullable = false)
     private String fileName;
 
-    public Attachment(URL imageURL, FileFormat fileFormat,String fileName) {
+    public Attachment(URL imageURL, FileFormat fileFormat, String fileName) {
         this.imageURL = imageURL;
         this.fileFormat = fileFormat;
         this.fileName = fileName;
     }
 
-    public void updateAttachment(URL imageURL, FileFormat fileFormat,String fileName){
+    public void updateAttachment(URL imageURL, FileFormat fileFormat, String fileName) {
         this.imageURL = imageURL;
         this.fileFormat = fileFormat;
         this.fileName = fileName;
