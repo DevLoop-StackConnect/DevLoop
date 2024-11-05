@@ -11,6 +11,7 @@ import com.devloop.lecture.response.UpdateLectureResponse;
 import com.devloop.lecture.service.LectureService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,8 +21,9 @@ import org.springframework.web.bind.annotation.*;
 public class LectureController {
     private final LectureService lectureService;
 
-    //강의 데이터 생성 (일반 사용자 접근 불가)
+    //강의 데이터 생성 (TUTOR)
     @PostMapping("/v2/tutor/lectures")
+    @PreAuthorize("hasRole('ROLE_TUTOR')")
     public ApiResponse<SaveLectureResponse> saveLecture(
             @AuthenticationPrincipal AuthUser authUser,
             @RequestBody SaveLectureRequest saveLectureRequest
@@ -29,8 +31,9 @@ public class LectureController {
         return ApiResponse.ok(lectureService.saveLecture(authUser,saveLectureRequest));
     }
 
-    //강의 수정 (일반 사용자 접근 불가)
+    //강의 수정 (TUTOR)
     @PatchMapping("/v2/tutor/lectures/{lectureId}")
+    @PreAuthorize("hasRole('ROLE_TUTOR')")
     public ApiResponse<UpdateLectureResponse> updateLecture(
             @AuthenticationPrincipal AuthUser authUser,
             @PathVariable("lectureId") Long lectureId,
@@ -40,7 +43,8 @@ public class LectureController {
     }
 
     //강의 단건 조회 (승인이 완료된 강의만 조회)
-    @GetMapping("/v2/search/lectures/{lectureId}")
+    @GetMapping("/v2/lectures/{lectureId}")
+    @PreAuthorize("permitAll()")
     public ApiResponse<GetLectureDetailResponse> getLecture(
             @PathVariable("lectureId") Long lectureId
     ){
@@ -48,7 +52,8 @@ public class LectureController {
     }
 
     //강의 다건 조회 (승인이 완료된 강의만 조회)
-    @GetMapping("/v2/search/lectures")
+    @GetMapping("/v2/lectures")
+    @PreAuthorize("permitAll()")
     public ApiResponse<Page<GetLectureListResponse>> getLectureList(
             @RequestParam(required = false) String title,
             @RequestParam(defaultValue = "1") int page,
@@ -59,6 +64,7 @@ public class LectureController {
 
     //강의 삭제
     @DeleteMapping("/v2/tutor/lectures/{lectureId}")
+    @PreAuthorize("#authUser.id == authentication.principal.id or hasRole('ROLE_ADMIN')")
     public ApiResponse<String> deleteLecture(
             @AuthenticationPrincipal AuthUser authUser,
             @PathVariable("lectureId") Long lectureId

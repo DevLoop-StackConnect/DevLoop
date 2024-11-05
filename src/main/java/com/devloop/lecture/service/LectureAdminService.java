@@ -23,6 +23,7 @@ public class LectureAdminService {
 
     private final LectureRepository lectureRepository;
     private final LectureVideoService lectureVideoService;
+
     //강의 승인 (ADMIN)
     @Transactional
     public String changeApproval(Long lectureId) {
