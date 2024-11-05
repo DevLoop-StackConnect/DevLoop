@@ -10,6 +10,7 @@ import com.devloop.tutor.request.TutorRequestSaveRequest;
 import com.devloop.user.entity.User;
 import com.devloop.user.enums.UserRole;
 import com.devloop.user.repository.UserRepository;
+import com.devloop.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,8 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class TutorService {
 
     private final TutorRequestRepository requestRepository;
-    // todo : UserService 주입받는 방식으로 리팩토링 하기
-    private final UserRepository userRepository;
+    private final UserService userService;
 
     // 튜터 신청
     @Transactional
@@ -30,7 +30,7 @@ public class TutorService {
             TutorRequestSaveRequest tutorRequest
     ) {
         // 사용자 객체 가져오기
-        User requestUser = userRepository.findById(authUser.getId()).orElseThrow(()-> new ApiException(ErrorStatus._NOT_FOUND_USER));
+        User requestUser = userService.findByUserId(authUser.getId());
 
         // 요청한 사용자의 권한이 USER인지 확인
         if((!requestUser.getUserRole().equals(UserRole.ROLE_USER))){

@@ -6,11 +6,11 @@ import com.devloop.common.exception.ApiException;
 import com.devloop.common.utils.NotificationHandler;
 import com.devloop.community.entity.Community;
 import com.devloop.community.service.CommunityService;
-import com.devloop.communitycomment.dto.CommentResponse;
-import com.devloop.communitycomment.dto.request.CommentSaveRequest;
-import com.devloop.communitycomment.dto.request.CommentUpdateRequest;
-import com.devloop.communitycomment.dto.response.CommentSaveResponse;
-import com.devloop.communitycomment.dto.response.CommentUpdateResponse;
+import com.devloop.communitycomment.response.CommentResponse;
+import com.devloop.communitycomment.request.CommentSaveRequest;
+import com.devloop.communitycomment.request.CommentUpdateRequest;
+import com.devloop.communitycomment.response.CommentSaveResponse;
+import com.devloop.communitycomment.response.CommentUpdateResponse;
 import com.devloop.communitycomment.entity.CommunityComment;
 import com.devloop.communitycomment.repository.CommunityCommentRepository;
 import com.devloop.notification.dto.NotificationMessage;
@@ -19,10 +19,12 @@ import com.devloop.party.entity.Party;
 import com.devloop.partycomment.entity.PartyComment;
 import com.devloop.user.entity.User;
 import com.devloop.user.repository.UserRepository;
+import com.devloop.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -40,16 +42,25 @@ import java.util.Objects;
 public class CommunityCommentService {
     private final CommunityCommentRepository communityCommentRepository;
     private final CommunityService communityService;
+    private final UserService userService;
     private final UserRepository userRepository; //서비스에서 가져오게 바꿔야함
     private final NotificationHandler notificationHandler;
 
     //댓글 작성
     @Transactional
-    public CommentSaveResponse creatComment(AuthUser authUser, CommentSaveRequest commentSaveRequest, Long communityId) {
+    public CommentSaveResponse createComment(AuthUser authUser, CommentSaveRequest commentSaveRequest, Long communityId) {
         try {
             //커뮤니티 게시글 조회
             Community community = communityService.getCommunityId(communityId);
 
+        //사용자 조회
+        User user = userService.findByUserId(authUser.getId());
+        //댓글 생성..?생성자가 프라이빗이고..?
+        CommunityComment communityComment = CommunityComment.of(commentSaveRequest.getContent(), community, user);
+        //댓글 저장
+        CommunityComment savedComment = communityCommentRepository.save(communityComment);
+        //응답으로 변환
+        return CommentSaveResponse.of(savedComment.getId(), savedComment.getContent(), savedComment.getCreatedAt());
             //사용자 조회
             User user = userRepository.findById(authUser.getId())
                     .orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_USER));
@@ -125,7 +136,8 @@ public class CommunityCommentService {
     }
 
     //댓글 다건 조회
-    public Page<CommentResponse> getComments(Long communityId, Pageable pageable) {
+    public Page<CommentResponse> getComments(Long communityId, int page, int size) {
+        Pageable pageable = PageRequest.of(page-1,size);
         //페이지네이션된 댓글 조회
         Page<CommunityComment> comments = communityCommentRepository.findByCommunityId(communityId, pageable);
 

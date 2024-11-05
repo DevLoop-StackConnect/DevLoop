@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Builder
@@ -15,7 +16,7 @@ import java.time.LocalDateTime;
 public class ProjectWithTutorResponseDto {
     private final Long id;
     private final String title;
-    private final Integer price;
+    private final BigDecimal price;
     private final ProjectWithTutorStatus status;
     private final LocalDateTime deadline;
     private final Integer maxParticipants;

@@ -16,7 +16,7 @@ import com.devloop.partycomment.response.GetPartyCommentListResponse;
 import com.devloop.partycomment.response.SavePartyCommentResponse;
 import com.devloop.partycomment.response.UpdatePartyCommentResponse;
 import com.devloop.user.entity.User;
-import com.devloop.user.repository.UserRepository;
+import com.devloop.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -36,7 +36,7 @@ import java.util.Objects;
 @Slf4j
 public class PartyCommentService {
     private final PartyCommentRepository partyCommentRepository;
-    private final UserRepository userRepository;
+    private final UserService userService;
     private final PartyService partyService;
     private final NotificationHandler notificationHandler;
 
@@ -47,6 +47,8 @@ public class PartyCommentService {
             //유저가 존재하는 지 확인
             User user = userRepository.findById(authUser.getId()).orElseThrow(() ->
                     new ApiException(ErrorStatus._NOT_FOUND_USER));
+            //유저가 존재하는 지 확인
+            User user = userService.findByUserId(authUser.getId());
 
             //스터디 파티 게시글이 존재하는 지 확인
             Party party = partyService.findById(partyId);
@@ -121,7 +123,7 @@ public class PartyCommentService {
 
     //스터디 파티 게시글 댓글 삭제
     @Transactional
-    public void deletePartyComment(AuthUser authUser, Long partyId, Long commentId) {
+    public String deletePartyComment(AuthUser authUser, Long partyId, Long commentId) {
         try {
             //스터디 파티 게시글이 존재하는 지 확인
             Party party = partyService.findById(partyId);
@@ -135,9 +137,11 @@ public class PartyCommentService {
                 throw new ApiException(ErrorStatus._PERMISSION_DENIED);
             }
 
-            partyCommentRepository.delete(partyComment);
+        partyCommentRepository.delete(partyComment);
+        return String.format("댓글을 삭제하였습니다.");
         } catch(Exception e){
             notifyErrorCommentDeletion(partyId,commentId, authUser.getId(), e.getMessage());
+            throw e;
         }
     }
 
@@ -183,5 +187,5 @@ public class PartyCommentService {
 
     public void notifyErrorCommentDeletion(Long partyId, Long commentId, Long userId, String errorMessage) {
         log.error("스터디 파티 댓글 삭제 실패  - communityId : {}, commentId : {}, userId : {}, error : {}", partyId, commentId, userId, errorMessage);
+        }
     }
-}

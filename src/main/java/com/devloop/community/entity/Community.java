@@ -1,5 +1,6 @@
 package com.devloop.community.entity;
 
+import com.devloop.attachment.entity.CommunityAttachment;
 import com.devloop.common.Timestamped;
 import com.devloop.common.enums.BoardType;
 import com.devloop.common.enums.Category;
@@ -51,8 +52,6 @@ public class Community extends Timestamped {
     @OneToMany(mappedBy = "community", fetch = FetchType.LAZY)
     private List<CommunityComment> communityComments = new ArrayList<>();
 
-    //!!!!!!!!!!원투매니로 이미지 첨부파일 연관관계 맺어야함
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
@@ -83,6 +82,5 @@ public class Community extends Timestamped {
         this.resolveStatus = resolveStatus;
         this.category = category;
     }
-
 
 }

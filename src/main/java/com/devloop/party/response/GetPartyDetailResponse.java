@@ -1,22 +1,21 @@
 package com.devloop.party.response;
 
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
 @Getter
-@NoArgsConstructor
 public class GetPartyDetailResponse {
-    private Long partyId;
-    private String title;
-    private String contents;
-    private String status;
-    private String category;
-    private LocalDateTime createdAt;
-    private LocalDateTime modifiedAt;
+    private final Long partyId;
+    private final String title;
+    private final String contents;
+    private final String status;
+    private final String category;
+    private final LocalDateTime createdAt;
+    private final LocalDateTime modifiedAt;
+    private final String imageUrl;
 
-    private GetPartyDetailResponse(Long partyId,String title,String contents,String status,String category, LocalDateTime createdAt, LocalDateTime modifiedAt){
+    private GetPartyDetailResponse(Long partyId,String title,String contents,String status,String category, LocalDateTime createdAt, LocalDateTime modifiedAt, String imageUrl){
         this.partyId=partyId;
         this.title=title;
         this.contents=contents;
@@ -24,9 +23,10 @@ public class GetPartyDetailResponse {
         this.category=category;
         this.createdAt=createdAt;
         this.modifiedAt=modifiedAt;
+        this.imageUrl=imageUrl;
     }
 
-    public static GetPartyDetailResponse of(Long partyId,String title,String contents,String status,String category, LocalDateTime createdAt, LocalDateTime modifiedAt){
+    public static GetPartyDetailResponse of(Long partyId,String title,String contents,String status,String category, LocalDateTime createdAt, LocalDateTime modifiedAt,String imageUrl){
         return new GetPartyDetailResponse(
                 partyId,
                 title,
@@ -34,7 +34,8 @@ public class GetPartyDetailResponse {
                 status,
                 category,
                 createdAt,
-                modifiedAt
+                modifiedAt,
+                imageUrl
         );
     }
 }

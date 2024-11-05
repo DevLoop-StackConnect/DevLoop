@@ -6,6 +6,7 @@ import com.devloop.common.enums.Category;
 import com.devloop.party.enums.PartyStatus;
 import com.devloop.party.request.SavePartyRequest;
 import com.devloop.party.request.UpdatePartyRequest;
+import com.devloop.partycomment.entity.PartyComment;
 import com.devloop.user.entity.User;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -13,6 +14,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 @Getter
 @Entity
@@ -47,6 +50,9 @@ public class Party extends Timestamped {
     @ManyToOne
     @JoinColumn(name="user_id")
     private User user;
+
+    @OneToMany(mappedBy = "party", cascade = CascadeType.REMOVE)
+    private List<PartyComment> comments;
 
     private Party(String title,String contents, PartyStatus status, Category category,User user){
         this.title=title;

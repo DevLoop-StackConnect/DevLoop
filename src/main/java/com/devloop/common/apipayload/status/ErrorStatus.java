@@ -19,18 +19,6 @@ public enum ErrorStatus implements BaseCode {
     _NOT_FOUND_USER(HttpStatus.NOT_FOUND, "404", "존재하지 않은 유저입니다"),
     _NOT_FOUND_(HttpStatus.NOT_FOUND, "404", "존재하지 않은 유저입니다"),
 
-    // workspace
-    _NOT_FOUND_WORKSPACE(HttpStatus.NOT_FOUND, "404", "존재하지 않은 워크스페이스입니다"),
-
-
-    _DUPLICATE_MANAGE(HttpStatus.BAD_REQUEST, "404", "매니저가 중복됩니다."),
-
-    // member
-    _READ_ONLY_ROLE(HttpStatus.FORBIDDEN, "403", "읽기 전용 권한으로 인해 카드 생성/수정/삭제가 불가능합니다"),
-
-    // card
-    _NOT_FOUND_CARD(HttpStatus.NOT_FOUND, "404", "존재하지 않는 카드입니다"),
-
     // attachment
     _FILE_SIZE_EXCEEDED(HttpStatus.BAD_REQUEST, "400", "파일 크기가 5MB를 초과합니다"),
     _UNSUPPORTED_FILE_TYPE(HttpStatus.BAD_REQUEST, "400", "지원되지 않는 파일 형식입니다"),
@@ -61,6 +49,15 @@ public enum ErrorStatus implements BaseCode {
     _ACCESS_PERMISSION_DENIED(HttpStatus.BAD_REQUEST, "400", "잘못된 접근입니다."),
     _LEVEL_NOT_EXIST(HttpStatus.BAD_REQUEST, "400", "존재하지 않는 난이도 입니다."),
 
+    // Cart
+    _NOT_FOUND_PRODUCT(HttpStatus.NOT_FOUND, "404", "존재하지 않는 상품 입니다."),
+    _NOT_FOUND_CART_ITEM(HttpStatus.NOT_FOUND, "404", "장바구니에 상품이 존재하지 않습니다."),
+    _NOT_FOUND_CART(HttpStatus.NOT_FOUND, "404", "장바구니를 찾지 못했습니다."),
+    _PRODUCT_ALREADY_EXIST(HttpStatus.CONFLICT, "409", "장바구니에 상품이 이미 존재합니다."),
+
+    // Order
+    _NOT_FOUND_ORDER(HttpStatus.NOT_FOUND, "404", "해당 주문을 찾지 못했습니다."),
+
 
     //Auth
     _NOT_AUTHENTICATIONPRINCIPAL_USER(HttpStatus.UNAUTHORIZED, "401", "인증되지 않은 유저입니다."),
@@ -77,7 +74,15 @@ public enum ErrorStatus implements BaseCode {
     //Community
     _NOT_FOUND_COMMUNITY(HttpStatus.NOT_FOUND, "404", "존재하지 않는 게시글입니다"),
 
+    //Lecture
+    _NOT_FOUND_LECTURE(HttpStatus.NOT_FOUND, "404", "존재하지 않는 강의입니다"),
+    _NOT_FOUND_LECTURE_REVIEW(HttpStatus.NOT_FOUND,"404","존재하지 않는 강의 후기 입니다"),
+    _NOT_FOUND_LECTURE_VIDEO(HttpStatus.NOT_FOUND,"404","존재하지 않는 영상 입니다"),
+    _INVALID_LECTURE_VIDEO(HttpStatus.BAD_REQUEST,"400","영상이 존재하는 강의만 승인이 가능합니다"),
+
+
     //S3
+    _S3_UPLOAD_ERROR(HttpStatus.INTERNAL_SERVER_ERROR,"500","영상 업로드 중 실패하였습니다"),
     _UNSUPPORTED_OBJECT_TYPE(HttpStatus.BAD_REQUEST,"400","지원하지 않는 객체입니다."),
     _STATUS_NOT_EXSIST(HttpStatus.BAD_REQUEST, "400", "잘못된 해결 상태 입력값입니다. 오타 및 해결상태 종류를 확인하세요"),
     _CATEGORY_NOT_EXSIST(HttpStatus.BAD_REQUEST, "400", "잘못된 카테고리 입력값입니다. 오타 및 카테고리 종류를 확인하세요"),
@@ -97,11 +102,14 @@ public enum ErrorStatus implements BaseCode {
     _METHOD_RUN_ERROR(HttpStatus.BAD_REQUEST, "400", "메서드 실행 중 오류가 발생하였습니다"),
     _TRANSACTION_RUN_ERROR(HttpStatus.BAD_REQUEST, "400", "트랜잭션 처리 중 에러가 발생하였습니다."),
     _INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR ,"400", "알림 생성에 실패하였습니다"),
-    _NOTIFICATION_QUEUE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "400", "알림 큐 처리에 실패하였습니다.");
+    _NOTIFICATION_QUEUE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "400", "알림 큐 처리에 실패하였습니다."),
 
+    //ScheduleBoard
+    _NOT_FOUND_SCHEDULE_BOARD(HttpStatus.NOT_FOUND,"404","존재하지 않는 스케줄보드입니다."),
 
-
-
+    //ScheduleTodo
+    _NOT_FOUND_SCHEDULE_TODO(HttpStatus.NOT_FOUND,"404","존재하지 않는 일정입니다."),
+    _CONFLICT(HttpStatus.CONFLICT,"409","다른 사용자가 이미 수저했습니다. 다시 시도하세요");
 
 
     private HttpStatus httpStatus;
