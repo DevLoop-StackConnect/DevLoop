@@ -1,16 +1,14 @@
 package com.devloop.party.response;
 
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 @Getter
-@NoArgsConstructor
 public class UpdatePartyResponse {
-    private Long partyId;
-    private String title;
-    private String contents;
-    private String status;
-    private String category;
+    private final Long partyId;
+    private final String title;
+    private final String contents;
+    private final String status;
+    private final String category;
 
     private UpdatePartyResponse(Long partyId,String title,String contents,String status,String category){
         this.partyId=partyId;
