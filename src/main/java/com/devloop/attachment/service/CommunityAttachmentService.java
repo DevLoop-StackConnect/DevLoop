@@ -14,13 +14,13 @@ public class CommunityAttachmentService {
     private final CommunityATMRepository communityATMRepository;
 
     //CommunityId로 첨부파일 조회
-    public CommunityAttachment findCommunityAttachmentByCommunityId(Long communityId){
+    public CommunityAttachment findCommunityAttachmentByCommunityId(Long communityId) {
         return communityATMRepository.findByCommunityId(communityId)
                 .orElse(null);
     }
 
     @Transactional
-    public void deleteCommunityAttachment(CommunityAttachment communityAttachment){
+    public void deleteCommunityAttachment(CommunityAttachment communityAttachment) {
         communityATMRepository.delete(communityAttachment);
     }
 

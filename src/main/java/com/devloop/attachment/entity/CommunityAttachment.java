@@ -1,12 +1,13 @@
 package com.devloop.attachment.entity;
 
-import com.devloop.attachment.enums.FileFormat;
+import lombok.Getter;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import jakarta.persistence.Entity;
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorValue;
-import jakarta.persistence.Entity;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import com.devloop.attachment.enums.FileFormat;
+
 
 import java.net.URL;
 

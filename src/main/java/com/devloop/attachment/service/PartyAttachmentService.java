@@ -14,12 +14,12 @@ import java.util.Optional;
 public class PartyAttachmentService {
     private final PartyAMTRepository partyAMTRepository;
 
-    public Optional<PartyAttachment> findPartyAttachmentByPartyId(Long id){
+    public Optional<PartyAttachment> findPartyAttachmentByPartyId(Long id) {
         return partyAMTRepository.findByPartyId(id);
     }
 
     @Transactional
-    public void deletePartyAttachment(PartyAttachment partyAttachment){
+    public void deletePartyAttachment(PartyAttachment partyAttachment) {
         partyAMTRepository.delete(partyAttachment);
     }
 
