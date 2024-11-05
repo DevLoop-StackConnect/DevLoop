@@ -44,7 +44,7 @@ public class S3Service {
     private final FileValidator fileValidator;
     private final ProfileATMRepository profileATMRepository;
     private final PWTATMRepository pwtATMRepository;
-    @Value("${cloud.aws.cloudfront.cloudFrontUrl}")
+    @Value("${cloud.aws.cloudfront.attachmentsCloudFrontUrl}")
     private String CLOUD_FRONT_URL;
 
     public String makeFileName(MultipartFile file){
