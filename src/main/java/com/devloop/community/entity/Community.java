@@ -27,24 +27,25 @@ public class Community extends Timestamped {
     @Enumerated(EnumType.STRING)
     private BoardType boardType = BoardType.COMMUNITY;
 
-    @Column(name = "title", length = 50, nullable = false)
+    @Column(length = 50, nullable = false)
     private String title;
 
-    @Column(name = "content", columnDefinition = "TEXT", nullable = false)
+    @Column(columnDefinition = "TEXT", nullable = false)
     private String content;
 
     @Enumerated(EnumType.STRING)
     private Category category = Category.ETC;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, name = "status")
+    @Column(name = "status")
     private ResolveStatus resolveStatus = ResolveStatus.UNSOLVED; //기본값 필드로 설정
 
     @OneToMany(mappedBy = "community", fetch = FetchType.LAZY)
+    @Column(nullable = false)
     private List<CommunityComment> communityComments = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
     //커뮤니티 글 생성자

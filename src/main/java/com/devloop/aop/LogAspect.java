@@ -21,16 +21,11 @@ import java.util.Arrays;
 public class LogAspect {
 
     @Pointcut("execution(* com.devloop..service..*.*(..))")
-    private void serviceLayer() {
-    }
-
-    ;
+    private void serviceLayer(){}
 
     @Pointcut("execution(* com.devloop..service..*(com.devloop.common.enums.Category, ..))")
-    private void categoryPointcut() {
-    }
+    private void categoryPointcut(){}
 
-    ;
 
     @Around("serviceLayer()")
     public Object serviceLogExecution(ProceedingJoinPoint joinPoint) throws Throwable {
