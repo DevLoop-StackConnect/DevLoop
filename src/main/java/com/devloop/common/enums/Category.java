@@ -2,7 +2,6 @@ package com.devloop.common.enums;
 
 import com.devloop.common.apipayload.status.ErrorStatus;
 import com.devloop.common.exception.ApiException;
-import com.devloop.party.enums.PartyStatus;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 

@@ -4,7 +4,7 @@ import com.devloop.attachment.cloudfront.CloudFrontService;
 import com.devloop.attachment.enums.FileFormat;
 import com.devloop.attachment.s3.S3Service;
 import com.devloop.common.AuthUser;
-import com.devloop.common.Validator.FileValidator;
+import com.devloop.common.validator.FileValidator;
 import com.devloop.common.apipayload.status.ErrorStatus;
 import com.devloop.common.enums.Approval;
 import com.devloop.common.exception.ApiException;
