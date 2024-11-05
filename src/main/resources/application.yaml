@@ -1,0 +1,53 @@
+spring:
+  profiles:
+    active: local
+slack:
+  webhook-url: ${SLACK_WEBHOOK_URL}
+  app:
+    base-url: ${SLACK_BASE_URL}
+    client-id: ${SLACK_CLIENT_ID}
+    client-secret: ${SLACK_CLIENT_SECRET}
+    signing-secret: ${SLACK_SIGNING_SECRET}
+    bot-token: ${SLACK_BOT_TOKEN}
+    notification:
+      error-channel: "#에러-모니터링"       # 에러 알림을 받을 채널
+      admin-channel: "#데브루프-관리자"          # 관리자 알림용 채널
+      general-channel: "#데브루프"
+##logging:
+##  config: classpath:logback-spring.xml
+#  level:
+#    root: INFO
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,prometheus  # prometheus 추가
+  endpoint:
+    health:
+      show-details: always
+    prometheus:
+      enabled: true
+jwt:
+  secret:
+    key: ${JWT_SECRET_KEY}
+cloud:
+  aws:
+    credentials:
+      accessKey: ${AWS_ACCESS_KEY}
+      secretKey: ${AWS_SECRET_KEY}
+    s3:
+      bucketName: ${AWS_BUCKET_NAME}
+      attachmentsBucketName: ${AWS_ATTACHMENTS_BUCKET_NAME}
+    region:
+      static: ${AWS_REGION}
+    stack:
+      auto: false
+    cloudfront:
+      cloudFrontUrl: ${CLOUD_FRONT_URL}
+      keyPairId: ${CLOUDFRONT_KEY_PAIR_ID}
+      privateKeyPath: ${CLOUDFRONT_PRIVATE_KEY_PATH}
+      attachmentsCloudFrontUrl: ${ATTACHMENTS_CLOUD_FRONT_URL}
+toss:
+  payment:
+    secret:
+      key: ${TOSS_SECRET_KEY}
