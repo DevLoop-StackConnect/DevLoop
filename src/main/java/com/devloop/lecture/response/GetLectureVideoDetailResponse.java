@@ -1,15 +1,13 @@
 package com.devloop.lecture.response;
 
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 import java.net.URL;
 
 @Getter
-@NoArgsConstructor
 public class GetLectureVideoDetailResponse {
-    private String title;
-    private URL videoURL;
+    private final String title;
+    private final URL videoURL;
 
     private GetLectureVideoDetailResponse(String title,URL videoURL){
         this.title=title;
