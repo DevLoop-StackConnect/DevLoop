@@ -1,25 +1,23 @@
 package com.devloop.lecture.response;
 
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Getter
-@NoArgsConstructor
 public class GetLectureDetailResponse {
-    private String title;
-    private String tutorName;
-    private String description;
-    private String recommend;
-    private String category;
-    private String level;
-    private BigDecimal price;
-    private Integer videoCount;
-    private Integer reviewCount;
-    private LocalDateTime created_at;
-    private LocalDateTime modified_at;
+    private final String title;
+    private final String tutorName;
+    private final String description;
+    private final String recommend;
+    private final String category;
+    private final String level;
+    private final BigDecimal price;
+    private final Integer videoCount;
+    private final Integer reviewCount;
+    private final LocalDateTime created_at;
+    private final LocalDateTime modified_at;
 
     private GetLectureDetailResponse(
             String title,
