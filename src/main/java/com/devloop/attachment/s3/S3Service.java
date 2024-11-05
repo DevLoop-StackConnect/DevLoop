@@ -10,7 +10,7 @@ import com.devloop.attachment.repository.CommunityATMRepository;
 import com.devloop.attachment.repository.PWTATMRepository;
 import com.devloop.attachment.repository.PartyAMTRepository;
 import com.devloop.attachment.repository.ProfileATMRepository;
-import com.devloop.common.Validator.FileValidator;
+import com.devloop.common.validator.FileValidator;
 import com.devloop.common.apipayload.status.ErrorStatus;
 import com.devloop.common.exception.ApiException;
 import com.devloop.community.entity.Community;

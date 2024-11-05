@@ -1,4 +1,4 @@
-package com.devloop.common.Validator;
+package com.devloop.common.validator;
 
 import com.devloop.attachment.enums.FileFormat;
 import com.devloop.common.apipayload.status.ErrorStatus;
