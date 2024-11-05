@@ -12,7 +12,7 @@ import com.devloop.pwt.repository.ProjectWithTutorRepository;
 import com.devloop.pwt.response.ProjectWithTutorDetailAdminResponse;
 import com.devloop.pwt.response.ProjectWithTutorListAdminResponse;
 import com.devloop.stock.service.StockService;
-import com.devloop.scheduleBoard.service.ScheduleBoardService;
+import com.devloop.scheduleboard.service.ScheduleBoardService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;

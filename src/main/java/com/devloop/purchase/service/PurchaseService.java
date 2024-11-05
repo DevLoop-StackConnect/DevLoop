@@ -4,7 +4,7 @@ import com.devloop.order.entity.Order;
 import com.devloop.order.service.OrderService;
 import com.devloop.purchase.entity.Purchase;
 import com.devloop.purchase.repository.PurchaseRepository;
-import com.devloop.scheduleBoard.service.BoardAssignmentService;
+import com.devloop.scheduleboard.service.BoardAssignmentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

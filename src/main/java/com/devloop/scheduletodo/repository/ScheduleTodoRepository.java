@@ -1,7 +1,7 @@
-package com.devloop.scheduleTodo.repository;
+package com.devloop.scheduletodo.repository;
 
-import com.devloop.scheduleBoard.entity.ScheduleBoard;
-import com.devloop.scheduleTodo.entity.ScheduleTodo;
+import com.devloop.scheduleboard.entity.ScheduleBoard;
+import com.devloop.scheduletodo.entity.ScheduleTodo;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
