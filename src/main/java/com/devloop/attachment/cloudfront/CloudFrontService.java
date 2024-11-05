@@ -29,6 +29,7 @@ public class CloudFrontService {
         CloudFrontUtilities cloudFrontUtilities = CloudFrontUtilities.create();
         Instant expirationDate = Instant.now().plus(expirationMinutes, ChronoUnit.MINUTES);
         resourcePath = URLEncoder.encode(resourcePath, StandardCharsets.UTF_8);
+
         CannedSignerRequest request = CannedSignerRequest.builder()
                 .resourceUrl(CLOUD_FRONT_URL+resourcePath)
                 .privateKey(new java.io.File(PRIVATE_KEY_PATH).toPath())
