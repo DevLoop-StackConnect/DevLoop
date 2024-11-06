@@ -2,7 +2,6 @@ package com.devloop.community.response;
 
 import lombok.Getter;
 
-
 @Getter
 public class CommunitySimpleResponse {
     private final Long communityId;
