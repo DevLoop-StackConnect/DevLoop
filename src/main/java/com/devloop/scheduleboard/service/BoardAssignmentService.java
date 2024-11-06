@@ -1,5 +1,6 @@
 package com.devloop.scheduleboard.service;
 
+import com.devloop.product.entity.Product;
 import com.devloop.purchase.entity.Purchase;
 import com.devloop.pwt.entity.ProjectWithTutor;
 import com.devloop.scheduleboard.entity.BoardAssignment;
@@ -23,16 +24,13 @@ public class BoardAssignmentService {
     @Transactional
     public void createBoardAssignment(List<Purchase> purchases) {
         for (Purchase purchase : purchases) {
-            if (((HibernateProxy) purchase.getProduct()).getHibernateLazyInitializer().getImplementationClass() == ProjectWithTutor.class) {
-                // ProjectWithTutor로 실제 객체를 가져오기
-                ProjectWithTutor projectWithTutor = (ProjectWithTutor) ((HibernateProxy) purchase.getProduct()).getHibernateLazyInitializer().getImplementation();
-                ScheduleBoard scheduleBoard = projectWithTutor.getScheduleBoard();
+            Product product = (Product) ((HibernateProxy) purchase.getProduct()).getHibernateLazyInitializer().getImplementation();
 
-                // ScheduleBoard가 있는 경우에만 BoardAssignment 생성
-                if (scheduleBoard != null) {
-                    BoardAssignment boardAssignment = BoardAssignment.of(scheduleBoard, purchase);
-                    boardAssignmentRepository.save(boardAssignment);
-                }
+            if (product.getClass() == ProjectWithTutor.class) {
+                // ProjectWithTutor로 실제 객체를 가져오기
+                ScheduleBoard scheduleBoard = ((ProjectWithTutor) product).getScheduleBoard();
+                BoardAssignment boardAssignment = BoardAssignment.of(scheduleBoard, purchase);
+                boardAssignmentRepository.save(boardAssignment);
             }
         }
     }
