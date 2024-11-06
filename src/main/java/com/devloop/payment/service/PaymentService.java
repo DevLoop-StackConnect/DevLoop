@@ -1,7 +1,6 @@
 package com.devloop.payment.service;
 
 import com.devloop.order.entity.Order;
-import com.devloop.order.repository.OrderRepository;
 import com.devloop.order.service.OrderService;
 import com.devloop.payment.entity.Payment;
 import com.devloop.payment.repository.PaymentRepository;
@@ -24,7 +23,7 @@ public class PaymentService {
     private final OrderService orderService;
 
     @Transactional
-    public void createPayment(JSONObject jsonObject){
+    public void createPayment(JSONObject jsonObject) {
 
         // 주문 객체 가져오기
         Order order = orderService.findByOrderRequestId(jsonObject.get("orderId").toString());
@@ -35,7 +34,6 @@ public class PaymentService {
         // requestedAt과 approvedAt을 LocalDateTime으로 변환
         LocalDateTime requestedAt = OffsetDateTime.parse(jsonObject.get("requestedAt").toString(), DateTimeFormatter.ISO_OFFSET_DATE_TIME).toLocalDateTime();
         LocalDateTime approvedAt = OffsetDateTime.parse(jsonObject.get("approvedAt").toString(), DateTimeFormatter.ISO_OFFSET_DATE_TIME).toLocalDateTime();
-
 
         // Payment 객체 생성
         Payment payment = Payment.of(
