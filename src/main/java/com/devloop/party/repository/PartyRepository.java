@@ -15,10 +15,6 @@ public interface PartyRepository extends JpaRepository<Party, Long>, JpaSpecific
 
     Page<Party> findByTitleContaining(String title, PageRequest pageable);
 
-    //사용중 아님 확인 필요
-    @Query("SELECT p FROM Party p JOIN FETCH p.user WHERE p.id = :partyId")
-    Optional<Party> findByIdWithUser(@Param("partyId") Long partyId);
-
     @Query("SELECT p FROM Party p WHERE p.user.id =:userId")
     Optional<List<Party>> findAllByUserId(@Param("userId") Long id);
 }
