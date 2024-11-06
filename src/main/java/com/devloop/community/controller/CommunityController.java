@@ -51,7 +51,6 @@ public class CommunityController {
 
     //게시글 삭제
     @DeleteMapping("/v1/communities/{communityId}")
-    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Void> deleteCommunity(@AuthenticationPrincipal AuthUser authUser, @PathVariable Long communityId) {
         communityService.deleteCommunity(authUser, communityId);
         return ResponseEntity.noContent().build();

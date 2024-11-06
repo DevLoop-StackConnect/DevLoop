@@ -1,15 +1,18 @@
 package com.devloop.notification.response;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.ToString;
 
-@Data
+@Getter
+@ToString
 public class SlackUserResponse {
 
     private boolean ok;
     private User user;
     private String error;
 
-    @Data
+    @Getter
+    @ToString
     public static class User{
         private String id;
         private String name;
@@ -18,7 +21,8 @@ public class SlackUserResponse {
         private boolean isBot;
     }
 
-    @Data
+    @Getter
+    @ToString
     public static class Profile{
         private String email;
         private String realName;
