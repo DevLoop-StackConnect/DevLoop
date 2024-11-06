@@ -15,18 +15,18 @@ public class GetPartyDetailResponse {
     private final LocalDateTime modifiedAt;
     private final String imageUrl;
 
-    private GetPartyDetailResponse(Long partyId,String title,String contents,String status,String category, LocalDateTime createdAt, LocalDateTime modifiedAt, String imageUrl){
-        this.partyId=partyId;
-        this.title=title;
-        this.contents=contents;
-        this.status=status;
-        this.category=category;
-        this.createdAt=createdAt;
-        this.modifiedAt=modifiedAt;
-        this.imageUrl=imageUrl;
+    private GetPartyDetailResponse(Long partyId, String title, String contents, String status, String category, LocalDateTime createdAt, LocalDateTime modifiedAt, String imageUrl) {
+        this.partyId = partyId;
+        this.title = title;
+        this.contents = contents;
+        this.status = status;
+        this.category = category;
+        this.createdAt = createdAt;
+        this.modifiedAt = modifiedAt;
+        this.imageUrl = imageUrl;
     }
 
-    public static GetPartyDetailResponse of(Long partyId,String title,String contents,String status,String category, LocalDateTime createdAt, LocalDateTime modifiedAt,String imageUrl){
+    public static GetPartyDetailResponse of(Long partyId, String title, String contents, String status, String category, LocalDateTime createdAt, LocalDateTime modifiedAt, String imageUrl) {
         return new GetPartyDetailResponse(
                 partyId,
                 title,
