@@ -43,7 +43,6 @@ public class LectureVideoController {
 
     //강의 단건 조회 (수강 유저와 어드민만 접근)
     @GetMapping("/v2/lectures/{lectureId}/videos/{videoId}")
-    @PreAuthorize("isAuthenticated()")
     public ApiResponse<GetLectureVideoDetailResponse> getLectureVideo(
             @AuthenticationPrincipal AuthUser authUser,
             @PathVariable("lectureId") Long lectureId,
