@@ -1,7 +1,5 @@
 package com.devloop.order.entity;
 
-import com.devloop.product.entity.Product;
-import com.devloop.user.entity.User;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -9,8 +7,8 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 
-@Entity
 @Getter
+@Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class OrderItem {
 
