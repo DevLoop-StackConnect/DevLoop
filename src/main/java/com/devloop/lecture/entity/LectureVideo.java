@@ -5,12 +5,13 @@ import com.devloop.common.Timestamped;
 import com.devloop.lecture.enums.VideoStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class LectureVideo extends Timestamped {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
