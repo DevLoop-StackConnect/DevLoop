@@ -15,7 +15,7 @@ public class CommunityDetailResponse {
     private final LocalDateTime modifiedAt;
     private final String imageUrl;
 
-    private CommunityDetailResponse(Long communityId, String title, String content, String status, String category, LocalDateTime createdAt, LocalDateTime modifiedAt,String imageUrl) {
+    private CommunityDetailResponse(Long communityId, String title, String content, String status, String category, LocalDateTime createdAt, LocalDateTime modifiedAt, String imageUrl) {
         this.communityId = communityId;
         this.title = title;
         this.content = content;
@@ -23,22 +23,8 @@ public class CommunityDetailResponse {
         this.category = category;
         this.createdAt = createdAt;
         this.modifiedAt = modifiedAt;
-        this.imageUrl= imageUrl;
+        this.imageUrl = imageUrl;
     }
-
-//    //코드컨벤션에 맞춰서 정적 팩토리 메서드 추가
-//    public static CommunityDetailResponse of(Long communityId, String title, String content, String status, String category, LocalDateTime createdAt, LocalDateTime modifiedAt,String imageUrl) {
-//        return new CommunityDetailResponse(
-//                communityId,
-//                title,
-//                content,
-//                status,
-//                category,
-//                createdAt,
-//                modifiedAt,
-//                imageUrl
-//        );
-//    }
 
     // 첨부파일 URL 포함한 메서드 (단건 조회용)
     public static CommunityDetailResponse withAttachment(Long communityId, String title, String content, String status, String category,

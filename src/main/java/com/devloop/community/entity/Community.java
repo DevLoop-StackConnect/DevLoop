@@ -1,59 +1,50 @@
 package com.devloop.community.entity;
 
-import com.devloop.attachment.entity.CommunityAttachment;
-import com.devloop.common.Timestamped;
-import com.devloop.common.enums.BoardType;
-import com.devloop.common.enums.Category;
-import com.devloop.communitycomment.entity.CommunityComment;
-import com.devloop.user.entity.User;
-import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.ArrayList;
+
+import jakarta.persistence.*;
+import com.devloop.user.entity.User;
+import com.devloop.common.Timestamped;
+import com.devloop.common.enums.Category;
+import com.devloop.common.enums.BoardType;
+import com.devloop.communitycomment.entity.CommunityComment;
 
 @Entity
 @Getter
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PROTECTED)
 public class Community extends Timestamped {
+
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "community_id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Enumerated(EnumType.STRING)
     private BoardType boardType = BoardType.COMMUNITY;
 
-    @NotNull
-    @Column(name = "title", length = 100)
+    @Column(length = 50, nullable = false)
     private String title;
 
-    @NotNull
-    @Column(name = "content", columnDefinition = "TEXT")
+    @Column(columnDefinition = "TEXT", nullable = false)
     private String content;
 
-    @NotNull
     @Enumerated(EnumType.STRING)
-    @Column(name = "category")
-    private Category category;
+    private Category category = Category.ETC;
 
-    @NotNull
-    @Enumerated(EnumType.STRING)
     @Column(name = "status")
+    @Enumerated(EnumType.STRING)
     private ResolveStatus resolveStatus = ResolveStatus.UNSOLVED; //기본값 필드로 설정
 
+    @Column(nullable = false)
     @OneToMany(mappedBy = "community", fetch = FetchType.LAZY)
     private List<CommunityComment> communityComments = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
     //커뮤니티 글 생성자
@@ -63,8 +54,6 @@ public class Community extends Timestamped {
         this.category = category;
         this.user = user;
     }
-
-
 
     public static Community of(String title, String content, Category category, User user) {
         return new Community(
@@ -82,5 +71,4 @@ public class Community extends Timestamped {
         this.resolveStatus = resolveStatus;
         this.category = category;
     }
-
 }
