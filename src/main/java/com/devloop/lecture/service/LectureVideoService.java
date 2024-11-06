@@ -103,7 +103,6 @@ public class LectureVideoService {
                         .partNumber(i)
                         .build();
 
-
                 //각 파트를 업로드하고 ETag를 partETags에 추가
                 UploadPartResponse uploadPartResponse=s3Client.uploadPart(
                         uploadPartRequest,
@@ -129,7 +128,6 @@ public class LectureVideoService {
                     .build();
 
             s3Client.completeMultipartUpload(completeMultipartUploadRequest);
-
 
             //새로운 강의 영상 객체 생성
             LectureVideo lectureVideo=LectureVideo.of(
@@ -175,13 +173,8 @@ public class LectureVideoService {
         return response.uploadId();
     }
 
-    /**
-     * 강의 영상 다건 조회
-     * @param authUser
-     * @param lectureId
-     * @return
-     */
-    public List<GetLectureVideoListResponse> getLectureVideoList(AuthUser authUser, Long lectureId) {
+    //강의 영상 다건 조회
+    public List<GetLectureVideoListResponse> getLectureVideoList(Long lectureId) {
         //강의가 존재하는 지 확인
         Lecture lecture=lectureService.findById(lectureId);
 
