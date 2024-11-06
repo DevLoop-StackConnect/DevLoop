@@ -1,20 +1,18 @@
 package com.devloop.pwt.entity;
 
-import com.devloop.common.Timestamped;
 import com.devloop.common.enums.Approval;
 import com.devloop.common.enums.BoardType;
 import com.devloop.common.enums.Category;
 import com.devloop.product.entity.Product;
 import com.devloop.pwt.enums.Level;
 import com.devloop.pwt.enums.ProjectWithTutorStatus;
-import com.devloop.scheduleBoard.entity.ScheduleBoard;
+import com.devloop.scheduleboard.entity.ScheduleBoard;
 import com.devloop.user.entity.User;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
