@@ -24,7 +24,7 @@ public class PWTAttachmentService {
         PWTATMRepository.delete(pwtAttachment);
     }
 
-    public PWTATMRepository getCommunityATMRepository() {
+    public PWTATMRepository getPWTATMRepository() {
         return PWTATMRepository;
     }
 }

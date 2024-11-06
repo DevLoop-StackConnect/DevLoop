@@ -22,7 +22,7 @@ public class ScheduleBoardService {
     @Transactional
     public ScheduleBoard createScheduleBoard(ProjectWithTutor projectWithTutor) {
         //스케줄보드객체 생성해서 db에 저장
-        ScheduleBoard scheduleBoard = ScheduleBoard.of(projectWithTutor);
+        ScheduleBoard scheduleBoard = ScheduleBoard.from(projectWithTutor);
         return scheduleBoardRepository.save(scheduleBoard);
     }
 
@@ -35,17 +35,15 @@ public class ScheduleBoardService {
         ScheduleBoard scheduleBoard = scheduleBoardRepository.findByProjectWithTutor(projectWithTutor)
                 .orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_SCHEDULE_BOARD));
 
-
         return ScheduleBoardResponse.of(
                 scheduleBoard.getId(),
                 projectWithTutor.getId(),
                 projectWithTutor.getUser().getUsername()
-//                scheduleBoard.getManagerTutor().getUsername()
         );
     }
 
     //util
-    public ScheduleBoard findByScheduleBoardId(Long scheduleBoardId) {
+    public ScheduleBoard findByScheduleBoardById(Long scheduleBoardId) {
         return scheduleBoardRepository.findById(scheduleBoardId)
                 .orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_SCHEDULE_BOARD));
     }
