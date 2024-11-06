@@ -9,7 +9,6 @@ public class SaveLectureResponse {
     private SaveLectureResponse(Long lectureId) {
         this.lectureId = lectureId;
     }
-
     public static SaveLectureResponse of(Long lectureId) {
         return new SaveLectureResponse(lectureId);
     }

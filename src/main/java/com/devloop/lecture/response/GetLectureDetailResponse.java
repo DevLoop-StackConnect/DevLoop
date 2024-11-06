@@ -44,7 +44,6 @@ public class GetLectureDetailResponse {
         this.created_at = created_at;
         this.modified_at = modified_at;
     }
-
     public static GetLectureDetailResponse of(
             String title,
             String tutorName,

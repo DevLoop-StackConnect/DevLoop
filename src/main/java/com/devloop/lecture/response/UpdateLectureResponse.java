@@ -9,7 +9,6 @@ public class UpdateLectureResponse {
     private UpdateLectureResponse(Long lectureId) {
         this.lectureId = lectureId;
     }
-
     public static UpdateLectureResponse of(Long lectureId) {
         return new UpdateLectureResponse(lectureId);
     }

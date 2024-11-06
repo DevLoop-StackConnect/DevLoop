@@ -12,7 +12,6 @@ public class GetLectureVideoListResponse {
         this.id = id;
         this.title = title;
     }
-
     public static GetLectureVideoListResponse of(Long id, String title) {
         return new GetLectureVideoListResponse(
                 id,

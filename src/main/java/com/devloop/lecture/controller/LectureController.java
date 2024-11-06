@@ -31,7 +31,6 @@ public class LectureController {
     ) {
         return ApiResponse.ok(lectureService.saveLecture(authUser, saveLectureRequest));
     }
-
     //강의 수정 (TUTOR)
     @PatchMapping("/v2/tutor/lectures/{lectureId}")
     @PreAuthorize("hasRole('ROLE_TUTOR')")
@@ -42,7 +41,6 @@ public class LectureController {
     ) {
         return ApiResponse.ok(lectureService.updateLecture(authUser, lectureId, updateLectureRequest));
     }
-
     //강의 단건 조회 (승인이 완료된 강의만 조회)
     @GetMapping("/v2/lectures/{lectureId}")
     @PreAuthorize("permitAll()")
@@ -51,7 +49,6 @@ public class LectureController {
     ) {
         return ApiResponse.ok(lectureService.getLecture(lectureId));
     }
-
     //강의 다건 조회 (승인이 완료된 강의만 조회)
     @GetMapping("/v2/lectures")
     @PreAuthorize("permitAll()")
@@ -62,7 +59,6 @@ public class LectureController {
     ) {
         return ApiResponse.ok(lectureService.getLectureList(title, page, size));
     }
-
     //강의 삭제
     @DeleteMapping("/v2/tutor/lectures/{lectureId}")
     @PreAuthorize("#authUser.id == authentication.principal.id or hasRole('ROLE_ADMIN')")
@@ -73,5 +69,4 @@ public class LectureController {
         lectureService.deleteLecture(authUser, lectureId);
         return ResponseEntity.noContent().build();
     }
-
 }
