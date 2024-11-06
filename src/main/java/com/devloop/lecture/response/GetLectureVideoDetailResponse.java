@@ -9,13 +9,14 @@ public class GetLectureVideoDetailResponse {
     private final String title;
     private final URL videoURL;
 
-    private GetLectureVideoDetailResponse(String title,URL videoURL){
-        this.title=title;
-        this.videoURL=videoURL;
+    private GetLectureVideoDetailResponse(String title, URL videoURL) {
+        this.title = title;
+        this.videoURL = videoURL;
     }
-    public static GetLectureVideoDetailResponse of(String title,URL videoURL){
+
+    public static GetLectureVideoDetailResponse of(String title, URL videoURL) {
         return new GetLectureVideoDetailResponse(
-               title,
+                title,
                 videoURL
         );
     }

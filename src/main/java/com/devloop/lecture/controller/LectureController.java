@@ -28,8 +28,8 @@ public class LectureController {
     public ApiResponse<SaveLectureResponse> saveLecture(
             @AuthenticationPrincipal AuthUser authUser,
             @RequestBody SaveLectureRequest saveLectureRequest
-    ){
-        return ApiResponse.ok(lectureService.saveLecture(authUser,saveLectureRequest));
+    ) {
+        return ApiResponse.ok(lectureService.saveLecture(authUser, saveLectureRequest));
     }
 
     //강의 수정 (TUTOR)
@@ -39,8 +39,8 @@ public class LectureController {
             @AuthenticationPrincipal AuthUser authUser,
             @PathVariable("lectureId") Long lectureId,
             @RequestBody UpdateLectureRequest updateLectureRequest
-    ){
-        return ApiResponse.ok(lectureService.updateLecture(authUser,lectureId,updateLectureRequest));
+    ) {
+        return ApiResponse.ok(lectureService.updateLecture(authUser, lectureId, updateLectureRequest));
     }
 
     //강의 단건 조회 (승인이 완료된 강의만 조회)
@@ -48,7 +48,7 @@ public class LectureController {
     @PreAuthorize("permitAll()")
     public ApiResponse<GetLectureDetailResponse> getLecture(
             @PathVariable("lectureId") Long lectureId
-    ){
+    ) {
         return ApiResponse.ok(lectureService.getLecture(lectureId));
     }
 
@@ -59,18 +59,18 @@ public class LectureController {
             @RequestParam(required = false) String title,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size
-    ){
-        return ApiResponse.ok(lectureService.getLectureList(title,page,size));
+    ) {
+        return ApiResponse.ok(lectureService.getLectureList(title, page, size));
     }
 
     //강의 삭제
     @DeleteMapping("/v2/tutor/lectures/{lectureId}")
     @PreAuthorize("#authUser.id == authentication.principal.id or hasRole('ROLE_ADMIN')")
-    public ResponseEntity<String> deleteLecture(
+    public ResponseEntity<Void> deleteLecture(
             @AuthenticationPrincipal AuthUser authUser,
             @PathVariable("lectureId") Long lectureId
-    ){
-        lectureService.deleteLecture(authUser,lectureId);
+    ) {
+        lectureService.deleteLecture(authUser, lectureId);
         return ResponseEntity.noContent().build();
     }
 

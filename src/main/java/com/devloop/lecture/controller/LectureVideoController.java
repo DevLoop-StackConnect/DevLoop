@@ -30,7 +30,7 @@ public class LectureVideoController {
             @RequestParam(value = "file") MultipartFile multipartFile,
             @RequestParam(value = "title") String title
     ) throws IOException {
-        return ApiResponse.ok(lectureVideoService.uploadLectureVideo(authUser,lectureId,multipartFile, title));
+        return ApiResponse.ok(lectureVideoService.uploadLectureVideo(authUser, lectureId, multipartFile, title));
     }
 
     //영상 다건 조회 (승인이 완료된 강의만 조회)
@@ -38,7 +38,7 @@ public class LectureVideoController {
     @PreAuthorize("permitAll()")
     public ApiResponse<List<GetLectureVideoListResponse>> getLectureVideoList(
             @PathVariable("lectureId") Long lectureId
-    ){
+    ) {
         return ApiResponse.ok(lectureVideoService.getLectureVideoList(lectureId));
     }
 
@@ -47,21 +47,21 @@ public class LectureVideoController {
     @PreAuthorize("#authUser.id == authentication.principal.id or hasRole('ROLE_ADMIN')")
     public ApiResponse<GetLectureVideoDetailResponse> getLectureVideo(
             @AuthenticationPrincipal AuthUser authUser,
-            @PathVariable("lectureId")Long lectureId,
+            @PathVariable("lectureId") Long lectureId,
             @PathVariable("videoId") Long videoId
     ) throws Exception {
-        return ApiResponse.ok(lectureVideoService.getLectureVideo(authUser,lectureId,videoId));
+        return ApiResponse.ok(lectureVideoService.getLectureVideo(authUser, lectureId, videoId));
     }
 
     //강의 영상 삭제
     @DeleteMapping("/v2/lectures/{lectureId}/videos/{videoId}")
     @PreAuthorize("#authUser.id == authentication.principal.id or hasRole('ROLE_ADMIN')")
-    public ResponseEntity<String> deleteVideo(
+    public ResponseEntity<Void> deleteVideo(
             @AuthenticationPrincipal AuthUser authUser,
-            @PathVariable("lectureId")Long lectureId,
+            @PathVariable("lectureId") Long lectureId,
             @PathVariable("videoId") Long videoId
-    ){
-        lectureVideoService.deleteVideo(authUser,lectureId,videoId);
+    ) {
+        lectureVideoService.deleteVideo(authUser, lectureId, videoId);
         return ResponseEntity.noContent().build();
     }
 }

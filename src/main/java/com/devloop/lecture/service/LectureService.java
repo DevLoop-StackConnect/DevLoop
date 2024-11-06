@@ -114,7 +114,7 @@ public class LectureService {
 
     //강의 삭제
     @Transactional
-    public String deleteLecture(AuthUser authUser, Long lectureId) {
+    public void deleteLecture(AuthUser authUser, Long lectureId) {
         //유저가 존재하는 지 확인
         User user= userService.findByUserId(authUser.getId());
 
@@ -129,8 +129,6 @@ public class LectureService {
 
         //강의 삭제
         lectureRepository.delete(lecture);
-
-        return String.format("%s 강의를 삭제하였습니다.", lecture.getTitle());
     }
 
     //Util

@@ -21,7 +21,7 @@ public class LectureAdminController {
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ApiResponse<String> changeApproval(
             @PathVariable("lectureId") Long lectureId
-    ){
+    ) {
         return ApiResponse.ok(lectureAdminService.changeApproval(lectureId));
     }
 
@@ -30,7 +30,7 @@ public class LectureAdminController {
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ApiResponse<GetLectureDetailResponse> getLecture(
             @PathVariable("lectureId") Long lectureId
-    ){
+    ) {
         return ApiResponse.ok(lectureAdminService.getLecture(lectureId));
     }
 
@@ -41,7 +41,7 @@ public class LectureAdminController {
             @RequestParam(required = false) String title,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size
-    ){
-        return ApiResponse.ok(lectureAdminService.getLectureList(title,page,size));
+    ) {
+        return ApiResponse.ok(lectureAdminService.getLectureList(title, page, size));
     }
 }
