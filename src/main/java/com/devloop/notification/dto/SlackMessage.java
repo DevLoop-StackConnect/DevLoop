@@ -1,9 +1,9 @@
 package com.devloop.notification.dto;
 
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
 
-@Data
+@Getter
 @Builder
 public class SlackMessage {
     //Slack 알림 메시지
