@@ -123,8 +123,11 @@ public class LectureReviewService {
         LectureReview lectureReview = lectureReviewRepository.findById(reviewId).orElseThrow(() ->
                 new ApiException(ErrorStatus._NOT_FOUND_LECTURE_REVIEW));
 
-        //후기를 작성한 유저가 맞는 지 확인
-        if (!authUser.getId().equals(lectureReview.getUser().getId())) {
+        boolean isAdmin =  authUser.getAuthorities().stream()
+                .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("ROLE_ADMIN"));
+
+        //후기를 작성한 유저 또는 어드민이 맞는 지 확인
+        if (!authUser.getId().equals(lectureReview.getUser().getId()) && !isAdmin) {
             throw new ApiException((ErrorStatus._PERMISSION_DENIED));
         }
 

@@ -53,7 +53,6 @@ public class LectureReviewController {
 
     //강의 후기 삭제
     @DeleteMapping("/v2/lectures/{lectureId}/reviews/{reviewId}")
-    @PreAuthorize("hasRole('ROLE_TUTOR') or hasRole('ROLE_ADMIN')")
     public ResponseEntity<Void> deleteLectureReview(
             @AuthenticationPrincipal AuthUser authUser,
             @PathVariable("lectureId") Long lectureId,
