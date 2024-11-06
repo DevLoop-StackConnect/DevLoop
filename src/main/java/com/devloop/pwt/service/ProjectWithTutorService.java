@@ -192,8 +192,11 @@ public class ProjectWithTutorService {
         // PWT 첨부파일 객체 가져오기
         PWTAttachment pwtAttachment = pwtAttachmentService.findPwtAttachmentByPwtId(projectWithTutor.getId());
 
-        // 게시글 작성자와 현재 로그인된 사용자 일치 여부 예외 처리
-        if (!user.getId().equals(projectWithTutor.getUser().getId())) {
+        // 접속한 사용자가 ADMIN인지 체크
+        boolean isAdmin = authUser.getAuthorities().stream().anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("ROLE_ADMIN"));
+
+        // 게시글 작성자와 현재 로그인된 사용자 일치 여부 , ADMIN 아닌 경우 예외 처리
+        if (!user.getId().equals(projectWithTutor.getUser().getId()) && !isAdmin) {
             throw new ApiException(ErrorStatus._HAS_NOT_ACCESS_PERMISSION);
         }
 

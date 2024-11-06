@@ -67,7 +67,7 @@ public class ProjectWithTutorController {
 
     // 튜터랑 함께하는 협업 프로젝트 게시글 삭제 (일반 사용자 접근 불가)
     @DeleteMapping("/v1/tutor/pwts/{pwtId}")
-    @PreAuthorize("#authUser.id == authentication.principal.id or hasRole('ROLE_ADMIN')")   // 작성자 와 ROLE_ADMIN 권한 접근 가능
+    @PreAuthorize("hasRole('ROLE_TUTOR') or hasRole('ROLE_ADMIN')")   // 작성자 와 ROLE_ADMIN 권한 접근 가능
     public ResponseEntity<Void> deleteProjectWithTutor(
             @AuthenticationPrincipal AuthUser authUser,
             @PathVariable("pwtId") Long projectId
@@ -75,5 +75,4 @@ public class ProjectWithTutorController {
         projectWithTutorService.deleteProjectWithTutor(authUser, projectId);
         return ResponseEntity.noContent().build();
     }
-
 }

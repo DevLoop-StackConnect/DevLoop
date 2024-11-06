@@ -11,8 +11,8 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 
-@Entity
 @Getter
+@Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "orders")
 public class Order extends Timestamped {
@@ -39,7 +39,6 @@ public class Order extends Timestamped {
     private Cart cart;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
     private OrderStatus status = OrderStatus.WAIT;
 
     private Order(
