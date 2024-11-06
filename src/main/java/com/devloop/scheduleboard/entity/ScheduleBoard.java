@@ -3,6 +3,7 @@ package com.devloop.scheduleboard.entity;
 import com.devloop.common.Timestamped;
 import com.devloop.pwt.entity.ProjectWithTutor;
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -11,7 +12,7 @@ import java.util.List;
 
 @Entity
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ScheduleBoard extends Timestamped {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,7 +30,7 @@ public class ScheduleBoard extends Timestamped {
         this.projectWithTutor = projectWithTutor;
     }
 
-    public static ScheduleBoard of(ProjectWithTutor projectWithTutor) {
+    public static ScheduleBoard from(ProjectWithTutor projectWithTutor) {
         return new ScheduleBoard(projectWithTutor);
     }
 
