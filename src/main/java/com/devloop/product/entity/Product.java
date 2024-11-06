@@ -2,30 +2,27 @@ package com.devloop.product.entity;
 
 import com.devloop.common.Timestamped;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 
-@Entity
 @Getter
-@NoArgsConstructor
-@AllArgsConstructor
+@Entity
 @DiscriminatorColumn
 @Inheritance(strategy = InheritanceType.JOINED)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Product extends Timestamped {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotNull
-    @Column(length = 255)
+    @Column(length = 255, nullable = false)
     private String title;
 
-    @NotNull
+    @Column(nullable = false)
     private BigDecimal price;
 
     public Product(String title, BigDecimal price) {
