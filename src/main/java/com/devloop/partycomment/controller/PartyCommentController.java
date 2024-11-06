@@ -11,6 +11,8 @@ import com.devloop.partycomment.service.PartyCommentService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,8 +28,8 @@ public class PartyCommentController {
             @AuthenticationPrincipal AuthUser authUser,
             @PathVariable("partyId") Long partyId,
             @Valid @RequestBody SavePartyCommentRequest savePartyCommentRequest
-    ){
-        return ApiResponse.ok(partyCommentService.savePartyComment(authUser,partyId,savePartyCommentRequest));
+    ) {
+        return ApiResponse.ok(partyCommentService.savePartyComment(authUser, partyId, savePartyCommentRequest));
     }
 
     //스터디 파디 게시글 댓글 수정
@@ -37,28 +39,29 @@ public class PartyCommentController {
             @PathVariable("partyId") Long partyId,
             @PathVariable("commentId") Long commentId,
             @Valid @RequestBody UpdatePartyCommentRequest updatePartyCommentRequest
-    ){
-        return ApiResponse.ok(partyCommentService.updatePartyComment(authUser,partyId,commentId,updatePartyCommentRequest));
+    ) {
+        return ApiResponse.ok(partyCommentService.updatePartyComment(authUser, partyId, commentId, updatePartyCommentRequest));
     }
 
     //스터디 파티 게시글 댓글 다건 조회
     @GetMapping("/v1/search/parties/{partyId}/comments")
+    @PreAuthorize("permitAll()")
     public ApiResponse<Page<GetPartyCommentListResponse>> getPartyCommentList(
             @PathVariable("partyId") Long partyId,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size
-    ){
-        return ApiResponse.ok(partyCommentService.getPartyCommentList(partyId,page,size));
+    ) {
+        return ApiResponse.ok(partyCommentService.getPartyCommentList(partyId, page, size));
     }
 
     //스터디 파티 게시글 댓글 삭제
     @DeleteMapping("/v1/parties/{partyId}/comments/{commentId}")
-    public ApiResponse<String> deletePartyComment(
+    public ResponseEntity<Void> deletePartyComment(
             @AuthenticationPrincipal AuthUser authUser,
             @PathVariable("partyId") Long partyId,
             @PathVariable("commentId") Long commentId
-    ){
-        return ApiResponse.ok(partyCommentService.deletePartyComment(authUser,partyId,commentId));
+    ) {
+        partyCommentService.deletePartyComment(authUser, partyId, commentId);
+        return ResponseEntity.noContent().build();
     }
-
 }

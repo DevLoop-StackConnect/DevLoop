@@ -27,6 +27,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -141,5 +142,19 @@ public class UserService {
             communitySimpleResponses.add(communitySimpleResponse);
         }
         return communitySimpleResponses;
+    }
+
+    public User findById(Long id){
+        return userRepository.findById(id).orElseThrow(
+                () -> new ApiException(ErrorStatus._NOT_FOUND_USER)
+        );
+    }
+
+    public Optional<User> getUserEmail(String email){
+        return userRepository.findByEmail(email);
+    }
+
+    public User save(User user) {
+        return userRepository.save(user);
     }
 }

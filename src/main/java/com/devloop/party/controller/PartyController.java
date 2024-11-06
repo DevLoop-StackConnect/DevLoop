@@ -69,8 +69,7 @@ public class PartyController {
 
     //파티모집 게시글 삭제
     @DeleteMapping("/v1/parties/{partyId}")
-    @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<String> deleteParty(
+    public ResponseEntity<Void> deleteParty(
             @AuthenticationPrincipal AuthUser authUser,
             @PathVariable Long partyId) {
         partyService.deleteParty(authUser, partyId);
