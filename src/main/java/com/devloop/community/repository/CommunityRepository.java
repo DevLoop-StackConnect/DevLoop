@@ -25,5 +25,5 @@ public interface CommunityRepository extends JpaRepository<Community, Long>, Jpa
     Optional<Community> findById(Long communityId);
 
     @Query("select c from Community c where c.user.id = :userId")
-    Optional<List<Community>> findAllByUserId(@Param("userId") Long id);
+    List<Community> findAllByUserId(@Param("userId") Long id);
 }
