@@ -6,7 +6,6 @@ import com.devloop.product.entity.Product;
 import com.devloop.product.service.ProductService;
 import com.devloop.pwt.entity.ProjectWithTutor;
 import com.devloop.pwt.enums.ProjectWithTutorStatus;
-import com.devloop.pwt.repository.ProjectWithTutorRepository;
 import com.devloop.pwt.service.ProjectWithTutorService;
 import com.devloop.stock.entity.Stock;
 import com.devloop.stock.repository.StockRepository;
@@ -56,5 +55,11 @@ public class StockService {
         if (stock.getQuantity() == 0) {
             pwt.changeStatus(ProjectWithTutorStatus.COMPLETED);
         }
+    }
+
+    // Utile Method
+    public Stock findByProductId(Long productId) {
+        return stockRepository.findByProductId(productId)
+                .orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_STOCK));
     }
 }
