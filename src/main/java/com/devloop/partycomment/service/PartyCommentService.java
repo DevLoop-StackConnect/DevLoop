@@ -29,11 +29,10 @@ import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.Objects;
 
-
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-@Slf4j
 public class PartyCommentService {
     private final PartyCommentRepository partyCommentRepository;
     private final UserService userService;
@@ -134,10 +133,10 @@ public class PartyCommentService {
                 throw new ApiException(ErrorStatus._PERMISSION_DENIED);
             }
 
-        partyCommentRepository.delete(partyComment);
-        return String.format("댓글을 삭제하였습니다.");
-        } catch(Exception e){
-            notifyErrorCommentDeletion(partyId,commentId, authUser.getId(), e.getMessage());
+            partyCommentRepository.delete(partyComment);
+            return String.format("댓글을 삭제하였습니다.");
+        } catch (Exception e) {
+            notifyErrorCommentDeletion(partyId, commentId, authUser.getId(), e.getMessage());
             throw e;
         }
     }
@@ -184,5 +183,5 @@ public class PartyCommentService {
 
     public void notifyErrorCommentDeletion(Long partyId, Long commentId, Long userId, String errorMessage) {
         log.error("스터디 파티 댓글 삭제 실패  - communityId : {}, commentId : {}, userId : {}, error : {}", partyId, commentId, userId, errorMessage);
-        }
     }
+}

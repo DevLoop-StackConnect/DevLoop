@@ -153,7 +153,7 @@ public class PartyService {
 
     //스터디 파티 모집 게시글 삭제
     @Transactional
-    public String deleteParty(AuthUser authUser, Long partyId) {
+    public void deleteParty(AuthUser authUser, Long partyId) {
         //게시글이 존재하는 지 확인
         Party party=partyRepository.findById(partyId).orElseThrow(()->
                 new ApiException(ErrorStatus._NOT_FOUND_PARTY));
@@ -175,8 +175,6 @@ public class PartyService {
             partyAttachmentService.deletePartyAttachment(partyAttachment.get());
         }
         partyRepository.delete(party);
-
-        return String.format("%s 게시글을 삭제하였습니다.", party.getTitle());
     }
 
     /**
