@@ -8,13 +8,13 @@ public class GetLectureReviewResponse {
     private final String review;
     private final Integer rating;
 
-    private GetLectureReviewResponse(String userName, String review, Integer rating){
-        this.userName=userName;
-        this.review=review;
-        this.rating=rating;
+    private GetLectureReviewResponse(String userName, String review, Integer rating) {
+        this.userName = userName;
+        this.review = review;
+        this.rating = rating;
     }
 
-    public static GetLectureReviewResponse of(String userName, String review, Integer rating){
+    public static GetLectureReviewResponse of(String userName, String review, Integer rating) {
         return new GetLectureReviewResponse(
                 userName,
                 review,

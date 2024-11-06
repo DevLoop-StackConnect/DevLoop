@@ -61,7 +61,7 @@ public class LectureController {
     }
     //강의 삭제
     @DeleteMapping("/v2/tutor/lectures/{lectureId}")
-    @PreAuthorize("#authUser.id == authentication.principal.id or hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ROLE_TUTOR') or hasRole('ROLE_ADMIN')")
     public ResponseEntity<Void> deleteLecture(
             @AuthenticationPrincipal AuthUser authUser,
             @PathVariable("lectureId") Long lectureId
