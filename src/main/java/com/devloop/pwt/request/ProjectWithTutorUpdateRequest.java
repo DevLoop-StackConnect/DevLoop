@@ -34,9 +34,9 @@ public class ProjectWithTutorUpdateRequest {
     @NotNull(message = "참여할 수 있는 최대 인원을 입력해 주세요.")
     private Integer maxParticipants;
 
-    @NotBlank(message = "난이도를 선택해 주세요.")
+    @NotNull(message = "난이도를 선택해 주세요.")
     private Level level;
 
-    @NotBlank(message = "카테고리를 입력해 주세요.")
+    @NotNull(message = "카테고리를 입력해 주세요.")
     private Category category;
 }
