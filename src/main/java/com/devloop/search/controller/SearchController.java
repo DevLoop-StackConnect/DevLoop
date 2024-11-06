@@ -25,7 +25,7 @@ public class SearchController {
         return ApiResponse.ok(searchService.integratedSearchPreview(request));
     }
 
-    @GetMapping("/v1/main/search/{category}")
+    @GetMapping("/v2/main/search/{category}")
     public ApiResponse<Page<IntegrationSearchResponse>> searchByCategory(
             @PathVariable String category,
             @RequestBody IntegrationSearchRequest request,
@@ -34,7 +34,7 @@ public class SearchController {
         return ApiResponse.ok(searchService.searchByCategory(request, category, page, size));
     }
 
-    @GetMapping("/v1/main/search/ranking")
+    @GetMapping("/v2/main/search/ranking")
     public Set<ZSetOperations.TypedTuple<String>> getRankingKeyword(){
         return searchService.getTopSearchKeywords();
     }

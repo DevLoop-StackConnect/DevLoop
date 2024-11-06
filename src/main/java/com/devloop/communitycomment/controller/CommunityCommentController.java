@@ -1,18 +1,20 @@
 package com.devloop.communitycomment.controller;
 
+import jakarta.validation.Valid;
 import com.devloop.common.AuthUser;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 import com.devloop.common.apipayload.ApiResponse;
 import com.devloop.communitycomment.response.CommentResponse;
 import com.devloop.communitycomment.request.CommentSaveRequest;
+import org.springframework.security.access.prepost.PreAuthorize;
 import com.devloop.communitycomment.request.CommentUpdateRequest;
 import com.devloop.communitycomment.response.CommentSaveResponse;
 import com.devloop.communitycomment.response.CommentUpdateResponse;
 import com.devloop.communitycomment.service.CommunityCommentService;
-import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -34,13 +36,15 @@ public class CommunityCommentController {
 
     //댓글 삭제
     @DeleteMapping("/v1/communities/{communityId}/comments/{commentId}")
-    public ApiResponse<Void> deleteComment(@AuthenticationPrincipal AuthUser authUser, @PathVariable Long communityId, @PathVariable Long commentId) {
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<Void> deleteComment(@AuthenticationPrincipal AuthUser authUser, @PathVariable Long communityId, @PathVariable Long commentId) {
         communityCommentService.deleteComment(authUser, communityId, commentId);
-        return ApiResponse.ok(null);
+        return ResponseEntity.noContent().build();
     }
 
     //댓글 다건 조회
     @GetMapping("/v1/communities/{communityId}/comments")
+    @PreAuthorize("permitAll()")
     public ApiResponse<Page<CommentResponse>> getComments(@PathVariable Long communityId, @RequestParam(defaultValue = "1") int page, @RequestParam(defaultValue = "10") int size) {
         return ApiResponse.ok(communityCommentService.getComments(communityId, page, size));
     }
