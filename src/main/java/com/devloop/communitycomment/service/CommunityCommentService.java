@@ -6,19 +6,17 @@ import com.devloop.common.exception.ApiException;
 import com.devloop.common.utils.NotificationHandler;
 import com.devloop.community.entity.Community;
 import com.devloop.community.service.CommunityService;
-import com.devloop.communitycomment.response.CommentResponse;
-import com.devloop.communitycomment.request.CommentSaveRequest;
-import com.devloop.communitycomment.request.CommentUpdateRequest;
-import com.devloop.communitycomment.response.CommentSaveResponse;
-import com.devloop.communitycomment.response.CommentUpdateResponse;
 import com.devloop.communitycomment.entity.CommunityComment;
 import com.devloop.communitycomment.repository.CommunityCommentRepository;
+import com.devloop.communitycomment.request.CommentSaveRequest;
+import com.devloop.communitycomment.request.CommentUpdateRequest;
+import com.devloop.communitycomment.response.CommentResponse;
+import com.devloop.communitycomment.response.CommentSaveResponse;
+import com.devloop.communitycomment.response.CommentUpdateResponse;
 import com.devloop.notification.dto.NotificationMessage;
 import com.devloop.notification.enums.NotificationType;
-import com.devloop.party.entity.Party;
-import com.devloop.partycomment.entity.PartyComment;
 import com.devloop.user.entity.User;
-import com.devloop.user.repository.UserRepository;
+import com.devloop.user.enums.UserRole;
 import com.devloop.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -35,15 +33,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-@Slf4j
 public class CommunityCommentService {
-    private final CommunityCommentRepository communityCommentRepository;
-    private final CommunityService communityService;
+
     private final UserService userService;
+    private final CommunityService communityService;
     private final NotificationHandler notificationHandler;
+    private final CommunityCommentRepository communityCommentRepository;
 
     //댓글 작성
     @Transactional
@@ -51,28 +50,28 @@ public class CommunityCommentService {
         try {
             //커뮤니티 게시글 조회
             Community community = communityService.getCommunityId(communityId);
-
             //사용자 조회
             User user = userService.findByUserId(authUser.getId());
-
             //게시글 작성자 가져오기
             User postAuthor = community.getUser();
-
             //댓글 생성..?생성자가 프라이빗이고..?
             CommunityComment communityComment = CommunityComment.of(commentSaveRequest.getContent(), community, user);
             //댓글 저장
             CommunityComment savedComment = communityCommentRepository.save(communityComment);
-
 
             //알림 전송 - 작성자가 댓글 작성자와 다른 경우만 전송
             if (!Objects.equals(user.getId(), postAuthor.getId())) {
                 notifyNewComment(communityComment);
             }
 
-            return CommentSaveResponse.of(savedComment.getId(), savedComment.getContent(), savedComment.getCreatedAt());
+            return CommentSaveResponse.of(
+                    savedComment.getId(),
+                    savedComment.getContent(),
+                    savedComment.getCreatedAt()
+            );
         } catch (Exception e) {
             notifyErrorCreation(communityId, authUser.getId(), e.getMessage());
-            throw e;
+            throw new ApiException(ErrorStatus._NOTIFICATION_SEND_ERROR);
         }
     }
 
@@ -113,15 +112,17 @@ public class CommunityCommentService {
             if (!communityComment.getCommunity().getId().equals(communityId)) {
                 throw new ApiException(ErrorStatus._NOT_INCLUDE_COMMENT);
             }
+
             //댓글 작성자와 현재 사용자가 같은지 확인
             if (!communityComment.getUser().getId().equals(authUser.getId())) {
                 throw new ApiException(ErrorStatus._INVALID_COMMENTUSER);
             }
+
             //삭제
             communityCommentRepository.delete(communityComment);
         } catch (Exception e) {
             notifyErrorCommentDeletion(communityId, commentId, authUser.getId(), e.getMessage());
-            throw e;
+            throw new ApiException(ErrorStatus._NOTIFICATION_SEND_ERROR);
         }
     }
 
