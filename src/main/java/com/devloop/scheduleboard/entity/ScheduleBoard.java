@@ -1,4 +1,4 @@
-package com.devloop.scheduleBoard.entity;
+package com.devloop.scheduleboard.entity;
 
 import com.devloop.common.Timestamped;
 import com.devloop.pwt.entity.ProjectWithTutor;
