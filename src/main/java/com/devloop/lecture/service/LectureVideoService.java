@@ -241,7 +241,7 @@ public class LectureVideoService {
      * @param videoId
      * @return
      */
-    public String deleteVideo(AuthUser authUser,Long lectureId, Long videoId) {
+    public void deleteVideo(AuthUser authUser,Long lectureId, Long videoId) {
         //강의가 존재하는 지 확인
         Lecture lecture=lectureService.findById(lectureId);
 
@@ -255,8 +255,6 @@ public class LectureVideoService {
         }
 
         deleteLectureVideo(lectureVideo);
-
-        return String.format("%s 강의를 삭제하였습니다.", lectureVideo.getTitle());
     }
 
     //Util

@@ -12,14 +12,15 @@ public class GetLectureListResponse {
     private final String level;
     private final BigDecimal price;
 
-    private GetLectureListResponse(Long id, String title, String category, String level, BigDecimal price){
-        this.id=id;
-        this.title=title;
-        this.category=category;
-        this.level=level;
-        this.price=price;
+    private GetLectureListResponse(Long id, String title, String category, String level, BigDecimal price) {
+        this.id = id;
+        this.title = title;
+        this.category = category;
+        this.level = level;
+        this.price = price;
     }
-    public static GetLectureListResponse of(Long id, String title, String category, String level, BigDecimal price){
+
+    public static GetLectureListResponse of(Long id, String title, String category, String level, BigDecimal price) {
         return new GetLectureListResponse(
                 id,
                 title,

@@ -23,8 +23,8 @@ public class LectureReviewController {
             @AuthenticationPrincipal AuthUser authUser,
             @PathVariable("lectureId") Long lectureId,
             @Valid @RequestBody SaveLectureReviewRequest saveLectureReviewRequest
-    ){
-        return ApiResponse.ok(lectureReviewService.saveLectureReview(authUser,lectureId,saveLectureReviewRequest));
+    ) {
+        return ApiResponse.ok(lectureReviewService.saveLectureReview(authUser, lectureId, saveLectureReviewRequest));
     }
 
     //강의 후기 수정
@@ -34,8 +34,8 @@ public class LectureReviewController {
             @PathVariable("lectureId") Long lectureId,
             @PathVariable("reviewId") Long reviewId,
             @Valid @RequestBody SaveLectureReviewRequest lectureReviewRequest
-    ){
-        return ApiResponse.ok(lectureReviewService.updateLectureReview(authUser,lectureId,reviewId,lectureReviewRequest));
+    ) {
+        return ApiResponse.ok(lectureReviewService.updateLectureReview(authUser, lectureId, reviewId, lectureReviewRequest));
     }
 
     //강의 후기 다건 조회
@@ -44,8 +44,8 @@ public class LectureReviewController {
             @PathVariable("lectureId") Long lectureId,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size
-    ){
-        return ApiResponse.ok(lectureReviewService.getLectureReviewList(lectureId,page,size));
+    ) {
+        return ApiResponse.ok(lectureReviewService.getLectureReviewList(lectureId, page, size));
     }
 
     //강의 후기 삭제
@@ -54,7 +54,7 @@ public class LectureReviewController {
             @AuthenticationPrincipal AuthUser authUser,
             @PathVariable("lectureId") Long lectureId,
             @PathVariable("reviewId") Long reviewId
-    ){
-        return ApiResponse.ok(lectureReviewService.deleteLectureReview(authUser,lectureId,reviewId));
+    ) {
+        return ApiResponse.ok(lectureReviewService.deleteLectureReview(authUser, lectureId, reviewId));
     }
 }

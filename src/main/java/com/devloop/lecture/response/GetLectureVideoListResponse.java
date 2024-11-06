@@ -8,11 +8,12 @@ public class GetLectureVideoListResponse {
     private final String title;
 
     // 강의 시간
-    private GetLectureVideoListResponse(Long id, String title){
-        this.id=id;
-        this.title=title;
+    private GetLectureVideoListResponse(Long id, String title) {
+        this.id = id;
+        this.title = title;
     }
-    public static GetLectureVideoListResponse of(Long id,String title){
+
+    public static GetLectureVideoListResponse of(Long id, String title) {
         return new GetLectureVideoListResponse(
                 id,
                 title

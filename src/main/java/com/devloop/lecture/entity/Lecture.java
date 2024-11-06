@@ -25,49 +25,43 @@ public class Lecture extends Product {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotNull
     @Column(columnDefinition = "TEXT", nullable = false)
     private String description;
 
-    @NotNull
     @Column(length = 20, nullable = false)
     private String recommend;
 
-    @NotNull
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private Category category;
 
-    @NotNull
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private Level level;
 
-    @NotNull
     @Enumerated(EnumType.STRING)
-    private Approval approval=Approval.WAITE;
+    private Approval approval = Approval.WAITE;
 
-    @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="user_id", nullable = false)
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
     @OneToMany(mappedBy = "lecture", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<LectureVideo> lectureVideos;
 
-    @OneToMany(mappedBy = "lecture",  cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @OneToMany(mappedBy = "lecture", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<LectureReview> lectureReviews;
 
-    private Lecture(String title, String description, String recommend, Category category, Level level, BigDecimal price, User user){
-        super(title,price);
-        this.description=description;
-        this.recommend=recommend;
-        this.category=category;
-        this.level=level;
-        this.user=user;
+    private Lecture(String title, String description, String recommend, Category category, Level level, BigDecimal price, User user) {
+        super(title, price);
+        this.description = description;
+        this.recommend = recommend;
+        this.category = category;
+        this.level = level;
+        this.user = user;
     }
 
-    public static Lecture from(SaveLectureRequest request, User user){
+    public static Lecture from(SaveLectureRequest request, User user) {
         return new Lecture(
                 request.getTitle(),
                 request.getDescription(),
@@ -79,12 +73,12 @@ public class Lecture extends Product {
         );
     }
 
-    public void update(UpdateLectureRequest request){
-        update(request.getTitle(),request.getPrice());
-        this.description= request.getDescription();
-        this.recommend= request.getRecommend();
-        this.category=request.getCategory();
-        this.level=request.getLevel();
+    public void update(UpdateLectureRequest request) {
+        update(request.getTitle(), request.getPrice());
+        this.description = request.getDescription();
+        this.recommend = request.getRecommend();
+        this.category = request.getCategory();
+        this.level = request.getLevel();
     }
 
     public void changeApproval(Approval approval) {
