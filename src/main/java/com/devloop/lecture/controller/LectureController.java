@@ -11,6 +11,7 @@ import com.devloop.lecture.response.UpdateLectureResponse;
 import com.devloop.lecture.service.LectureService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -65,11 +66,12 @@ public class LectureController {
     //강의 삭제
     @DeleteMapping("/v2/tutor/lectures/{lectureId}")
     @PreAuthorize("#authUser.id == authentication.principal.id or hasRole('ROLE_ADMIN')")
-    public ApiResponse<String> deleteLecture(
+    public ResponseEntity<String> deleteLecture(
             @AuthenticationPrincipal AuthUser authUser,
             @PathVariable("lectureId") Long lectureId
     ){
-        return ApiResponse.ok(lectureService.deleteLecture(authUser,lectureId));
+        lectureService.deleteLecture(authUser,lectureId);
+        return ResponseEntity.noContent().build();
     }
 
 }

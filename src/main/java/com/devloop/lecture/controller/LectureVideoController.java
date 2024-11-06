@@ -6,6 +6,7 @@ import com.devloop.lecture.response.GetLectureVideoDetailResponse;
 import com.devloop.lecture.response.GetLectureVideoListResponse;
 import com.devloop.lecture.service.LectureVideoService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -80,11 +81,12 @@ public class LectureVideoController {
      */
     @DeleteMapping("/v2/lectures/{lectureId}/videos/{videoId}")
     @PreAuthorize("#authUser.id == authentication.principal.id or hasRole('ROLE_ADMIN')")
-    public ApiResponse<String> deleteVideo(
+    public ResponseEntity<String> deleteVideo(
             @AuthenticationPrincipal AuthUser authUser,
             @PathVariable("lectureId")Long lectureId,
             @PathVariable("videoId") Long videoId
     ){
-        return ApiResponse.ok(lectureVideoService.deleteVideo(authUser,lectureId,videoId));
+        lectureVideoService.deleteVideo(authUser,lectureId,videoId);
+        return ResponseEntity.noContent().build();
     }
 }
