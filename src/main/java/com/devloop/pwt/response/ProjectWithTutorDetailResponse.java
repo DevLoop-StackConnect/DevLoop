@@ -51,7 +51,7 @@ public class ProjectWithTutorDetailResponse {
             String level,
             String tutorName,
             URL attachmentUrl
-    ){
+    ) {
         return new ProjectWithTutorDetailResponse(
                 title,
                 description,
