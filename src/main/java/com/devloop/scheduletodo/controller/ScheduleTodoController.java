@@ -24,9 +24,10 @@ public class ScheduleTodoController {
 
     //일정 생성
     @PostMapping
-    public ApiResponse<ScheduleTodoResponse> createScheduleTodo(@AuthenticationPrincipal AuthUser authUser,
-                                                                @PathVariable Long scheduleBoardId,
-                                                                @RequestBody @Valid ScheduleTodoRequest scheduleTodoRequest) {
+    public ApiResponse<ScheduleTodoResponse> createScheduleTodo(
+            @AuthenticationPrincipal AuthUser authUser,
+            @PathVariable Long scheduleBoardId,
+            @RequestBody @Valid ScheduleTodoRequest scheduleTodoRequest) {
         return ApiResponse.ok(scheduleTodoService.createScheduleTodo(scheduleBoardId, scheduleTodoRequest, authUser));
     }
 
@@ -46,9 +47,10 @@ public class ScheduleTodoController {
 
     //일정 수정
     @PatchMapping("/{scheduleTodoId}")
-    public ApiResponse<ScheduleTodoResponse> updateScheduleTodo(@AuthenticationPrincipal AuthUser authUser,
-                                                                @PathVariable Long scheduleTodoId,
-                                                                @RequestBody @Valid ScheduleTodoRequest scheduleTodoRequest) {
+    public ApiResponse<ScheduleTodoResponse> updateScheduleTodo(
+            @AuthenticationPrincipal AuthUser authUser,
+            @PathVariable Long scheduleTodoId,
+            @RequestBody @Valid ScheduleTodoRequest scheduleTodoRequest) {
         return ApiResponse.ok(scheduleTodoService.updateScheduleTodo(authUser, scheduleTodoId, scheduleTodoRequest));
     }
 
