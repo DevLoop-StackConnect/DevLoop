@@ -1,11 +1,11 @@
 package com.devloop.communitycomment.response;
 
 import lombok.Getter;
-
 import java.time.LocalDateTime;
 
 @Getter
 public class CommentResponse {
+
     private final Long commentId;
     private final String content;
     private final String username;

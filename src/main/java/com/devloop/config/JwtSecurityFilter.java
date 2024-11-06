@@ -53,7 +53,6 @@ public class JwtSecurityFilter extends OncePerRequestFilter {
                 }
                 UserRole userRole = UserRole.of(claims.get("userRole", String.class));
 
-
                 if (userId != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                     String email = claims.get("email", String.class);
                     AuthUser authUser = new AuthUser(userId, email, userRole);
@@ -64,7 +63,6 @@ public class JwtSecurityFilter extends OncePerRequestFilter {
                 } else {
                     log.error("JWT 파싱 실패: userId가 null이거나 SecurityContext에 이미 인증 정보가 설정됨");
                 }
-
 
             } catch (SecurityException | MalformedJwtException e) {
                 log.error("Invalid JWT signature, 유효하지 않는 JWT 서명 입니다.", e);

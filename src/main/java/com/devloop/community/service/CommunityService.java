@@ -3,6 +3,7 @@ package com.devloop.community.service;
 import java.net.URL;
 import java.util.List;
 
+import com.devloop.user.enums.UserRole;
 import lombok.extern.slf4j.Slf4j;
 import com.devloop.common.AuthUser;
 import com.devloop.user.entity.User;
@@ -178,8 +179,12 @@ public class CommunityService {
         //게시글 존재하는지 확인
         Community community = communityRepository.findById(communityId)
                 .orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_COMMUNITY));
+        //관리자 추가
+        boolean isAdmin =  authUser.getAuthorities().stream()
+                .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("ROLE_ADMIN"));
+
         //작성자 확인
-        if (!community.getUser().getId().equals(authUser.getId())) {
+        if (!community.getUser().getId().equals(authUser.getId()) && !isAdmin) {
             throw new ApiException(ErrorStatus._PERMISSION_DENIED);
         }
         // 첨부파일 확인 및 삭제
