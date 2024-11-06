@@ -18,8 +18,7 @@ public class LectureReview extends Timestamped {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotNull
-    @Column(length = 255)
+    @Column(length = 255, nullable = false)
     private String review;
 
     @NotNull
