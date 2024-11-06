@@ -61,6 +61,7 @@ public enum ErrorStatus implements BaseCode {
 
     //Stock
     _NOT_FOUND_STOCK(HttpStatus.NOT_FOUND, "404", "해당 재고를 찾지 못했습니다."),
+    _STOCK_EMPTY(HttpStatus.CONFLICT, "409", "재고가 없습니다."),
 
     //Auth
     _NOT_AUTHENTICATIONPRINCIPAL_USER(HttpStatus.UNAUTHORIZED, "401", "인증되지 않은 유저입니다."),
