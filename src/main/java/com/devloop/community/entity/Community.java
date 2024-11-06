@@ -14,13 +14,13 @@ import com.devloop.communitycomment.entity.CommunityComment;
 
 @Entity
 @Getter
-@AllArgsConstructor(access = AccessLevel.PROTECTED)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PROTECTED)
 public class Community extends Timestamped {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "community_id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Enumerated(EnumType.STRING)
@@ -35,12 +35,12 @@ public class Community extends Timestamped {
     @Enumerated(EnumType.STRING)
     private Category category = Category.ETC;
 
-    @Enumerated(EnumType.STRING)
     @Column(name = "status")
+    @Enumerated(EnumType.STRING)
     private ResolveStatus resolveStatus = ResolveStatus.UNSOLVED; //기본값 필드로 설정
 
-    @OneToMany(mappedBy = "community", fetch = FetchType.LAZY)
     @Column(nullable = false)
+    @OneToMany(mappedBy = "community", fetch = FetchType.LAZY)
     private List<CommunityComment> communityComments = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
