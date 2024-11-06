@@ -128,8 +128,8 @@ public class UserService {
     }
 
     public List<CommunitySimpleResponse> userCommunityResponses(User user){
-        List<Community> communities = communityRepository.findAllByUserId(user.getId())
-                .orElseThrow(()->new ApiException(ErrorStatus._INVALID_REQUEST));
+        List<Community> communities = communityRepository.findAllByUserId(user.getId());
+
         List<CommunitySimpleResponse> communitySimpleResponses = new ArrayList<>();
         for (Community community : communities) {
             CommunitySimpleResponse communitySimpleResponse = CommunitySimpleResponse.of(
@@ -142,5 +142,4 @@ public class UserService {
         }
         return communitySimpleResponses;
     }
-
 }
