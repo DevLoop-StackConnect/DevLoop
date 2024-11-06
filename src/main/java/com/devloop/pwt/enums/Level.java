@@ -2,7 +2,6 @@ package com.devloop.pwt.enums;
 
 import com.devloop.common.apipayload.status.ErrorStatus;
 import com.devloop.common.exception.ApiException;
-import com.devloop.user.enums.UserRole;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
