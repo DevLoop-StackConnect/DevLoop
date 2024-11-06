@@ -36,13 +36,14 @@ public class PurchaseService {
         // Purchase 객체 저장
         purchaseRepository.saveAll(purchases);
 
+        // Board 지급 객체 저장
         boardAssignmentService.createBoardAssignment(purchases);
 
     }
 
     //Util
     //유저가 수강한 강의인지 확인
-    public boolean exitsByUserIdAndProductId(Long userId,Long productId){
-        return purchaseRepository.existsByUserIdAndProductId(userId,productId);
+    public boolean exitsByUserIdAndProductId(Long userId, Long productId) {
+        return purchaseRepository.existsByUserIdAndProductId(userId, productId);
     }
 }
