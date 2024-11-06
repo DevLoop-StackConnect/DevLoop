@@ -6,6 +6,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 
-public interface ScheduleTodoRepository extends JpaRepository<ScheduleTodo,Long> {
+public interface ScheduleTodoRepository extends JpaRepository<ScheduleTodo, Long> {
     List<ScheduleTodo> findByScheduleBoard(ScheduleBoard scheduleBoard);
 }

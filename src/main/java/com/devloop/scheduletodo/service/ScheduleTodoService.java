@@ -5,13 +5,13 @@ import com.devloop.common.apipayload.status.ErrorStatus;
 import com.devloop.common.exception.ApiException;
 import com.devloop.pwt.entity.ProjectWithTutor;
 import com.devloop.scheduleboard.entity.ScheduleBoard;
-import com.devloop.scheduleboard.repository.BoardAssignmentRepository;
+import com.devloop.scheduleboard.service.BoardAssignmentService;
 import com.devloop.scheduleboard.service.ScheduleBoardService;
+import com.devloop.scheduletodo.entity.ScheduleTodo;
+import com.devloop.scheduletodo.repository.ScheduleTodoRepository;
 import com.devloop.scheduletodo.request.ScheduleTodoRequest;
 import com.devloop.scheduletodo.response.ScheduleTodoResponse;
 import com.devloop.scheduletodo.response.ScheduleTodoSimpleResponse;
-import com.devloop.scheduletodo.entity.ScheduleTodo;
-import com.devloop.scheduletodo.repository.ScheduleTodoRepository;
 import com.devloop.user.entity.User;
 import com.devloop.user.service.UserService;
 import jakarta.persistence.OptimisticLockException;
@@ -29,7 +29,7 @@ public class ScheduleTodoService {
     private final ScheduleTodoRepository scheduleTodoRepository;
     private final UserService userService;
     private final ScheduleBoardService scheduleBoardService;
-    private final BoardAssignmentRepository boardAssignmentRepository;
+    private final BoardAssignmentService boardAssignmentService;
 
     //생성
     @Transactional
@@ -64,7 +64,8 @@ public class ScheduleTodoService {
         }
 
         // 현재 유저가 해당 스케줄 보드에 속한 PWT 게시글의 유저인지 확인 BoardAssignment로 접근 권한 확인
-        boolean hasAccess = boardAssignmentRepository.existsByScheduleBoardAndPurchase_User(scheduleBoard, currentUser);
+        boolean hasAccess = boardAssignmentService.getBoardAssignmentRepository()
+                .existsByScheduleBoardAndPurchase_User(scheduleBoard, currentUser);
         if (!hasAccess) {
             throw new ApiException(ErrorStatus._PERMISSION_DENIED);
         }
@@ -99,7 +100,6 @@ public class ScheduleTodoService {
                 .map(todo -> ScheduleTodoSimpleResponse.of(todo.getTitle(), todo.getStartDate(), todo.getEndDate()))
                 .collect(Collectors.toList());
     }
-
     //scheduleTodo 단건조회
     public ScheduleTodoResponse getScheduleTodo(Long scheduleTodoId) {
         ScheduleTodo scheduleTodo = scheduleTodoRepository.findById(scheduleTodoId)
@@ -121,14 +121,15 @@ public class ScheduleTodoService {
         try {
             ScheduleTodo scheduleTodo = scheduleTodoRepository.findById(scheduleTodoId)
                     .orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_SCHEDULE_TODO));
-
             ScheduleBoard scheduleBoard = scheduleTodo.getScheduleBoard();
             ProjectWithTutor projectWithTutor = scheduleBoard.getProjectWithTutor();
             User currentUser = userService.findByUserId(authUser.getId());
 
+            boolean isAdmin =  authUser.getAuthorities().stream()
+                    .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("ROLE_ADMIN"));
 
-            //튜터는 모든 scheduleTodo수정가능
-            if (currentUser.equals(projectWithTutor.getUser())) {
+            //튜터나 관리자는 모든 scheduleTodo수정가능
+            if (currentUser.equals(projectWithTutor.getUser()) || isAdmin) {
                 scheduleTodo.updateScheduleTodo(
                         scheduleTodoRequest.getTitle(),
                         scheduleTodoRequest.getContent(),
@@ -180,9 +181,11 @@ public class ScheduleTodoService {
         ProjectWithTutor projectWithTutor = scheduleBoard.getProjectWithTutor();
         User currentUser = userService.findByUserId(authUser.getId());
 
+        // 튜터 권한 확인: 프로젝트 작성자(튜터) 또는 관리자라면 모든 스케줄Todo 삭제 가능
+        boolean isAdmin =  authUser.getAuthorities().stream()
+                .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("ROLE_ADMIN"));
 
-        // 튜터 권한 확인: 프로젝트 작성자(튜터)라면 모든 스케줄Todo 삭제 가능
-        if (currentUser.equals(projectWithTutor.getUser())) {
+        if (currentUser.equals(projectWithTutor.getUser())||isAdmin) {
             scheduleTodoRepository.delete(scheduleTodo);
             return;
         }
@@ -190,8 +193,6 @@ public class ScheduleTodoService {
         if (!scheduleTodo.getCreatedBy().equals(currentUser)) {
             throw new ApiException(ErrorStatus._PERMISSION_DENIED);
         }
-
         scheduleTodoRepository.delete(scheduleTodo);
     }
-
 }
