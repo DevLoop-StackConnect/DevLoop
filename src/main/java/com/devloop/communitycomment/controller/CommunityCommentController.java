@@ -36,7 +36,6 @@ public class CommunityCommentController {
 
     //댓글 삭제
     @DeleteMapping("/v1/communities/{communityId}/comments/{commentId}")
-    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Void> deleteComment(@AuthenticationPrincipal AuthUser authUser, @PathVariable Long communityId, @PathVariable Long commentId) {
         communityCommentService.deleteComment(authUser, communityId, commentId);
         return ResponseEntity.noContent().build();

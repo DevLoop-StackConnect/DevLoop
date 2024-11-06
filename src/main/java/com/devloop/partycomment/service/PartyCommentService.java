@@ -29,11 +29,10 @@ import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.Objects;
 
-
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-@Slf4j
 public class PartyCommentService {
     private final PartyCommentRepository partyCommentRepository;
     private final UserService userService;
@@ -120,7 +119,7 @@ public class PartyCommentService {
 
     //스터디 파티 게시글 댓글 삭제
     @Transactional
-    public String deletePartyComment(AuthUser authUser, Long partyId, Long commentId) {
+    public void deletePartyComment(AuthUser authUser, Long partyId, Long commentId) {
         try {
             //스터디 파티 게시글이 존재하는 지 확인
             Party party = partyService.findById(partyId);
@@ -129,15 +128,18 @@ public class PartyCommentService {
             PartyComment partyComment = partyCommentRepository.findById(commentId).orElseThrow(() ->
                     new ApiException(ErrorStatus._NOT_FOUND_COMMENT));
 
+            boolean isAdmin =  authUser.getAuthorities().stream()
+                    .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("ROLE_ADMIN"));
+
             //댓글을 작성한 유저가 맞는 지 확인
-            if (!authUser.getId().equals(partyComment.getUser().getId())) {
+            if (!authUser.getId().equals(partyComment.getUser().getId()) && isAdmin) {
                 throw new ApiException(ErrorStatus._PERMISSION_DENIED);
             }
 
-        partyCommentRepository.delete(partyComment);
-        return String.format("댓글을 삭제하였습니다.");
-        } catch(Exception e){
-            notifyErrorCommentDeletion(partyId,commentId, authUser.getId(), e.getMessage());
+            partyCommentRepository.delete(partyComment);
+
+        } catch (Exception e) {
+            notifyErrorCommentDeletion(partyId, commentId, authUser.getId(), e.getMessage());
             throw e;
         }
     }
@@ -184,5 +186,5 @@ public class PartyCommentService {
 
     public void notifyErrorCommentDeletion(Long partyId, Long commentId, Long userId, String errorMessage) {
         log.error("스터디 파티 댓글 삭제 실패  - communityId : {}, commentId : {}, userId : {}, error : {}", partyId, commentId, userId, errorMessage);
-        }
     }
+}

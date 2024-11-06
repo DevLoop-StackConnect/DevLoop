@@ -11,9 +11,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.cache.annotation.Cacheable;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
-@Slf4j
 public class SlackUserService {
 
     private final SlackFeignClient slackFeignClient;
@@ -63,6 +63,7 @@ public class SlackUserService {
             throw new ApiException(ErrorStatus._SLACK_API_ERROR);
         }
     }
+
     //Slack 사용자 검증 메서드
     public boolean verifySlackUser(String slackId) {
         try {
