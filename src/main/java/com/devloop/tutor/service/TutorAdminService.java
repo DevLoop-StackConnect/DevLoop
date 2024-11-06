@@ -2,9 +2,9 @@ package com.devloop.tutor.service;
 
 import com.devloop.common.apipayload.dto.UserResponseDto;
 import com.devloop.common.apipayload.status.ErrorStatus;
+import com.devloop.common.enums.Approval;
 import com.devloop.common.exception.ApiException;
 import com.devloop.tutor.entity.TutorRequest;
-import com.devloop.common.enums.Approval;
 import com.devloop.tutor.repository.TutorRequestRepository;
 import com.devloop.tutor.response.TutorRequestListAdminResponse;
 import com.devloop.user.entity.User;
@@ -33,7 +33,7 @@ public class TutorAdminService {
         Page<TutorRequest> requests = requestRepository.findAllByStatus(pageable, Approval.WAITE);
 
         // 값이 비어있을때 예외 처리
-        if(requests.isEmpty()){
+        if (requests.isEmpty()) {
             throw new ApiException(ErrorStatus._TUTOR_REQUEST_NOT_EXIST);
         }
 
