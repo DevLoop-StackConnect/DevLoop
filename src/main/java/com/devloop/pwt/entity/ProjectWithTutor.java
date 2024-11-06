@@ -120,4 +120,8 @@ public class ProjectWithTutor extends Product {
     public void changeStatus(ProjectWithTutorStatus projectWithTutorStatus) {
         this.status = projectWithTutorStatus;
     }
+
+    public void saveScheduleBoard(ScheduleBoard scheduleBoard) {
+        this.scheduleBoard = scheduleBoard;
+    }
 }
