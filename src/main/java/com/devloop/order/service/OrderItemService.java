@@ -20,18 +20,17 @@ import java.util.stream.Collectors;
 public class OrderItemService {
 
     private final OrderItemRepository orderItemRepository;
-//    private final OrderService orderService;
     private final OrderRepository orderRepository;  // 순환 참조 막기 위해 레파지토리 주입
     private final CartService cartService;
 
     @Transactional
     public void saveOrderItem(String orderRequestId) {
         // orderRequestId(UUID : orderId)로 Order 객체 찾기
-        Order order = orderRepository.findByOrderRequestId(orderRequestId).orElseThrow(()->new ApiException(ErrorStatus._NOT_FOUND_ORDER));
+        Order order = orderRepository.findByOrderRequestId(orderRequestId).orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_ORDER));
 
         // OrderItem 객체 생성
         List<OrderItem> orderItems = order.getCart().getItems().stream()
-                .map(o->OrderItem.of(order, o.getProduct().getTitle(), o.getProduct().getPrice()))
+                .map(o -> OrderItem.of(order, o.getProduct().getTitle(), o.getProduct().getPrice()))
                 .collect(Collectors.toList());
 
         // OrderItem 객체 저장
