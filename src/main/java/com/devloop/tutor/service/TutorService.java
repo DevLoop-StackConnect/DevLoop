@@ -47,4 +47,10 @@ public class TutorService {
                         "승인까지 3~5일 정도 소요될 수 있습니다.",
                 requestUser.getUsername());
     }
+    /*
+    * UserService에서 사용
+    */
+    public TutorRequest getTutorRequestByUserId(Long userId) {
+        return requestRepository.findByUserId(userId).orElse(null);
+    }
 }
