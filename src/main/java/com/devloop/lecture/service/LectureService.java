@@ -3,7 +3,9 @@ package com.devloop.lecture.service;
 import com.devloop.common.AuthUser;
 import com.devloop.common.apipayload.status.ErrorStatus;
 import com.devloop.common.enums.Approval;
+import com.devloop.common.enums.BoardType;
 import com.devloop.common.exception.ApiException;
+import com.devloop.common.utils.SearchResponseUtil;
 import com.devloop.lecture.entity.Lecture;
 import com.devloop.lecture.repository.LectureRepository;
 import com.devloop.lecture.request.SaveLectureRequest;
@@ -12,14 +14,18 @@ import com.devloop.lecture.response.GetLectureDetailResponse;
 import com.devloop.lecture.response.GetLectureListResponse;
 import com.devloop.lecture.response.SaveLectureResponse;
 import com.devloop.lecture.response.UpdateLectureResponse;
+import com.devloop.search.response.IntegrationSearchResponse;
 import com.devloop.user.entity.User;
 import com.devloop.user.enums.UserRole;
 import com.devloop.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -145,5 +151,15 @@ public class LectureService {
                 new ApiException(ErrorStatus._NOT_FOUND_LECTURE));
     }
 
+    public List<IntegrationSearchResponse> getAllLecture(Specification<Lecture> spec) {
+        List<Lecture> lectures = lectureRepository.findAll(spec);
+        return SearchResponseUtil.wrapResponse(BoardType.LECTURE, lectures);
+    }
 
+    public Page<IntegrationSearchResponse> getLectureWithPage(Specification<Lecture> spec, PageRequest pageable) {
+        Page<Lecture> lectures = lectureRepository.findAll(spec, pageable);
+        return lectures.map(lecture ->
+                IntegrationSearchResponse.of(lecture, BoardType.LECTURE.name().toLowerCase())
+        );
+    }
 }
