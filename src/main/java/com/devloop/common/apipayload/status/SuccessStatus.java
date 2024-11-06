@@ -2,6 +2,8 @@ package com.devloop.common.apipayload.status;
 
 import com.devloop.common.apipayload.BaseCode;
 import com.devloop.common.apipayload.dto.ReasonDto;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -10,7 +12,7 @@ import org.springframework.http.HttpStatus;
 @RequiredArgsConstructor
 public enum SuccessStatus implements BaseCode {
 
-    _OK(org.springframework.http.HttpStatus.OK, "200", "Ok");
+    _OK(HttpStatus.OK, "200", "Ok");
 
     private final HttpStatus httpStatus;
     private final String statusCode;
