@@ -75,5 +75,4 @@ public class ProjectWithTutorController {
         projectWithTutorService.deleteProjectWithTutor(authUser, projectId);
         return ResponseEntity.noContent().build();
     }
-
 }
