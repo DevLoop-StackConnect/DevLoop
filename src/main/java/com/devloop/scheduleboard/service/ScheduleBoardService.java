@@ -35,7 +35,6 @@ public class ScheduleBoardService {
         ScheduleBoard scheduleBoard = scheduleBoardRepository.findByProjectWithTutor(projectWithTutor)
                 .orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_SCHEDULE_BOARD));
 
-
         return ScheduleBoardResponse.of(
                 scheduleBoard.getId(),
                 projectWithTutor.getId(),

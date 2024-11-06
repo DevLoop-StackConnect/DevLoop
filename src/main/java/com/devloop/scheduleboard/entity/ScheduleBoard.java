@@ -6,7 +6,6 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,6 +32,4 @@ public class ScheduleBoard extends Timestamped {
     public static ScheduleBoard from(ProjectWithTutor projectWithTutor) {
         return new ScheduleBoard(projectWithTutor);
     }
-
-
 }
