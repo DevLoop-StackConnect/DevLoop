@@ -86,7 +86,7 @@ public class OrderService {
 
         List<CartItem> cartItems = order.getCart().getItems();
         Product product = (Product) Hibernate.unproxy(cartItems.get(0).getProduct());
-        if(product.getClass().getSimpleName().equals("ProjectWithTutor")) {
+        if (product.getClass().getSimpleName().equals("ProjectWithTutor")) {
             // 각 PWT의 Stock 업데이트
             for (CartItem cartItem : cartItems) {
                 stockService.updateStock(cartItem.getProduct().getId());
@@ -97,15 +97,15 @@ public class OrderService {
         orderItemService.saveOrderItem(orderRequestId);
     }
 
+    // Utile Method
     public Order findByOrderId(Long orderId) {
         return orderRepository.findById(orderId)
                 .orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_ORDER));
     }
 
     public Order findByOrderRequestId(String orderRequestId) {
-        return orderRepository.findByOrderRequestId(orderRequestId).orElseThrow(()->new ApiException(ErrorStatus._NOT_FOUND_ORDER));
+        return orderRepository.findByOrderRequestId(orderRequestId).orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_ORDER));
     }
-
 
 
 }

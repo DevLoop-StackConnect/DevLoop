@@ -5,6 +5,7 @@ import com.devloop.order.entity.Order;
 import com.devloop.order.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,6 +21,7 @@ public class OrderController {
 
     // 주문 하기 (주문 객체 생성)
     @PostMapping("/api/v2/orders")
+    @PreAuthorize("isAuthenticated()")  //로그인 사용자 전부
     public String createOrder(
             @AuthenticationPrincipal AuthUser authUser
     ) {
