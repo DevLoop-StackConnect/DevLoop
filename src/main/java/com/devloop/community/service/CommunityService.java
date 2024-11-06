@@ -1,40 +1,39 @@
 package com.devloop.community.service;
 
+import com.devloop.attachment.entity.CommunityAttachment;
+import com.devloop.attachment.s3.S3Service;
+import com.devloop.attachment.service.CommunityAttachmentService;
+import com.devloop.common.AuthUser;
+import com.devloop.common.apipayload.dto.CommunitySimpleResponseDto;
+import com.devloop.common.apipayload.status.ErrorStatus;
+import com.devloop.common.enums.BoardType;
+import com.devloop.common.enums.Category;
+import com.devloop.common.exception.ApiException;
+import com.devloop.common.utils.SearchResponseUtil;
+import com.devloop.community.entity.Community;
+import com.devloop.community.entity.ResolveStatus;
+import com.devloop.community.repository.CommunityRepository;
+import com.devloop.community.request.CommunitySaveRequest;
+import com.devloop.community.request.CommunityUpdateRequest;
+import com.devloop.community.response.CommunityDetailResponse;
+import com.devloop.community.response.CommunitySaveResponse;
+import com.devloop.community.response.CommunitySimpleResponse;
+import com.devloop.search.response.IntegrationSearchResponse;
+import com.devloop.user.entity.User;
+import com.devloop.user.service.UserService;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
 import java.net.URL;
 import java.util.List;
-
-import com.devloop.user.enums.UserRole;
-import lombok.extern.slf4j.Slf4j;
-import com.devloop.common.AuthUser;
-import com.devloop.user.entity.User;
-import lombok.RequiredArgsConstructor;
-import com.devloop.common.enums.Category;
-import com.devloop.common.enums.BoardType;
-import com.devloop.attachment.s3.S3Service;
-import com.devloop.user.service.UserService;
-import org.springframework.data.domain.Page;
-import com.devloop.community.entity.Community;
-import org.springframework.stereotype.Service;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
-import com.devloop.common.exception.ApiException;
-import com.devloop.community.entity.ResolveStatus;
-import com.devloop.common.utils.SearchResponseUtil;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.web.multipart.MultipartFile;
-import com.devloop.common.apipayload.status.ErrorStatus;
-import org.springframework.data.jpa.domain.Specification;
-import com.devloop.attachment.entity.CommunityAttachment;
-import com.devloop.community.request.CommunitySaveRequest;
-import com.devloop.community.repository.CommunityRepository;
-import com.devloop.community.request.CommunityUpdateRequest;
-import com.devloop.community.response.CommunitySaveResponse;
-import com.devloop.search.response.IntegrationSearchResponse;
-import com.devloop.community.response.CommunityDetailResponse;
-import com.devloop.community.response.CommunitySimpleResponse;
-import org.springframework.transaction.annotation.Transactional;
-import com.devloop.attachment.service.CommunityAttachmentService;
-import com.devloop.common.apipayload.dto.CommunitySimpleResponseDto;
 
 @Slf4j
 @Service
@@ -100,7 +99,7 @@ public class CommunityService {
         Community community = communityRepository.findById(communityId)
                 .orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_COMMUNITY));
         //첨부파일 url이 있는지 확인
-        String imageUrl = communityAttachmentService.getCommunityATMRepository().findByCommunityId(communityId) //첨부파일 있는지 조회
+        String imageUrl = communityAttachmentService.getCommunityATMRepository(communityId) //첨부파일 있는지 조회
                 .map(CommunityAttachment::getImageURL)
                 .map(URL::toString)
                 .orElse(null);
@@ -180,7 +179,7 @@ public class CommunityService {
         Community community = communityRepository.findById(communityId)
                 .orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_COMMUNITY));
         //관리자 추가
-        boolean isAdmin =  authUser.getAuthorities().stream()
+        boolean isAdmin = authUser.getAuthorities().stream()
                 .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("ROLE_ADMIN"));
 
         //작성자 확인
@@ -188,9 +187,9 @@ public class CommunityService {
             throw new ApiException(ErrorStatus._PERMISSION_DENIED);
         }
         // 첨부파일 확인 및 삭제
-        communityAttachmentService.getCommunityATMRepository().findByCommunityId(communityId).ifPresent(attachment -> {
+        communityAttachmentService.getCommunityATMRepository(communityId).ifPresent(attachment -> {
             s3Service.delete(attachment.getFileName());
-            communityAttachmentService.getCommunityATMRepository().delete(attachment);
+            communityAttachmentService.deleteCommunityAttachment(attachment);
         });
         //삭제
         communityRepository.delete(community);
@@ -200,6 +199,13 @@ public class CommunityService {
     public Community getCommunityId(Long communityId) {
         return communityRepository.findById(communityId)
                 .orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_COMMUNITY));
+    }
+
+    /*
+     * UserService에서 사용
+     */
+    public List<Community> getCommunitiesByUserId(Long userId) {
+        return communityRepository.findAllByUserId(userId);
     }
 
     /**

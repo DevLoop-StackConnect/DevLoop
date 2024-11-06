@@ -23,7 +23,8 @@ public class PartyAttachmentService {
         partyAMTRepository.delete(partyAttachment);
     }
 
-    public PartyAMTRepository getPartyAMTRepository() {
-        return partyAMTRepository;
+    @Transactional
+    public void savePartyAttachment(PartyAttachment partyAttachment) {
+        partyAMTRepository.save(partyAttachment);
     }
 }
