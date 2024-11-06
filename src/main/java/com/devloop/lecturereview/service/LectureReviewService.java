@@ -39,7 +39,8 @@ public class LectureReviewService {
 
         //수강 여부 확인
         boolean isPurchased=purchaseService.exitsByUserIdAndProductId(authUser.getId(),lectureId);
-        //수강 유저 또는 어드민이 아닌 경우 권한 없음
+
+        //수강 유저인지 확인
         if(!isPurchased){
             throw new ApiException(ErrorStatus._ACCESS_PERMISSION_DENIED);
         }
@@ -109,7 +110,7 @@ public class LectureReviewService {
 
     //강의 후기 삭제
     @Transactional
-    public String deleteLectureReview(AuthUser authUser, Long lectureId, Long reviewId) {
+    public void deleteLectureReview(AuthUser authUser, Long lectureId, Long reviewId) {
         //강의가 존재하는 지 확인
         Lecture lecture=lectureService.findById(lectureId);
 
@@ -128,7 +129,5 @@ public class LectureReviewService {
         }
 
         lectureReviewRepository.delete(lectureReview);
-
-        return String.format("%s 님의 댓글이 삭제되었습니다",lectureReview.getUser().getUsername());
     }
 }
