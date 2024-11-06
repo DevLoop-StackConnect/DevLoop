@@ -4,14 +4,12 @@ import com.devloop.common.Timestamped;
 import com.devloop.common.enums.Approval;
 import com.devloop.user.entity.User;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 
-@Entity
 @Getter
+@Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class TutorRequest extends Timestamped {
 
@@ -19,26 +17,20 @@ public class TutorRequest extends Timestamped {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long tutorRequestId;
 
-    @NotNull
-    @Column(length = 20)
+    @Column(nullable = false, length = 20)
     private String name;
 
-    @NotNull
-    @Column(length = 255)
+    @Column(nullable = false, length = 255)
     private String subUrl;
 
-    @NotNull
-    @Column(length = 20)
+    @Column(nullable = false, length = 20)
     private String accountNum;
 
-    @NotNull
     @Enumerated(EnumType.STRING)
-    @Column(length = 20)
     private Approval status = Approval.WAITE;
 
-    @NotNull
     @OneToOne
-    @JoinColumn(name="user_id")  // 단방향 참조
+    @JoinColumn(name = "user_id", nullable = false)  // 단방향 참조
     private User user;
 
     private TutorRequest(
@@ -58,7 +50,7 @@ public class TutorRequest extends Timestamped {
             String subUrl,
             String accountNum,
             User userId
-    ){
+    ) {
         return new TutorRequest(
                 name,
                 subUrl,
@@ -70,8 +62,5 @@ public class TutorRequest extends Timestamped {
     public void changeStatus(Approval newStatus) {
         this.status = newStatus;
     }
-
-
-
 
 }
