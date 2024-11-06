@@ -8,6 +8,8 @@ import com.devloop.lecturereview.service.LectureReviewService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,7 +19,7 @@ import org.springframework.web.bind.annotation.*;
 public class LectureReviewController {
     private final LectureReviewService lectureReviewService;
 
-    //강의 후기 등록
+    //강의 후기 등록 (수강 유저만 가능)
     @PostMapping("/v2/lectures/{lectureId}/reviews")
     public ApiResponse<String> saveLectureReview(
             @AuthenticationPrincipal AuthUser authUser,
@@ -27,7 +29,7 @@ public class LectureReviewController {
         return ApiResponse.ok(lectureReviewService.saveLectureReview(authUser, lectureId, saveLectureReviewRequest));
     }
 
-    //강의 후기 수정
+    //강의 후기 수정 (수강 유저만 가능)
     @PatchMapping("/v2/lectures/{lectureId}/reviews/{reviewId}")
     public ApiResponse<String> updateLectureReview(
             @AuthenticationPrincipal AuthUser authUser,
@@ -39,7 +41,8 @@ public class LectureReviewController {
     }
 
     //강의 후기 다건 조회
-    @GetMapping("/v2/search/lectures/{lectureId}/reviews")
+    @GetMapping("/v2/lectures/{lectureId}/reviews")
+    @PreAuthorize("permitAll()")
     public ApiResponse<Page<GetLectureReviewResponse>> getLectureReviewList(
             @PathVariable("lectureId") Long lectureId,
             @RequestParam(defaultValue = "1") int page,
@@ -50,11 +53,12 @@ public class LectureReviewController {
 
     //강의 후기 삭제
     @DeleteMapping("/v2/lectures/{lectureId}/reviews/{reviewId}")
-    public ApiResponse<String> deleteLectureReview(
+    public ResponseEntity<Void> deleteLectureReview(
             @AuthenticationPrincipal AuthUser authUser,
             @PathVariable("lectureId") Long lectureId,
             @PathVariable("reviewId") Long reviewId
     ) {
-        return ApiResponse.ok(lectureReviewService.deleteLectureReview(authUser, lectureId, reviewId));
+        lectureReviewService.deleteLectureReview(authUser, lectureId, reviewId);
+        return ResponseEntity.noContent().build();
     }
 }

@@ -43,7 +43,6 @@ public class LectureVideoController {
 
     //강의 단건 조회 (수강 유저와 어드민만 접근)
     @GetMapping("/v2/lectures/{lectureId}/videos/{videoId}")
-    @PreAuthorize("#authUser.id == authentication.principal.id or hasRole('ROLE_ADMIN')")
     public ApiResponse<GetLectureVideoDetailResponse> getLectureVideo(
             @AuthenticationPrincipal AuthUser authUser,
             @PathVariable("lectureId") Long lectureId,
@@ -54,7 +53,7 @@ public class LectureVideoController {
 
     //강의 영상 삭제
     @DeleteMapping("/v2/lectures/{lectureId}/videos/{videoId}")
-    @PreAuthorize("#authUser.id == authentication.principal.id or hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ROLE_TUTOR') or hasRole('ROLE_ADMIN')")
     public ResponseEntity<Void> deleteVideo(
             @AuthenticationPrincipal AuthUser authUser,
             @PathVariable("lectureId") Long lectureId,
