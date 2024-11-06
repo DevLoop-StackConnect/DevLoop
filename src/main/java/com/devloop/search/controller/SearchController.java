@@ -8,6 +8,7 @@ import com.devloop.search.service.SearchService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.redis.core.ZSetOperations;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Set;
@@ -20,12 +21,14 @@ public class SearchController {
     private final SearchService searchService;
 
     @GetMapping("/v1/main/search/preview")
+    @PreAuthorize("permitAll()")
     public ApiResponse<IntegratedSearchPreview> previewSearch(
             @RequestBody IntegrationSearchRequest request) {
         return ApiResponse.ok(searchService.integratedSearchPreview(request));
     }
 
     @GetMapping("/v2/main/search/{category}")
+    @PreAuthorize("permitAll()")
     public ApiResponse<Page<IntegrationSearchResponse>> searchByCategory(
             @PathVariable String category,
             @RequestBody IntegrationSearchRequest request,
@@ -35,7 +38,8 @@ public class SearchController {
     }
 
     @GetMapping("/v2/main/search/ranking")
-    public Set<ZSetOperations.TypedTuple<String>> getRankingKeyword(){
-        return searchService.getTopSearchKeywords();
+    @PreAuthorize("permitAll()")
+    public ApiResponse<Set<ZSetOperations.TypedTuple<String>>> getRankingKeyword(){
+        return ApiResponse.ok(searchService.getTopSearchKeywords());
     }
 }

@@ -194,7 +194,12 @@ public class NotificationHandler {
             String userId = (String) message.getData().get("userId");
             if (userId != null) {
                 //Slack 사용자 멘션 형식으로 타겟 설정
-                message.setNotificationTarget("@" + userId);
+                NotificationMessage updatedMessage = NotificationMessage.builder()
+                        .type(message.getType())
+                        .notificationTarget("@" + userId) // 새로운 notificationTarget 설정
+                        .data(message.getData())
+                        .timestamp(message.getTimestamp())
+                        .build();
                 redisTemplate.opsForList().leftPush(NOTIFICATION_QUEUE, message);
             }
         } catch (Exception e) {

@@ -163,7 +163,7 @@ public class PartyService {
                 .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("ROLE_ADMIN"));
 
         //게시글을 작성한 유저가 맞는 지 확인
-        if(!authUser.getId().equals(party.getUser().getId()) && isAdmin){
+        if(!authUser.getId().equals(party.getUser().getId()) && !isAdmin){
             throw new ApiException(ErrorStatus._PERMISSION_DENIED);
         }
 
