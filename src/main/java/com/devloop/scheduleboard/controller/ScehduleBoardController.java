@@ -18,7 +18,7 @@ public class ScehduleBoardController {
 
     //pwt 게시판의 게시글에서 scheduleBoard 조회
     @GetMapping("{pwtId}")
-    @PreAuthorize("permitAll")
+    @PreAuthorize("permitAll()")
     public ApiResponse<ScheduleBoardResponse> getScheduleBoard(@PathVariable Long pwtId) {
         return ApiResponse.ok(scheduleBoardService.getScheduleBoard(pwtId));
     }
