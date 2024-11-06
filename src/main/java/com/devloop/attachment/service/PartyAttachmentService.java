@@ -23,7 +23,7 @@ public class PartyAttachmentService {
         partyAMTRepository.delete(partyAttachment);
     }
 
-    public PartyAMTRepository getCommunityATMRepository() {
+    public PartyAMTRepository getPartyAMTRepository() {
         return partyAMTRepository;
     }
 }
