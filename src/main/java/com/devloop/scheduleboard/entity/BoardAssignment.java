@@ -2,12 +2,14 @@ package com.devloop.scheduleboard.entity;
 
 import com.devloop.purchase.entity.Purchase;
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 
 @Getter
 @Entity
-@RequiredArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class BoardAssignment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,6 +33,4 @@ public class BoardAssignment {
             Purchase purchase) {
         return new BoardAssignment(scheduleBoard,purchase);
     }
-
-
 }

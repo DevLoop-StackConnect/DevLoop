@@ -16,6 +16,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class BoardAssignmentService {
+
     private final BoardAssignmentRepository boardAssignmentRepository;
 
     //BoardAssignment 생성 메서드
@@ -37,4 +38,3 @@ public class BoardAssignmentService {
        }
     }
 }
-//           purchase.getProduct().
