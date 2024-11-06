@@ -31,52 +31,48 @@ public class Party extends Timestamped {
     @Enumerated(EnumType.STRING)
     private BoardType boardType = BoardType.PARTY;
 
-    @NotNull
-    @Column(length = 20)
+    @Column(length = 20, nullable = false)
     private String title;
 
-    @NotNull
-    @Column(columnDefinition = "TEXT")
+    @Column(columnDefinition = "TEXT", nullable = false)
     private String contents;
 
-    @NotNull
     @Enumerated(EnumType.STRING)
-    private PartyStatus status;
+    private PartyStatus status = PartyStatus.IN_PROGRESS;
 
-    @NotNull
     @Enumerated(EnumType.STRING)
-    private Category category;
+    private Category category = Category.ETC;
 
     @ManyToOne
-    @JoinColumn(name="user_id")
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
     @OneToMany(mappedBy = "party", cascade = CascadeType.REMOVE)
     private List<PartyComment> comments;
 
-    private Party(String title,String contents, PartyStatus status, Category category,User user){
-        this.title=title;
-        this.contents=contents;
-        this.status=status;
-        this.category=category;
-        this.user=user;
+    private Party(String title, String contents, PartyStatus status, Category category, User user) {
+        this.title = title;
+        this.contents = contents;
+        this.status = status;
+        this.category = category;
+        this.user = user;
     }
 
-    public static Party from(SavePartyRequest request,User user){
+    public static Party from(SavePartyRequest request, User user) {
         return new Party(
                 request.getTitle(),
                 request.getContents(),
-                PartyStatus.of(request.getStatus()),
-                Category.of(request.getCategory()),
+                request.getStatus(),
+                request.getCategory(),
                 user
         );
     }
 
-    public void update(UpdatePartyRequest request){
-        this.title=request.getTitle();
-        this.contents=request.getContents();
-        this.status=PartyStatus.of(request.getStatus());
-        this.category=Category.of(request.getCategory());
+    public void update(UpdatePartyRequest request) {
+        this.title = request.getTitle();
+        this.contents = request.getContents();
+        this.status = PartyStatus.of(request.getStatus());
+        this.category = Category.of(request.getCategory());
     }
 
 }

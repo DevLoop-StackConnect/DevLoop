@@ -1,12 +1,11 @@
 package com.devloop.communitycomment.entity;
 
+import lombok.Getter;
+import jakarta.persistence.*;
+import lombok.NoArgsConstructor;
+import com.devloop.user.entity.User;
 import com.devloop.common.Timestamped;
 import com.devloop.community.entity.Community;
-import com.devloop.user.entity.User;
-import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
@@ -14,12 +13,11 @@ import lombok.NoArgsConstructor;
 public class CommunityComment extends Timestamped {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "communityComment_id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotNull
-    @Column(name = "communityComment_content", columnDefinition = "TEXT")
+    @Column(name = "communityComment_content", columnDefinition = "TEXT", nullable = false)
     private String content;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -49,5 +47,4 @@ public class CommunityComment extends Timestamped {
     public void updateContent(String newContent) {
         this.content = newContent;
     }
-
 }
