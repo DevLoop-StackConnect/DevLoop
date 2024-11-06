@@ -22,5 +22,4 @@ public class ScehduleBoardController {
     public ApiResponse<ScheduleBoardResponse> getScheduleBoard(@PathVariable Long pwtId) {
         return ApiResponse.ok(scheduleBoardService.getScheduleBoard(pwtId));
     }
-
 }
