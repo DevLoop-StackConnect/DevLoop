@@ -38,7 +38,6 @@ public class Community extends Timestamped {
     @Enumerated(EnumType.STRING)
     private ResolveStatus resolveStatus = ResolveStatus.UNSOLVED; //기본값 필드로 설정
 
-    @Column(nullable = false)
     @OneToMany(mappedBy = "community", fetch = FetchType.LAZY)
     private List<CommunityComment> communityComments = new ArrayList<>();
 
