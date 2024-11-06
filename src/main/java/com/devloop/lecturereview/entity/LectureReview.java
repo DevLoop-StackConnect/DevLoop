@@ -6,12 +6,13 @@ import com.devloop.lecturereview.request.SaveLectureReviewRequest;
 import com.devloop.user.entity.User;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class LectureReview extends Timestamped {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
