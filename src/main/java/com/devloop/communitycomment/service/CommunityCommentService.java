@@ -118,7 +118,7 @@ public class CommunityCommentService {
                     .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("ROLE_ADMIN"));
 
             //댓글 작성자와 현재 사용자가 같은지 확인
-            if (!communityComment.getUser().getId().equals(authUser.getId()) && isAdmin) {
+            if (!communityComment.getUser().getId().equals(authUser.getId()) && !isAdmin) {
                 throw new ApiException(ErrorStatus._INVALID_COMMENTUSER);
             }
 

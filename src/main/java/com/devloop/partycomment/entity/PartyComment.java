@@ -6,12 +6,13 @@ import com.devloop.partycomment.request.SavePartyCommentRequest;
 import com.devloop.partycomment.request.UpdatePartyCommentRequest;
 import com.devloop.user.entity.User;
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
 @Entity
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class PartyComment extends Timestamped {
 
     @Id

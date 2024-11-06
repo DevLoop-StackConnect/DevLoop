@@ -1,13 +1,16 @@
 package com.devloop.search.request;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.Setter;
+import lombok.NoArgsConstructor;
 
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-@Setter
 @Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PROTECTED)
 public class IntegrationSearchRequest {
 
     private String boardType;
