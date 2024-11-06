@@ -11,8 +11,8 @@ import lombok.NoArgsConstructor;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-@Entity
 @Getter
+@Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Payment extends Timestamped {
 
@@ -87,6 +87,5 @@ public class Payment extends Timestamped {
                 approvedAt
         );
     }
-
 
 }
