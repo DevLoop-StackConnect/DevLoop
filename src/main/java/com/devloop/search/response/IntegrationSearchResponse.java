@@ -21,7 +21,7 @@ public class IntegrationSearchResponse {
     private String username;
     private LocalDateTime createdAt;
 
-    private IntegrationSearchResponse(Long id, String boardType, String title, String content, String category, String username, LocalDateTime createdAt){
+    private IntegrationSearchResponse(Long id, String boardType, String title, String content, String category, String username, LocalDateTime createdAt) {
         this.id = id;
         this.boardType = boardType;
         this.title = title;
@@ -42,8 +42,7 @@ public class IntegrationSearchResponse {
                     .username(community.getUser().getUsername())
                     .createdAt(community.getCreatedAt())
                     .build();
-        }
-        else if (data instanceof Party party) {
+        } else if (data instanceof Party party) {
             return IntegrationSearchResponse.builder()
                     .id(party.getId())
                     .boardType(boardType)
@@ -53,8 +52,7 @@ public class IntegrationSearchResponse {
                     .username(party.getUser().getUsername())
                     .createdAt(party.getCreatedAt())
                     .build();
-        }
-        else if (data instanceof ProjectWithTutor pwt) {
+        } else if (data instanceof ProjectWithTutor pwt) {
             return IntegrationSearchResponse.builder()
                     .id(pwt.getId())
                     .boardType(boardType)

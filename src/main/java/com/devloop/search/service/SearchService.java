@@ -1,7 +1,6 @@
 package com.devloop.search.service;
 
 import com.devloop.common.apipayload.status.ErrorStatus;
-import com.devloop.common.enums.BoardType;
 import com.devloop.common.exception.ApiException;
 import com.devloop.common.utils.SearchSpecificationUtil;
 import com.devloop.community.entity.Community;
@@ -16,7 +15,6 @@ import com.devloop.search.response.IntegrationSearchResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -41,7 +39,6 @@ public class SearchService {
     private final ProjectWithTutorService projectWithTutorService;
     private final RedisTemplate<String, String> rankingRedisTemplate;
     private static final String SEARCH_RANKING_KEY = "search:ranking";
-
     private static final int PREVIEW_SIZE = 5;
     @Value("${search.ranking.soze:10}")
     private int rankingSize;
@@ -56,7 +53,7 @@ public class SearchService {
         log.debug("Cache miss for search preview: {}", request);
 
         String searchKey = request.generateCompositeKey();
-        if(!searchKey.isEmpty()){
+        if (!searchKey.isEmpty()) {
             incrementSearchCount(searchKey);
         }
 
@@ -108,17 +105,17 @@ public class SearchService {
             default -> throw new ApiException(ErrorStatus._BAD_SEARCH_KEYWORD);
         };
     }
-
-    public void incrementSearchCount(String keyword){
+    //랭킹
+    public void incrementSearchCount(String keyword) {
         ZSetOperations<String, String> zSetOps = rankingRedisTemplate.opsForZSet();
         zSetOps.incrementScore(SEARCH_RANKING_KEY, keyword, 1);
     }
-
-    public Set<ZSetOperations.TypedTuple<String>> getTopSearchKeywords(){
+    //랭킹
+    public Set<ZSetOperations.TypedTuple<String>> getTopSearchKeywords() {
         ZSetOperations<String, String> zSetOps = rankingRedisTemplate.opsForZSet();
         return zSetOps.reverseRangeWithScores(SEARCH_RANKING_KEY, 0, rankingSize - 1);
     }
-
+    //랭킹 시간 초기화
     @Scheduled(cron = "0 0 0 * * ?")
     public void resetSearchRanking() {
         rankingRedisTemplate.delete(SEARCH_RANKING_KEY); // 랭킹 초기화
