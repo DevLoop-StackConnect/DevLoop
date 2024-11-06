@@ -36,4 +36,8 @@ public class BoardAssignmentService {
             }
         }
     }
+
+    public BoardAssignmentRepository getBoardAssignmentRepository() {
+        return boardAssignmentRepository;
+    }
 }
