@@ -106,6 +106,4 @@ public class OrderService {
     public Order findByOrderRequestId(String orderRequestId) {
         return orderRepository.findByOrderRequestId(orderRequestId).orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_ORDER));
     }
-
-
 }
