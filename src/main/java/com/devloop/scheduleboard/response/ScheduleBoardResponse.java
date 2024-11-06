@@ -14,7 +14,7 @@ public class ScheduleBoardResponse {
         this.managerTutorName = managerTutorName;
     }
 
-    public static ScheduleBoardResponse of(Long id, Long pwtId, String managerTutorName){
+    public static ScheduleBoardResponse of(Long id, Long pwtId, String managerTutorName) {
         return new ScheduleBoardResponse(
                 id,
                 pwtId,
