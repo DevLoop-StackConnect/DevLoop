@@ -4,7 +4,6 @@ import com.devloop.attachment.enums.FileFormat;
 import com.devloop.common.Timestamped;
 import com.devloop.lecture.enums.VideoStatus;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -41,7 +40,6 @@ public class LectureVideo extends Timestamped {
         this.fileFormat = fileFormat;
         this.lecture = lecture;
     }
-
     public static LectureVideo of(String fileName, String title, VideoStatus status, FileFormat fileFormat, Lecture lecture) {
         return new LectureVideo(
                 fileName,

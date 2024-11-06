@@ -19,7 +19,6 @@ public class GetLectureListResponse {
         this.level = level;
         this.price = price;
     }
-
     public static GetLectureListResponse of(Long id, String title, String category, String level, BigDecimal price) {
         return new GetLectureListResponse(
                 id,

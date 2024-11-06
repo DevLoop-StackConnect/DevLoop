@@ -36,13 +36,11 @@ public class LectureAdminService {
         if(lectureVideo.isEmpty()){
             throw new ApiException(ErrorStatus._INVALID_LECTURE_VIDEO);
         }
-
         //강의 승인여부 상태 변경
         lecture.changeApproval(Approval.APPROVED);
 
         return String.format("%s 강의가 승인 되었습니다.", lecture.getTitle());
     }
-
     //강의 단건 조회 (ADMIN)
     public GetLectureDetailResponse getLecture(Long lectureId) {
         //강의가 존재하는 지 확인
@@ -64,7 +62,6 @@ public class LectureAdminService {
                 lecture.getModifiedAt()
         );
     }
-
     //강의 다건 조회 (승인이 안된 강의만 조회) (ADMIN)
     public Page<GetLectureListResponse> getLectureList(String title,int page, int size) {
         PageRequest pageable= PageRequest.of(page-1,size);

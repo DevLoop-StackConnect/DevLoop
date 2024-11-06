@@ -12,7 +12,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -29,7 +28,7 @@ public class LectureVideoController {
             @PathVariable("lectureId") Long lectureId,
             @RequestParam(value = "file") MultipartFile multipartFile,
             @RequestParam(value = "title") String title
-    ) throws IOException {
+    ) {
         return ApiResponse.ok(lectureVideoService.uploadLectureVideo(authUser, lectureId, multipartFile, title));
     }
 
@@ -49,7 +48,7 @@ public class LectureVideoController {
             @AuthenticationPrincipal AuthUser authUser,
             @PathVariable("lectureId") Long lectureId,
             @PathVariable("videoId") Long videoId
-    ) throws Exception {
+    ) {
         return ApiResponse.ok(lectureVideoService.getLectureVideo(authUser, lectureId, videoId));
     }
 

@@ -9,7 +9,6 @@ import com.devloop.product.entity.Product;
 import com.devloop.pwt.enums.Level;
 import com.devloop.user.entity.User;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -60,7 +59,6 @@ public class Lecture extends Product {
         this.level = level;
         this.user = user;
     }
-
     public static Lecture from(SaveLectureRequest request, User user) {
         return new Lecture(
                 request.getTitle(),
@@ -72,7 +70,6 @@ public class Lecture extends Product {
                 user
         );
     }
-
     public void update(UpdateLectureRequest request) {
         update(request.getTitle(), request.getPrice());
         this.description = request.getDescription();
@@ -80,7 +77,6 @@ public class Lecture extends Product {
         this.category = request.getCategory();
         this.level = request.getLevel();
     }
-
     public void changeApproval(Approval approval) {
         this.approval = approval;
     }

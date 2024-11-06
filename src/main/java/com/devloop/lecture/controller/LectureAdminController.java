@@ -24,7 +24,6 @@ public class LectureAdminController {
     ) {
         return ApiResponse.ok(lectureAdminService.changeApproval(lectureId));
     }
-
     //강의 단건 조회 (ADMIN : User 정보 포함 단건 조회)
     @GetMapping("/v2/admin/lectures/{lectureId}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
@@ -33,7 +32,6 @@ public class LectureAdminController {
     ) {
         return ApiResponse.ok(lectureAdminService.getLecture(lectureId));
     }
-
     //승인 되지 않은 강의 다건 조회 (ADMIN)
     @GetMapping("/v2/admin/lectures")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
