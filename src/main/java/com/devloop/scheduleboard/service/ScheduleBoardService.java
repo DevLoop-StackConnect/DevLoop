@@ -21,8 +21,10 @@ public class ScheduleBoardService {
     //PWT 승인 시 스케줄보드 생성 메서드
     @Transactional
     public ScheduleBoard createScheduleBoard(ProjectWithTutor projectWithTutor) {
-        //스케줄보드객체 생성해서 db에 저장
+        // 스케줄보드객체 생성해서 db에 저장
         ScheduleBoard scheduleBoard = ScheduleBoard.from(projectWithTutor);
+        // 생성한 스케줄보드 객체를 해당 PWT 객체에 저장
+        projectWithTutor.saveScheduleBoard(scheduleBoard);
         return scheduleBoardRepository.save(scheduleBoard);
     }
 
