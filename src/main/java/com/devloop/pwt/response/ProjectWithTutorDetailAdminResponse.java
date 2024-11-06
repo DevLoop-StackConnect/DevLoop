@@ -1,7 +1,6 @@
 package com.devloop.pwt.response;
 
 import com.devloop.common.apipayload.dto.UserResponseDto;
-import com.devloop.user.entity.User;
 import lombok.Getter;
 
 import java.math.BigDecimal;
@@ -53,7 +52,7 @@ public class ProjectWithTutorDetailAdminResponse {
             String level,
             URL attachmentUrl,
             UserResponseDto user
-    ){
+    ) {
         return new ProjectWithTutorDetailAdminResponse(
                 title,
                 description,

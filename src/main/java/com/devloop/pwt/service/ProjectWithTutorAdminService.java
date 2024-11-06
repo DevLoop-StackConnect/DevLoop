@@ -11,8 +11,8 @@ import com.devloop.pwt.entity.ProjectWithTutor;
 import com.devloop.pwt.repository.ProjectWithTutorRepository;
 import com.devloop.pwt.response.ProjectWithTutorDetailAdminResponse;
 import com.devloop.pwt.response.ProjectWithTutorListAdminResponse;
-import com.devloop.stock.service.StockService;
 import com.devloop.scheduleboard.service.ScheduleBoardService;
+import com.devloop.stock.service.StockService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -60,7 +60,7 @@ public class ProjectWithTutorAdminService {
         PWTAttachment pwtAttachment = pwtAttachmentService.findPwtAttachmentByPwtId(projectWithTutor.getId());
 
         // null 예외 처리
-        if(pwtAttachment == null) {
+        if (pwtAttachment == null) {
             throw new ApiException(ErrorStatus._ATTACHMENT_NOT_FOUND);
         }
 
@@ -89,7 +89,7 @@ public class ProjectWithTutorAdminService {
         Page<ProjectWithTutorResponseDto> projectWithTutors = projectWithTutorRepository.findAllWaiteProjectWithTutor(Approval.WAITE, pageable);
 
         // 값이 비어있을때 예외 처리
-        if(projectWithTutors.isEmpty()) {
+        if (projectWithTutors.isEmpty()) {
             throw new ApiException(ErrorStatus._NOT_FOUND_PROJECT_WITH_TUTOR);
         }
 
