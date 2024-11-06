@@ -14,7 +14,6 @@ import com.devloop.communitycomment.entity.CommunityComment;
 
 @Entity
 @Getter
-@Builder
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Community extends Timestamped {

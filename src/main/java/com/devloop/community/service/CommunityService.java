@@ -32,7 +32,6 @@ import com.devloop.search.response.IntegrationSearchResponse;
 import com.devloop.community.response.CommunityDetailResponse;
 import com.devloop.community.response.CommunitySimpleResponse;
 import org.springframework.transaction.annotation.Transactional;
-import com.devloop.attachment.repository.CommunityATMRepository;
 import com.devloop.attachment.service.CommunityAttachmentService;
 import com.devloop.common.apipayload.dto.CommunitySimpleResponseDto;
 
@@ -44,7 +43,7 @@ public class CommunityService {
     private final CommunityRepository communityRepository;
     private final UserService userService;
     private final S3Service s3Service;
-    private final CommunityATMRepository communityATMRepository;
+
     private final CommunityAttachmentService communityAttachmentService;
 
     //게시글 작성
@@ -100,7 +99,7 @@ public class CommunityService {
         Community community = communityRepository.findById(communityId)
                 .orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_COMMUNITY));
         //첨부파일 url이 있는지 확인
-        String imageUrl = communityATMRepository.findByCommunityId(communityId) //첨부파일 있는지 조회
+        String imageUrl = communityAttachmentService.getCommunityATMRepository().findByCommunityId(communityId) //첨부파일 있는지 조회
                 .map(CommunityAttachment::getImageURL)
                 .map(URL::toString)
                 .orElse(null);
@@ -120,14 +119,8 @@ public class CommunityService {
     //게시글 수정
     @Transactional
     public CommunityDetailResponse updateCommunity(AuthUser authUser, Long communityId, CommunityUpdateRequest communityUpdateRequest, MultipartFile file) {
+
         ResolveStatus status = communityUpdateRequest.getStatus();
-
-        if (status == ResolveStatus.SOLVED) {
-            log.info("게시글 상태가 해결된 상태로 변경되었습니다.");
-        } else {
-            log.info("게시글이 미해결 상태로 전환되었습니다.");
-        }
-
         Category category = communityUpdateRequest.getCategory();
 
         //게시글 조회
@@ -139,6 +132,9 @@ public class CommunityService {
             throw new ApiException(ErrorStatus._PERMISSION_DENIED);
         }
 
+        log.info("현재 게시글 상태 : {}", community.getResolveStatus());
+        log.info("현재 게시글 카테고리 : {}", community.getCategory());
+
         //수정 요청에서 값이 있는 필드만 업데이트시키기
         community.updateCommunity(
                 communityUpdateRequest.getTitle(),
@@ -146,6 +142,13 @@ public class CommunityService {
                 status,
                 category
         );
+
+        if (status == ResolveStatus.SOLVED) {
+            log.info("게시글 상태가 해결된 상태로 변경되었습니다");
+        } else {
+            log.info("게시글이 상태 미해결 상태로 변경되엇습니다..");
+        }
+        //변경된 상태 확인 로그
 
         //첨부파일 수정
         if (file != null && !file.isEmpty()) {
@@ -180,9 +183,9 @@ public class CommunityService {
             throw new ApiException(ErrorStatus._PERMISSION_DENIED);
         }
         // 첨부파일 확인 및 삭제
-        communityATMRepository.findByCommunityId(communityId).ifPresent(attachment -> {
+        communityAttachmentService.getCommunityATMRepository().findByCommunityId(communityId).ifPresent(attachment -> {
             s3Service.delete(attachment.getFileName());
-            communityATMRepository.delete(attachment);
+            communityAttachmentService.getCommunityATMRepository().delete(attachment);
         });
         //삭제
         communityRepository.delete(community);
