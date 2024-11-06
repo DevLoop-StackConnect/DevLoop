@@ -8,11 +8,9 @@ import com.devloop.common.apipayload.dto.ProjectWithTutorResponseDto;
 import com.devloop.common.apipayload.status.ErrorStatus;
 import com.devloop.common.enums.Approval;
 import com.devloop.common.enums.BoardType;
-import com.devloop.common.enums.Category;
 import com.devloop.common.exception.ApiException;
 import com.devloop.common.utils.SearchResponseUtil;
 import com.devloop.pwt.entity.ProjectWithTutor;
-import com.devloop.pwt.enums.Level;
 import com.devloop.pwt.repository.ProjectWithTutorRepository;
 import com.devloop.pwt.request.ProjectWithTutorSaveRequest;
 import com.devloop.pwt.request.ProjectWithTutorUpdateRequest;
@@ -68,8 +66,8 @@ public class ProjectWithTutorService {
                 projectWithTutorSaveRequest.getPrice(),
                 projectWithTutorSaveRequest.getDeadline(),
                 projectWithTutorSaveRequest.getMaxParticipants(),
-                Level.of(projectWithTutorSaveRequest.getLevel()),
-                Category.of(projectWithTutorSaveRequest.getCategory()),
+                projectWithTutorSaveRequest.getLevel(),
+                projectWithTutorSaveRequest.getCategory(),
                 user
         );
         projectWithTutorRepository.save(projectWithTutor);
@@ -115,7 +113,7 @@ public class ProjectWithTutorService {
         Page<ProjectWithTutorResponseDto> projectWithTutors = projectWithTutorRepository.findAllApprovedProjectWithTutor(Approval.APPROVED, pageable);
 
         // 값이 비어있을때 예외 처리
-        if(projectWithTutors.isEmpty()) {
+        if (projectWithTutors.isEmpty()) {
             throw new ApiException(ErrorStatus._NOT_FOUND_PROJECT_WITH_TUTOR);
         }
 
@@ -172,9 +170,9 @@ public class ProjectWithTutorService {
                 projectWithTutorUpdateRequest.getPrice(),
                 projectWithTutorUpdateRequest.getDeadline(),
                 projectWithTutorUpdateRequest.getMaxParticipants(),
-                Level.of(projectWithTutorUpdateRequest.getLevel()),
+                projectWithTutorUpdateRequest.getLevel(),
                 user,
-                Category.of(projectWithTutorUpdateRequest.getCategory())
+                projectWithTutorUpdateRequest.getCategory()
         );
 
         return String.format("%s 게시글이 수정되었습니다.", projectWithTutor.getTitle());
@@ -182,7 +180,7 @@ public class ProjectWithTutorService {
 
     // 튜터랑 함께하는 협업 프로젝트 게시글 삭제
     @Transactional
-    public String deleteProjectWithTutor(AuthUser authUser, Long projectId) {
+    public void deleteProjectWithTutor(AuthUser authUser, Long projectId) {
 
         // 사용자 객체 가져오기
         User user = userService.findByUserId(authUser.getId());
@@ -207,8 +205,6 @@ public class ProjectWithTutorService {
 
         // PWT 게시글 삭제
         projectWithTutorRepository.delete(projectWithTutor);
-
-        return String.format("%s 게시글을 삭제하였습니다.", projectWithTutor.getTitle());
     }
 
     //Util

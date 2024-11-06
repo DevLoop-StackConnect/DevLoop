@@ -1,16 +1,21 @@
 package com.devloop.pwt.request;
 
+import com.devloop.common.enums.Category;
+import com.devloop.pwt.enums.Level;
 import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Getter
-@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PROTECTED)
 public class ProjectWithTutorUpdateRequest {
 
     @NotBlank(message = "제목을 입력해 주세요.")
@@ -29,9 +34,9 @@ public class ProjectWithTutorUpdateRequest {
     @NotNull(message = "참여할 수 있는 최대 인원을 입력해 주세요.")
     private Integer maxParticipants;
 
-    @NotBlank(message = "난이도를 선택해 주세요.")
-    private String level;
+    @NotNull(message = "난이도를 선택해 주세요.")
+    private Level level;
 
-    @NotBlank(message = "카테고리를 입력해 주세요.")
-    private String category;
+    @NotNull(message = "카테고리를 입력해 주세요.")
+    private Category category;
 }
