@@ -36,7 +36,7 @@ public class ScheduleTodoService {
     public ScheduleTodoResponse createScheduleTodo(Long scheduleBoardId, ScheduleTodoRequest scheduleTodoRequest, AuthUser authUser) {
 
         //존재하는 스케줄보드,유저인지 확인
-        ScheduleBoard scheduleBoard = scheduleBoardService.findByScheduleBoardId(scheduleBoardId);
+        ScheduleBoard scheduleBoard = scheduleBoardService.findByScheduleBoardById(scheduleBoardId);
         User currentUser = userService.findByUserId(authUser.getId());
 
         //현재 유저가 해당 pwt 게시글의 튜터인지 확인(글작성자=튜터는 일정작성 가능)
@@ -92,7 +92,7 @@ public class ScheduleTodoService {
 
     //스케줄보드에 속한 scheduleTodo목록 다건조회
     public List<ScheduleTodoSimpleResponse> getTodoByScheduleBoard(Long scheduleBoardId) {
-        ScheduleBoard scheduleBoard = scheduleBoardService.findByScheduleBoardId(scheduleBoardId);
+        ScheduleBoard scheduleBoard = scheduleBoardService.findByScheduleBoardById(scheduleBoardId);
 
         return scheduleTodoRepository.findByScheduleBoard(scheduleBoard)
                 .stream()
