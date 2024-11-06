@@ -32,10 +32,10 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-@Slf4j
 public class PartyService {
     private final PartyRepository partyRepository;
     private final UserService userService;
@@ -158,8 +158,12 @@ public class PartyService {
         Party party=partyRepository.findById(partyId).orElseThrow(()->
                 new ApiException(ErrorStatus._NOT_FOUND_PARTY));
 
+        //관리자 추가
+        boolean isAdmin =  authUser.getAuthorities().stream()
+                .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("ROLE_ADMIN"));
+
         //게시글을 작성한 유저가 맞는 지 확인
-        if(!authUser.getId().equals(party.getUser().getId())){
+        if(!authUser.getId().equals(party.getUser().getId()) && isAdmin){
             throw new ApiException(ErrorStatus._PERMISSION_DENIED);
         }
 
@@ -174,7 +178,6 @@ public class PartyService {
 
         return String.format("%s 게시글을 삭제하였습니다.", party.getTitle());
     }
-
 
     /**
      * Search에서 사용
