@@ -17,8 +17,8 @@ public class ProjectWithTutorAdminController {
     private final ProjectWithTutorAdminService projectWithTutorAdminService;
 
     // PWT 게시글 승인 (ADMIN)
-    @PatchMapping("/v1/admin/pwts/{pwtId}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")  // ROLE_ADMIN 권한만 접근 가능
+    @PatchMapping("/v1/admin/pwts/{pwtId}")
     public ApiResponse<String> changeApproval(
             @PathVariable("pwtId") Long pwtId
     ) {
@@ -26,8 +26,8 @@ public class ProjectWithTutorAdminController {
     }
 
     // 튜터랑 함께하는 협업 프로젝트 게시글 단건 조회(ADMIN : User 정보 포함 단건 조회)
-    @GetMapping("/v1/admin/pwts/{pwtId}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")  // ROLE_ADMIN 권한만 접근 가능
+    @GetMapping("/v1/admin/pwts/{pwtId}")
     public ApiResponse<ProjectWithTutorDetailAdminResponse> getProjectWithTutor(
             @PathVariable("pwtId") Long projectId
     ) {
@@ -35,8 +35,8 @@ public class ProjectWithTutorAdminController {
     }
 
     // 튜터랑 함께하는 협업 프로젝트 승인되지 않은 게시글 다건 조회 (ADMIN : TEXT 타입 데이터 제외 다건 조회)
-    @GetMapping("/v1/admin/pwts")
     @PreAuthorize("hasRole('ROLE_ADMIN')")  // ROLE_ADMIN 권한만 접근 가능
+    @GetMapping("/v1/admin/pwts")
     public ApiResponse<Page<ProjectWithTutorListAdminResponse>> getAllProjectWithTutors(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size

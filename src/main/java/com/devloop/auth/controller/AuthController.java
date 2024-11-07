@@ -26,6 +26,13 @@ public class AuthController {
     private final AuthService authService;
     private final KakaoService kakaoService;
 
+    private static final String KAKAO_LOGIN_URL = "https://kauth.kakao.com/oauth/authorize?client_id=3d49a145e53a056301badcfd23ac5373&redirect_uri=http://localhost:8080/api/v1/auth/kakao/login&response_type=code&prompt=login";
+
+    @GetMapping("/v1/auth/kakao")
+    public String kakaoLoginPage() {
+        return "redirect:" + KAKAO_LOGIN_URL;
+    }
+
     @PostMapping("/v1/auth/signup")
     public ApiResponse<SignupResponse> signup(@Valid @RequestBody SignupRequest signupRequest) {
         return ApiResponse.ok(authService.createUser(signupRequest));

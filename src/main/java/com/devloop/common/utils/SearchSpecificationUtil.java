@@ -18,7 +18,10 @@ public class SearchSpecificationUtil {
 
         if ((request.getTitle() == null || request.getTitle().isEmpty()) &&
                 (request.getUsername() == null || request.getUsername().isEmpty()) &&
-                (request.getCategory() == null || request.getCategory().isEmpty())) {
+                (request.getCategory() == null || request.getCategory().isEmpty()) &&
+                (request.getLecture()==null || request.getLecture().isEmpty())
+
+        ) {
             return (root, query, criteriaBuilder) -> criteriaBuilder.isNotNull(root.get("id"));
         }
 
