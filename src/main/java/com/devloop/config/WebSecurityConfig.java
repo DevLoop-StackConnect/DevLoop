@@ -40,7 +40,7 @@ public class WebSecurityConfig {
                         .requestMatchers(
                                 "/api/v1/auth/signup",
                                 "/api/v1/auth/login",
-                                "/api/v1/auth/kakao/login",
+                                "/api/v1/auth/**",
                                 "/api/v1/main/search/**",
                                 // payments test 위해 열어두는 API
                                 "/payments/**",
