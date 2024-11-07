@@ -1,5 +1,6 @@
 package com.devloop.party.service;
 
+import com.devloop.attachment.s3.S3Service;
 import com.devloop.common.AuthUser;
 import com.devloop.common.enums.Category;
 import com.devloop.party.entity.Party;
@@ -9,17 +10,21 @@ import com.devloop.party.request.SavePartyRequest;
 import com.devloop.party.response.SavePartyResponse;
 import com.devloop.user.entity.User;
 import com.devloop.user.enums.UserRole;
+import com.devloop.user.service.UserService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.web.multipart.MultipartFile;
 
-import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.*;
 
 
 @ExtendWith(MockitoExtension.class)
@@ -29,6 +34,12 @@ class PartyServiceTest {
 
     @Mock
     private PartyRepository partyRepository;
+
+    @Mock
+    private UserService userService;
+
+    @Mock
+    private S3Service s3Service;
 
     @Mock
     private MultipartFile file;
@@ -47,8 +58,10 @@ class PartyServiceTest {
         Party newParty= Party.from(savePartyRequest,user);
 
         //mocking
+        given(userService.findByUserId(any())).willReturn(user);
         given(partyRepository.save(any())).willReturn(newParty);
         given(file.isEmpty()).willReturn(false);
+        doNothing().when(s3Service).uploadFile(eq(file), eq(user), any(Party.class));
 
         //when
         SavePartyResponse savePartyResponse=partyService.saveParty(authUser,file,savePartyRequest);
@@ -56,7 +69,7 @@ class PartyServiceTest {
         //then
         Assertions.assertNotNull(savePartyResponse);
         Assertions.assertEquals(newParty.getId(),savePartyResponse.getPartyId());
-
+        verify(s3Service,times(1)).uploadFile(eq(file), eq(user), any(Party.class));
     }
 
 }
