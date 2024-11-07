@@ -31,20 +31,19 @@ public class GetLectureDetailResponse {
             Integer reviewCount,
             LocalDateTime created_at,
             LocalDateTime modified_at
-    ){
-        this.title=title;
-        this.tutorName=tutorName;
-        this.description=description;
-        this.recommend=recommend;
-        this.category=category;
-        this.level=level;
-        this.price=price;
-        this.videoCount=videoCount;
-        this.reviewCount=reviewCount;
-        this.created_at=created_at;
-        this.modified_at=modified_at;
+    ) {
+        this.title = title;
+        this.tutorName = tutorName;
+        this.description = description;
+        this.recommend = recommend;
+        this.category = category;
+        this.level = level;
+        this.price = price;
+        this.videoCount = videoCount;
+        this.reviewCount = reviewCount;
+        this.created_at = created_at;
+        this.modified_at = modified_at;
     }
-
     public static GetLectureDetailResponse of(
             String title,
             String tutorName,
@@ -57,7 +56,7 @@ public class GetLectureDetailResponse {
             Integer reviewCount,
             LocalDateTime created_at,
             LocalDateTime modified_at
-    ){
+    ) {
         return new GetLectureDetailResponse(
                 title,
                 tutorName,

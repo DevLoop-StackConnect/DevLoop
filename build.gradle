@@ -98,7 +98,7 @@ dependencies {
 	//feign
 	implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
 
-//CloudFront
+	//CloudFront
     implementation 'software.amazon.awssdk:cloudfront:2.20.32' // 예시 버전
     implementation 'software.amazon.awssdk:sts:2.20.32'       // 예시 버전
 

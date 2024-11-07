@@ -2,16 +2,18 @@ package com.devloop.attachment.cloudfront;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/api")
 public class CloudFrontController {
 
     private final CloudFrontService cloudFrontService;
 
-    @GetMapping("/api/v2/cloudfront/signedUrl")
+    @GetMapping("/v2/cloudfront/signedUrl")
     public String generateSignedUrl(
             @RequestParam String path,
             @RequestParam(defaultValue = "60") int minutes) {

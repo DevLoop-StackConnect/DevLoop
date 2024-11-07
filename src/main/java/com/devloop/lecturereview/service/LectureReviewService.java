@@ -35,25 +35,26 @@ public class LectureReviewService {
     @Transactional
     public String saveLectureReview(AuthUser authUser, Long lectureId, @Valid SaveLectureReviewRequest saveLectureReviewRequest) {
         //유저가 존재하는 지 확인
-        User user=userService.findByUserId(authUser.getId());
+        User user = userService.findByUserId(authUser.getId());
 
         //수강 여부 확인
-        boolean isPurchased=purchaseService.exitsByUserIdAndProductId(authUser.getId(),lectureId);
-        //수강 유저 또는 어드민이 아닌 경우 권한 없음
-        if(!isPurchased){
+        boolean isPurchased = purchaseService.exitsByUserIdAndProductId(authUser.getId(), lectureId);
+
+        //수강 유저인지 확인
+        if (!isPurchased) {
             throw new ApiException(ErrorStatus._ACCESS_PERMISSION_DENIED);
         }
 
         //강의가 존재하는 지 확인
-        Lecture lecture=lectureService.findById(lectureId);
+        Lecture lecture = lectureService.findById(lectureId);
 
         //강의가 승인되었는 지 확인
-        if(lecture.getApproval().equals(Approval.WAITE)){
+        if (lecture.getApproval().equals(Approval.WAITE)) {
             throw new ApiException(ErrorStatus._ACCESS_PERMISSION_DENIED);
         }
 
         //새로운 강의 후기 생성 및 저장
-        LectureReview newLectureReview=LectureReview.from(saveLectureReviewRequest,user,lecture);
+        LectureReview newLectureReview = LectureReview.from(saveLectureReviewRequest, user, lecture);
         lectureReviewRepository.save(newLectureReview);
 
         return String.format("%s 님의 댓글이 등록되었습니다", user.getUsername());
@@ -63,72 +64,73 @@ public class LectureReviewService {
     @Transactional
     public String updateLectureReview(AuthUser authUser, Long lectureId, Long reviewId, @Valid SaveLectureReviewRequest lectureReviewRequest) {
         //강의가 존재하는 지 확인
-        Lecture lecture=lectureService.findById(lectureId);
+        Lecture lecture = lectureService.findById(lectureId);
 
         //강의가 승인되었는 지 확인
-        if(lecture.getApproval().equals(Approval.WAITE)){
+        if (lecture.getApproval().equals(Approval.WAITE)) {
             throw new ApiException(ErrorStatus._ACCESS_PERMISSION_DENIED);
         }
 
         //강의 후기가 존재하는 지 확인
-        LectureReview lectureReview=lectureReviewRepository.findById(reviewId).orElseThrow(()->
+        LectureReview lectureReview = lectureReviewRepository.findById(reviewId).orElseThrow(() ->
                 new ApiException(ErrorStatus._NOT_FOUND_LECTURE_REVIEW));
 
         //후기를 작성한 유저가 맞는 지 확인
-        if(!authUser.getId().equals(lectureReview.getUser().getId())){
+        if (!authUser.getId().equals(lectureReview.getUser().getId())) {
             throw new ApiException((ErrorStatus._PERMISSION_DENIED));
         }
 
         lectureReview.update(lectureReviewRequest);
 
-        return String.format("%s 님의 댓글이 수정되었습니다",lectureReview.getUser().getUsername());
+        return String.format("%s 님의 댓글이 수정되었습니다", lectureReview.getUser().getUsername());
     }
 
     //후기 다건 조회
     public Page<GetLectureReviewResponse> getLectureReviewList(Long lectureId, int page, int size) {
-        Pageable pageable= PageRequest.of(page-1,size);
+        Pageable pageable = PageRequest.of(page - 1, size);
 
         //강의가 존재하는 지 확인
-        Lecture lecture=lectureService.findById(lectureId);
+        Lecture lecture = lectureService.findById(lectureId);
 
         //강의가 승인되었는 지 확인
-        if(lecture.getApproval().equals(Approval.WAITE)){
+        if (lecture.getApproval().equals(Approval.WAITE)) {
             throw new ApiException(ErrorStatus._ACCESS_PERMISSION_DENIED);
         }
 
-        Page<LectureReview> lectureReviews=lectureReviewRepository.findByLectureId(lecture.getId(),pageable);
+        Page<LectureReview> lectureReviews = lectureReviewRepository.findByLectureId(lecture.getId(), pageable);
 
         //후기 리스트 조회
-         return lectureReviews.map(lectureReview -> {
-             return GetLectureReviewResponse.of(
-                     lectureReview.getUser().getUsername(),
-                     lectureReview.getReview(),
-                     lectureReview.getRating());
-         });
+        return lectureReviews.map(lectureReview -> {
+            return GetLectureReviewResponse.of(
+                    lectureReview.getUser().getUsername(),
+                    lectureReview.getReview(),
+                    lectureReview.getRating());
+        });
     }
 
     //강의 후기 삭제
     @Transactional
-    public String deleteLectureReview(AuthUser authUser, Long lectureId, Long reviewId) {
+    public void deleteLectureReview(AuthUser authUser, Long lectureId, Long reviewId) {
         //강의가 존재하는 지 확인
-        Lecture lecture=lectureService.findById(lectureId);
+        Lecture lecture = lectureService.findById(lectureId);
 
         //강의가 승인되었는 지 확인
-        if(lecture.getApproval().equals(Approval.WAITE)){
+        if (lecture.getApproval().equals(Approval.WAITE)) {
             throw new ApiException(ErrorStatus._ACCESS_PERMISSION_DENIED);
         }
 
         //강의 후기가 존재하는 지 확인
-        LectureReview lectureReview=lectureReviewRepository.findById(reviewId).orElseThrow(()->
+        LectureReview lectureReview = lectureReviewRepository.findById(reviewId).orElseThrow(() ->
                 new ApiException(ErrorStatus._NOT_FOUND_LECTURE_REVIEW));
 
-        //후기를 작성한 유저가 맞는 지 확인
-        if(!authUser.getId().equals(lectureReview.getUser().getId())){
+        boolean isAdmin =  authUser.getAuthorities().stream()
+                .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("ROLE_ADMIN"));
+
+        //후기를 작성한 유저 또는 어드민이 맞는 지 확인
+        if (!authUser.getId().equals(lectureReview.getUser().getId()) && !isAdmin) {
             throw new ApiException((ErrorStatus._PERMISSION_DENIED));
         }
 
         lectureReviewRepository.delete(lectureReview);
-
-        return String.format("%s 님의 댓글이 삭제되었습니다",lectureReview.getUser().getUsername());
     }
 }

@@ -7,18 +7,14 @@ import com.devloop.user.enums.LoginType;
 import com.devloop.user.enums.UserRole;
 import com.devloop.user.enums.UserStatus;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
-@NoArgsConstructor
-@AllArgsConstructor
 @Getter
-@Builder
 @Table
+@Builder
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PROTECTED)
 public class User extends Timestamped {
 
     @Id
@@ -28,15 +24,16 @@ public class User extends Timestamped {
     @Enumerated(EnumType.STRING)
     private LoginType loginType = LoginType.LOCAL;
 
+    @Column
     private Long attachmentId;
 
-    @NotNull
+    @Column(nullable = false)
     private String username;
 
-    @NotNull
+    @Column(nullable = false)
     private String email;
 
-    @NotNull
+    @Column(nullable = false)
     private String password;
 
     @Enumerated(EnumType.STRING)
@@ -44,13 +41,10 @@ public class User extends Timestamped {
 
     @Enumerated(EnumType.STRING)
     @Column(length = 50)
-    @NotNull
-    private UserRole userRole;
+    private UserRole userRole = UserRole.ROLE_USER;
 
-    @Column(nullable = true)
+
     private Long kakaoId;
-
-    @Column(nullable = true)
     private String loginId;
 
     private String slackId;
@@ -72,10 +66,12 @@ public class User extends Timestamped {
     }
 
     public void update() {
-        this.status = UserStatus.WITHDRAWAL;}
+        this.status = UserStatus.WITHDRAWAL;
+    }
 
-    public void updateProfileImg(Long attachmentId){
-        this.attachmentId = attachmentId;}
+    public void updateProfileImg(Long attachmentId) {
+        this.attachmentId = attachmentId;
+    }
 
     public void changeUserRoleToTutor(UserRole userRole) {
         this.userRole = userRole;
@@ -86,7 +82,7 @@ public class User extends Timestamped {
         this.password = password;
         this.email = email;
         this.userRole = userRole;
-        this.kakaoId =kakaoId;
+        this.kakaoId = kakaoId;
         this.loginType = LoginType.SOCIAL;
         this.loginId = email;
         this.attachmentId = 1L;
@@ -97,7 +93,7 @@ public class User extends Timestamped {
         return this;
     }
 
-    public void setId(long id){
+    public void setId(long id) {
         this.id = id;
     }
 

@@ -15,7 +15,8 @@ public class ScheduleTodoSimpleResponse {
         this.startDate = startDate;
         this.endDate = endDate;
     }
-    public static ScheduleTodoSimpleResponse of(String title, LocalDateTime startDate, LocalDateTime endDate){
+
+    public static ScheduleTodoSimpleResponse of(String title, LocalDateTime startDate, LocalDateTime endDate) {
         return new ScheduleTodoSimpleResponse(
                 title,
                 startDate,
