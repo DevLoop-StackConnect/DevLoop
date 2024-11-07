@@ -57,17 +57,17 @@ class PartyServiceTest {
     private PartyAttachment partyAttachment;
     private MultipartFile file;
 
-    @BeforeEach
-    public void setUp() throws MalformedURLException {
-        authUser=new AuthUser(1L,"abc@email.com",UserRole.ROLE_USER);
-        savePartyRequest=new SavePartyRequest("파티 제목","파티 내용","IN_PROGRESS","WEB_DEV");
-        updatePartyRequest=new UpdatePartyRequest("수정된 파티 제목","수정된 파티 내용","IN_PROGRESS","WEB_DEV");
-        user=User.of("홍길동","abc@eamil.com",passwordEncoder.encode("Abc1234!"),UserRole.ROLE_USER);
-        party=Party.from(savePartyRequest,user);
-        String imageURL="https://example.com/image.PNG";
-        file=mock(MultipartFile.class);
-        partyAttachment=PartyAttachment.of(1L, new URL(imageURL), FileFormat.PNG,"image.PNG");
-    }
+//    @BeforeEach
+//    public void setUp() throws MalformedURLException {
+//        authUser=new AuthUser(1L,"abc@email.com",UserRole.ROLE_USER);
+//        savePartyRequest=new SavePartyRequest("파티 제목","파티 내용","IN_PROGRESS","WEB_DEV");
+//        updatePartyRequest=new UpdatePartyRequest("수정된 파티 제목","수정된 파티 내용","IN_PROGRESS","WEB_DEV");
+//        user=User.of("홍길동","abc@eamil.com",passwordEncoder.encode("Abc1234!"),UserRole.ROLE_USER);
+//        party=Party.from(savePartyRequest,user);
+//        String imageURL="https://example.com/image.PNG";
+//        file=mock(MultipartFile.class);
+//        partyAttachment=PartyAttachment.of(1L, new URL(imageURL), FileFormat.PNG,"image.PNG");
+//    }
     @Test
     public void 파티_저장_정상동작(){
         //given

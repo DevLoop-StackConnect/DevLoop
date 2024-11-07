@@ -33,6 +33,9 @@ public class PartyController {
             @RequestParam(value = "file", required = false) MultipartFile file,
             @Valid @ModelAttribute SavePartyRequest savePartyRequest
     ){
+        log.info("SavePartyRequest: title={}, contents={}, status={}, category={}",
+                savePartyRequest.getTitle(), savePartyRequest.getContents(),
+                savePartyRequest.getStatus(), savePartyRequest.getCategory());
         return ApiResponse.ok(partyService.saveParty(authUser,file,savePartyRequest));
     }
 
