@@ -116,7 +116,7 @@ public class NotificationHandler {
     }
 
     //주기적으로 알림 큐를 처리하는 스케줄링 메서드
-    @Scheduled(fixedDelay = 2000)
+    //@Scheduled(fixedDelay = 2000)
     public void processNotifications() {
         //redis 큐에서 알림 메시지 추출
         NotificationMessage notification = redisTemplate.opsForList()
@@ -137,7 +137,7 @@ public class NotificationHandler {
         }
     }
     //실패한 알림을 재처리하는 스케줄링 메서드
-    @Scheduled(fixedDelay = 5000)
+//@Scheduled(fixedDelay = 5000)
     public void processFailedNotifications() {
         //실패 큐에서 메시지 추출
         NotificationMessage failedNotification =
