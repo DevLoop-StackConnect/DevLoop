@@ -23,7 +23,7 @@ public class User extends Timestamped {
 
     @Enumerated(EnumType.STRING)
     private LoginType loginType = LoginType.LOCAL;
-
+  
     @Column
     private Long attachmentId;
 
