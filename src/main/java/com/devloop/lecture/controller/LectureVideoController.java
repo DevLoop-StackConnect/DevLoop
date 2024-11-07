@@ -21,8 +21,8 @@ public class LectureVideoController {
     private final LectureVideoService lectureVideoService;
 
     //강의 영상파일 등록
-    @PostMapping("/v2/lectures/{lectureId}/videos/multipart-upload")
     @PreAuthorize("hasRole('ROLE_TUTOR')")
+    @PostMapping("/v2/lectures/{lectureId}/videos/multipart-upload")
     public ApiResponse<String> uploadLectureVideo(
             @AuthenticationPrincipal AuthUser authUser,
             @PathVariable("lectureId") Long lectureId,
@@ -33,8 +33,7 @@ public class LectureVideoController {
     }
 
     //영상 다건 조회 (승인이 완료된 강의만 조회)
-    @GetMapping("/v2/lectures/{lectureId}/videos")
-    @PreAuthorize("permitAll()")
+    @GetMapping("/search/v2/lectures/{lectureId}/videos")
     public ApiResponse<List<GetLectureVideoListResponse>> getLectureVideoList(
             @PathVariable("lectureId") Long lectureId
     ) {
@@ -52,8 +51,8 @@ public class LectureVideoController {
     }
 
     //강의 영상 삭제
+    @PreAuthorize("hasRole('ROLE_TUTOR')")
     @DeleteMapping("/v2/lectures/{lectureId}/videos/{videoId}")
-    @PreAuthorize("hasRole('ROLE_TUTOR') or hasRole('ROLE_ADMIN')")
     public ResponseEntity<Void> deleteVideo(
             @AuthenticationPrincipal AuthUser authUser,
             @PathVariable("lectureId") Long lectureId,
