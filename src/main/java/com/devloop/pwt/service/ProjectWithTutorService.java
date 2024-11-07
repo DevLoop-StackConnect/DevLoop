@@ -17,11 +17,16 @@ import com.devloop.pwt.request.ProjectWithTutorUpdateRequest;
 import com.devloop.pwt.response.ProjectWithTutorDetailResponse;
 import com.devloop.pwt.response.ProjectWithTutorListResponse;
 import com.devloop.search.response.IntegrationSearchResponse;
+import com.devloop.stock.entity.Stock;
+import com.devloop.stock.repository.StockRepository;
+import com.devloop.stock.service.StockService;
 import com.devloop.user.entity.User;
 import com.devloop.user.enums.UserRole;
 import com.devloop.user.service.UserService;
+import com.slack.api.model.event.ErrorEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -40,6 +45,7 @@ import java.util.List;
 public class ProjectWithTutorService {
 
     private final ProjectWithTutorRepository projectWithTutorRepository;
+    private final StockRepository stockRepository;  // 순환 참조 막기 위해 레파이토리 주입
     private final UserService userService;
     private final S3Service s3Service;
     private final PWTAttachmentService pwtAttachmentService;
@@ -205,6 +211,12 @@ public class ProjectWithTutorService {
 
         // PWT 첨부파일 삭제
         pwtAttachmentService.deletePwtAttachment(pwtAttachment);
+
+        // stock 객체 찾아서 삭제
+        if(projectWithTutor.getApproval().equals(Approval.APPROVED)) {
+            Stock stock = stockRepository.findByProductId(projectWithTutor.getId()).orElseThrow(()->new ApiException(ErrorStatus._NOT_FOUND_STOCK));
+            stockRepository.delete(stock);
+        }
 
         // PWT 게시글 삭제
         projectWithTutorRepository.delete(projectWithTutor);
