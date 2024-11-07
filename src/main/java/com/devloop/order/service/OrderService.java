@@ -36,6 +36,7 @@ public class OrderService {
     private final StockService stockService;
 
     // 주문 하기 (주문 요청, 주문 객체 생성)
+    // todo : 진입 시점에 Lock
     @Transactional
     public Order createOrder(AuthUser authUser) {
 
