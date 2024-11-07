@@ -18,13 +18,15 @@ public class IntegrationSearchRequest {
     private String content;
     private String username;
     private String category;
+    private String lecture;
 
     public String generateCompositeKey() {
         return Stream.of(
                         title != null ? "title:" + title : "",
                         username != null ? "user:" + username : "",
                         content != null ? "content:" + content : "",
-                        category != null ? "category:" + category : ""
+                        category != null ? "category:" + category : "",
+                        lecture != null ? "lecture:" + lecture: ""
                 ).filter(key -> !key.isEmpty())
                 .collect(Collectors.joining("|"));
     }
