@@ -21,14 +21,12 @@ public class SearchController {
     private final SearchService searchService;
 
     @GetMapping("/v1/main/search/preview")
-    @PreAuthorize("permitAll()")
     public ApiResponse<IntegratedSearchPreview> previewSearch(
             @RequestBody IntegrationSearchRequest request) {
         return ApiResponse.ok(searchService.integratedSearchPreview(request));
     }
 
     @GetMapping("/v2/main/search/{category}")
-    @PreAuthorize("permitAll()")
     public ApiResponse<Page<IntegrationSearchResponse>> searchByCategory(
             @PathVariable String category,
             @RequestBody IntegrationSearchRequest request,
@@ -38,7 +36,6 @@ public class SearchController {
     }
 
     @GetMapping("/v2/main/search/ranking")
-    @PreAuthorize("permitAll()")
     public ApiResponse<Set<ZSetOperations.TypedTuple<String>>> getRankingKeyword(){
         return ApiResponse.ok(searchService.getTopSearchKeywords());
     }

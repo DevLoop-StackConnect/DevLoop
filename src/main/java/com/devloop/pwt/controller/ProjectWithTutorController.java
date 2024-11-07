@@ -24,8 +24,8 @@ public class ProjectWithTutorController {
     private final ProjectWithTutorService projectWithTutorService;
 
     // 튜터랑 함께하는 협업 프로젝트 게시글 생성 (일반 사용자 접근 불가)
-    @PostMapping("/v1/tutor/pwts")
     @PreAuthorize("hasRole('ROLE_TUTOR')")  // ROLE_TUTOR 권한만 접근 가능
+    @PostMapping("/v1/tutor/pwts")
     public ApiResponse<String> saveProjectWithTutor(
             @AuthenticationPrincipal AuthUser authUser,
             @RequestParam("file") MultipartFile file,
@@ -35,8 +35,7 @@ public class ProjectWithTutorController {
     }
 
     // 튜터랑 함께하는 협업 프로젝트 게시글 단건 조회 (승인이 완료된 게시글 단건 조회)
-    @GetMapping("/v1/pwts/{pwtId}")
-    @PreAuthorize("permitAll()")    // 아무나 접근 가능
+    @GetMapping("/search/v1/pwts/{pwtId}")
     public ApiResponse<ProjectWithTutorDetailResponse> getProjectWithTutor(
             @PathVariable("pwtId") Long projectId
     ) {
@@ -44,8 +43,7 @@ public class ProjectWithTutorController {
     }
 
     // 튜터랑 함께하는 협업 프로젝트 게시글 다건 조회 (승인이 완료된 게시글 다건 조회)
-    @GetMapping("/v1/pwts")
-    @PreAuthorize("permitAll()")    // 아무나 접근 가능
+    @GetMapping("/search/v1/pwts")
     public ApiResponse<Page<ProjectWithTutorListResponse>> getAllProjectWithTutors(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size
@@ -54,8 +52,8 @@ public class ProjectWithTutorController {
     }
 
     // 튜터랑 함께하는 협업 프로젝트 게시글 수정 (일반 사용자 접근 불가)
-    @PatchMapping("/v1/tutor/pwts/{pwtId}")
     @PreAuthorize("hasRole('ROLE_TUTOR')")  // ROLE_TUTOR 권한만 접근 가능
+    @PatchMapping("/v1/tutor/pwts/{pwtId}")
     public ApiResponse<String> updateProjectWithTutor(
             @AuthenticationPrincipal AuthUser authUser,
             @PathVariable("pwtId") Long projectId,
@@ -66,8 +64,8 @@ public class ProjectWithTutorController {
     }
 
     // 튜터랑 함께하는 협업 프로젝트 게시글 삭제 (일반 사용자 접근 불가)
-    @DeleteMapping("/v1/tutor/pwts/{pwtId}")
     @PreAuthorize("hasRole('ROLE_TUTOR') or hasRole('ROLE_ADMIN')")   // 작성자 와 ROLE_ADMIN 권한 접근 가능
+    @DeleteMapping("/v1/tutor/pwts/{pwtId}")
     public ResponseEntity<Void> deleteProjectWithTutor(
             @AuthenticationPrincipal AuthUser authUser,
             @PathVariable("pwtId") Long projectId

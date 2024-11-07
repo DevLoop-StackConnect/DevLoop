@@ -17,8 +17,7 @@ public class ScehduleBoardController {
     private final ScheduleBoardService scheduleBoardService;
 
     //pwt 게시판의 게시글에서 scheduleBoard 조회
-    @GetMapping("/v2/scheduleBoards/{pwtId}")
-    @PreAuthorize("permitAll()")
+    @GetMapping("/search/v2/scheduleBoards/{pwtId}")
     public ApiResponse<ScheduleBoardResponse> getScheduleBoard(@PathVariable Long pwtId) {
         return ApiResponse.ok(scheduleBoardService.getScheduleBoard(pwtId));
     }
