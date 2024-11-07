@@ -7,13 +7,13 @@ import com.devloop.common.AuthUser;
 import com.devloop.common.apipayload.status.ErrorStatus;
 import com.devloop.common.exception.ApiException;
 import com.devloop.community.entity.Community;
+import com.devloop.community.repository.CommunityRepository;
 import com.devloop.community.response.CommunitySimpleResponse;
-import com.devloop.community.service.CommunityService;
 import com.devloop.party.entity.Party;
+import com.devloop.party.repository.PartyRepository;
 import com.devloop.party.response.GetPartyListResponse;
-import com.devloop.party.service.PartyService;
 import com.devloop.tutor.entity.TutorRequest;
-import com.devloop.tutor.service.TutorService;
+import com.devloop.tutor.repository.TutorRequestRepository;
 import com.devloop.user.entity.User;
 import com.devloop.user.repository.UserRepository;
 import com.devloop.user.response.UserResponse;
@@ -35,9 +35,9 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final ProfileATMRepository profileATMRepository;
-    private final PartyService partyService;
-    private final CommunityService communityService;
-    private final TutorService tutorService;
+    private final PartyRepository partyRepository;
+    private final CommunityRepository communityRepository;
+    private final TutorRequestRepository tutorRequestRepository;
     private final S3Service s3Service;
 
     public UserResponse getUser(AuthUser authUser) {
@@ -62,7 +62,8 @@ public class UserService {
             /*
              * 유저 개인 프로필에 보여줄 튜터 신청서 url
              * */
-            TutorRequest tutorRequest = tutorService.getTutorRequestByUserId(user.getId());
+            TutorRequest tutorRequest = tutorRequestRepository.findByUserId(user.getId())
+                    .orElse(null);
             return UserResponse.of(
                     user.getUsername(),
                     user.getEmail(),
@@ -104,7 +105,7 @@ public class UserService {
      * */
     public List<GetPartyListResponse> userPartyResponses(User user) {
 
-        List<Party> partys = partyService.getPartiesByUserId(user.getId());
+        List<Party> partys = partyRepository.findAllByUserId(user.getId());
         List<GetPartyListResponse> getPartyListResponses = new ArrayList<>();
         if (partys != null) {
             //유저가 소속된 파티 있을 때
@@ -125,7 +126,7 @@ public class UserService {
     }
 
     public List<CommunitySimpleResponse> userCommunityResponses(User user) {
-        List<Community> communities = communityService.getCommunitiesByUserId(user.getId());
+        List<Community> communities = communityRepository.findAllByUserId(user.getId());
         if (communities != null) {
             //유저가 올린 커뮤니티 게시글 있을 때
             List<CommunitySimpleResponse> communitySimpleResponses = new ArrayList<>();
