@@ -23,8 +23,8 @@ public class LectureController {
     private final LectureService lectureService;
 
     //강의 데이터 생성 (TUTOR)
-    @PostMapping("/v2/tutor/lectures")
     @PreAuthorize("hasRole('ROLE_TUTOR')")
+    @PostMapping("/v2/tutor/lectures")
     public ApiResponse<SaveLectureResponse> saveLecture(
             @AuthenticationPrincipal AuthUser authUser,
             @RequestBody SaveLectureRequest saveLectureRequest
@@ -32,8 +32,8 @@ public class LectureController {
         return ApiResponse.ok(lectureService.saveLecture(authUser, saveLectureRequest));
     }
     //강의 수정 (TUTOR)
-    @PatchMapping("/v2/tutor/lectures/{lectureId}")
     @PreAuthorize("hasRole('ROLE_TUTOR')")
+    @PatchMapping("/v2/tutor/lectures/{lectureId}")
     public ApiResponse<UpdateLectureResponse> updateLecture(
             @AuthenticationPrincipal AuthUser authUser,
             @PathVariable("lectureId") Long lectureId,
@@ -42,14 +42,14 @@ public class LectureController {
         return ApiResponse.ok(lectureService.updateLecture(authUser, lectureId, updateLectureRequest));
     }
     //강의 단건 조회 (승인이 완료된 강의만 조회)
-    @GetMapping("/search/lectures/{lectureId}")
+    @GetMapping("/search/v2/lectures/{lectureId}")
     public ApiResponse<GetLectureDetailResponse> getLecture(
             @PathVariable("lectureId") Long lectureId
     ) {
         return ApiResponse.ok(lectureService.getLecture(lectureId));
     }
     //강의 다건 조회 (승인이 완료된 강의만 조회)
-    @GetMapping("/search/lectures")
+    @GetMapping("/search/v2/lectures")
     public ApiResponse<Page<GetLectureListResponse>> getLectureList(
             @RequestParam(required = false) String title,
             @RequestParam(defaultValue = "1") int page,
@@ -58,8 +58,8 @@ public class LectureController {
         return ApiResponse.ok(lectureService.getLectureList(title, page, size));
     }
     //강의 삭제
-    @DeleteMapping("/v2/tutor/lectures/{lectureId}")
     @PreAuthorize("hasRole('ROLE_TUTOR') or hasRole('ROLE_ADMIN')")
+    @DeleteMapping("/v2/tutor/lectures/{lectureId}")
     public ResponseEntity<Void> deleteLecture(
             @AuthenticationPrincipal AuthUser authUser,
             @PathVariable("lectureId") Long lectureId

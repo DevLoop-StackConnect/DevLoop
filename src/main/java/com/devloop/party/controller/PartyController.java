@@ -48,7 +48,7 @@ public class PartyController {
     }
 
     //스터디 파티 모집 다건 조회
-    @GetMapping("/search/parties")
+    @GetMapping("/search/v1/parties")
     public ApiResponse<Page<GetPartyListResponse>> getPartyList(
         @RequestParam(required = false) String title,
         @RequestParam(defaultValue = "1") int page,
@@ -58,7 +58,7 @@ public class PartyController {
     }
 
     //스터디 파티 모집 게시글 단건 조회
-    @GetMapping("/search/parties/{partyId}")
+    @GetMapping("/search/v1/parties/{partyId}")
     public ApiResponse<GetPartyDetailResponse> getParty(
             @PathVariable Long partyId
     ){
