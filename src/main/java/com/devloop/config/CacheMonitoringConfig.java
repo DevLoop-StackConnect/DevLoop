@@ -50,7 +50,8 @@ public class CacheMonitoringConfig {
         meterRegistry.gauge("cache.misses", tags, getCacheMisses(cacheName));
     }
 
-    //@Scheduled(fixedRate = 60000) // 1분마다 업데이트
+
+//    @Scheduled(fixedRate = 60000) // 1분마다 업데이트
     public void updateMetrics() {
         try {
             //모니터링할 캐시 목록
