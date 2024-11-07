@@ -55,6 +55,7 @@ public enum ErrorStatus implements BaseCode {
     _NOT_FOUND_CART_ITEM(HttpStatus.NOT_FOUND, "404", "장바구니에 상품이 존재하지 않습니다."),
     _NOT_FOUND_CART(HttpStatus.NOT_FOUND, "404", "장바구니를 찾지 못했습니다."),
     _PRODUCT_ALREADY_EXIST(HttpStatus.CONFLICT, "409", "장바구니에 상품이 이미 존재합니다."),
+    _ALREADY_PURCHASE(HttpStatus.CONFLICT, "409", "이미 구매한 상품 입니다."),
 
     // Order
     _NOT_FOUND_ORDER(HttpStatus.NOT_FOUND, "404", "해당 주문을 찾지 못했습니다."),
