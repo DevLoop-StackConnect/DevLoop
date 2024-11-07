@@ -33,8 +33,7 @@ public class LectureVideoController {
     }
 
     //영상 다건 조회 (승인이 완료된 강의만 조회)
-    @GetMapping("/v2/lectures/{lectureId}/videos")
-    @PreAuthorize("permitAll()")
+    @GetMapping("/search/lectures/{lectureId}/videos")
     public ApiResponse<List<GetLectureVideoListResponse>> getLectureVideoList(
             @PathVariable("lectureId") Long lectureId
     ) {

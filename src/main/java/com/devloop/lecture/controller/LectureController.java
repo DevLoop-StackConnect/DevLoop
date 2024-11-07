@@ -42,16 +42,14 @@ public class LectureController {
         return ApiResponse.ok(lectureService.updateLecture(authUser, lectureId, updateLectureRequest));
     }
     //강의 단건 조회 (승인이 완료된 강의만 조회)
-    @GetMapping("/v2/lectures/{lectureId}")
-    @PreAuthorize("permitAll()")
+    @GetMapping("/search/lectures/{lectureId}")
     public ApiResponse<GetLectureDetailResponse> getLecture(
             @PathVariable("lectureId") Long lectureId
     ) {
         return ApiResponse.ok(lectureService.getLecture(lectureId));
     }
     //강의 다건 조회 (승인이 완료된 강의만 조회)
-    @GetMapping("/v2/lectures")
-    @PreAuthorize("permitAll()")
+    @GetMapping("/search/lectures")
     public ApiResponse<Page<GetLectureListResponse>> getLectureList(
             @RequestParam(required = false) String title,
             @RequestParam(defaultValue = "1") int page,

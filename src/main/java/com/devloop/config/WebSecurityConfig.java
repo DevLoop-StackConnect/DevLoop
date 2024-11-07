@@ -42,6 +42,7 @@ public class WebSecurityConfig {
                                 "/api/v1/auth/login",
                                 "/api/v1/auth/**",
                                 "/api/v1/main/search/**",
+                                "/api/search/**",
                                 // payments test 위해 열어두는 API
                                 "/payments/**",
                                 "/api/v2/orders",
