@@ -8,12 +8,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v2")
+@RequestMapping("/api")
 public class CloudFrontController {
 
     private final CloudFrontService cloudFrontService;
 
-    @GetMapping("/cloudfront/signedUrl")
+    @GetMapping("/v2/cloudfront/signedUrl")
     public String generateSignedUrl(
             @RequestParam String path,
             @RequestParam(defaultValue = "60") int minutes) {

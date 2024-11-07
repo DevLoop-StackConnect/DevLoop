@@ -17,13 +17,13 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v2")
+@RequestMapping("/api")
 public class ScheduleTodoController {
 
     private final ScheduleTodoService scheduleTodoService;
 
     //일정 생성
-    @PostMapping("/{scheduleBoardId}/scheduleTodos")
+    @PostMapping("/v2/{scheduleBoardId}/scheduleTodos")
     public ApiResponse<ScheduleTodoResponse> createScheduleTodo(
             @AuthenticationPrincipal AuthUser authUser,
             @PathVariable Long scheduleBoardId,
@@ -32,21 +32,21 @@ public class ScheduleTodoController {
     }
 
     //일정 다건 조회
-    @GetMapping("/{scheduleBoardId}/scheduleTodos")
+    @GetMapping("/v2/{scheduleBoardId}/scheduleTodos")
     @PreAuthorize("permitAll()")
     public ApiResponse<List<ScheduleTodoSimpleResponse>> getTodoByScheduleBoard(@PathVariable Long scheduleBoardId) {
         return ApiResponse.ok(scheduleTodoService.getTodoByScheduleBoard(scheduleBoardId));
     }
 
     //일정 단건 조회
-    @GetMapping("/{scheduleBoardId}/scheduleTodos/{scheduleTodoId}")
+    @GetMapping("/v2/{scheduleBoardId}/scheduleTodos/{scheduleTodoId}")
     @PreAuthorize("permitAll()")
     public ApiResponse<ScheduleTodoResponse> getScheduleTodo(@PathVariable Long scheduleTodoId) {
         return ApiResponse.ok(scheduleTodoService.getScheduleTodo(scheduleTodoId));
     }
 
     //일정 수정
-    @PatchMapping("/{scheduleBoardId}/scheduleTodos/{scheduleTodoId}")
+    @PatchMapping("/v2/{scheduleBoardId}/scheduleTodos/{scheduleTodoId}")
     public ApiResponse<ScheduleTodoResponse> updateScheduleTodo(
             @AuthenticationPrincipal AuthUser authUser,
             @PathVariable Long scheduleTodoId,
@@ -55,7 +55,7 @@ public class ScheduleTodoController {
     }
 
     //일정 삭제
-    @DeleteMapping("/{scheduleBoardId}/scheduleTodos/{scheduleTodoId}")
+    @DeleteMapping("/v2/{scheduleBoardId}/scheduleTodos/{scheduleTodoId}")
     public ResponseEntity<Void> deleteScheduleTodo(@PathVariable Long scheduleTodoId, @AuthenticationPrincipal AuthUser authUser) {
         scheduleTodoService.deleteScheduleTodo(scheduleTodoId, authUser);
         return ResponseEntity.noContent().build();

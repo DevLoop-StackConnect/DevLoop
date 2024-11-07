@@ -24,7 +24,7 @@ public class UserController {
     }
 
     @PatchMapping("/v1/users/profiles/image")
-    public ApiResponse<String>updateProfileImg(@RequestParam("file") MultipartFile[] files, @AuthenticationPrincipal AuthUser authUser){
+    public ApiResponse<String> updateProfileImg(@RequestParam("file") MultipartFile[] files, @AuthenticationPrincipal AuthUser authUser) {
         userService.updateProfileImg(files, authUser);
         return ApiResponse.ok("프로필 이미지가 변경 되었습니다.");
     }

@@ -80,8 +80,7 @@ public class S3Service {
                         fileType,
                         fileName
                 );
-                PartyAMTRepository partyAMTRepository = partyAttachmentService.getPartyAMTRepository();
-                partyAMTRepository.save(partyAttachment);
+                partyAttachmentService.savePartyAttachment(partyAttachment);
             } else if (object instanceof Community) {
                 CommunityAttachment communityAttachment = CommunityAttachment.of(
                         ((Community) object).getId(),
@@ -89,8 +88,7 @@ public class S3Service {
                         fileType,
                         fileName
                 );
-                CommunityATMRepository communityATMRepository = communityAttachmentService.getCommunityATMRepository();
-                communityATMRepository.save(communityAttachment);
+                communityAttachmentService.saveCommunityAttachment(communityAttachment);
             } else if (object instanceof User) {
                 ProfileAttachment profileAttachment = ProfileAttachment.of(
                         ((User) object).getId(),
@@ -107,8 +105,7 @@ public class S3Service {
                         fileType,
                         fileName
                 );
-                PWTATMRepository pwtATMRepository = pwtAttachmentService.getPWTATMRepository();
-                pwtATMRepository.save(pwtAttachment);
+                pwtAttachmentService.savePwtAttachment(pwtAttachment);
             } else {
                 throw new ApiException(ErrorStatus._UNSUPPORTED_OBJECT_TYPE);
             }
