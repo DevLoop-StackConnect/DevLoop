@@ -4,6 +4,7 @@ import com.devloop.order.entity.Order;
 import com.devloop.order.service.OrderService;
 import com.devloop.payment.entity.Payment;
 import com.devloop.payment.repository.PaymentRepository;
+import com.devloop.purchase.service.PurchaseService;
 import lombok.RequiredArgsConstructor;
 import org.json.simple.JSONObject;
 import org.springframework.stereotype.Service;
@@ -21,6 +22,18 @@ public class PaymentService {
 
     private final PaymentRepository paymentRepository;
     private final OrderService orderService;
+    private final PurchaseService purchaseService;
+
+    // 결제 승인 후 수행되는 로직
+    @Transactional
+    public void paymentCompletionLogic(JSONObject jsonObject) {
+        // 구매 내역 생성
+        purchaseService.createPurchase(jsonObject.get("orderId").toString());
+        // 주문 상태 완료로 변경
+        orderService.orderApproved(jsonObject.get("orderId").toString());
+        // 결제 내역 생성
+        createPayment(jsonObject);
+    }
 
     @Transactional
     public void createPayment(JSONObject jsonObject) {
