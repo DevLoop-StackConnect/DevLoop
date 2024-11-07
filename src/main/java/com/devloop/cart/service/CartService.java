@@ -18,6 +18,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
@@ -128,5 +129,22 @@ public class CartService {
     public Cart findById(Long cartId) {
         return cartRepository.findById(cartId)
                 .orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_CART));
+    }
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void deleteProductItemFromCart(User user, Long productId) {
+        // Cart 객체 가져오기
+        Cart cart = cartRepository.findByUserId(user.getId())
+                .orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_CART_ITEM));
+
+        CartItem cartItem = cartItemRepository.findByCartIdAndProductId(cart.getId(), productId).orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_CART_ITEM));
+
+        cart.deleteItem(cartItem);
+        cart.updateTotalPrice(cart.getTotalPrice().subtract(cartItem.getProduct().getPrice()));
+
+        // 장바구니에 담긴 상품이 없으면 장바구니 삭제
+        if (cart.getItems().isEmpty()) {
+            cartRepository.delete(cart);
+        }
     }
 }
