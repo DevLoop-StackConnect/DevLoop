@@ -53,7 +53,7 @@ public class LectureVideoController {
 
     //강의 영상 삭제
     @DeleteMapping("/v2/lectures/{lectureId}/videos/{videoId}")
-    @PreAuthorize("hasRole('ROLE_TUTOR') or hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ROLE_TUTOR')")
     public ResponseEntity<Void> deleteVideo(
             @AuthenticationPrincipal AuthUser authUser,
             @PathVariable("lectureId") Long lectureId,
