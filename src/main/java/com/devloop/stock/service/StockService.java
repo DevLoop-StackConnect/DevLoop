@@ -6,7 +6,7 @@ import com.devloop.product.entity.Product;
 import com.devloop.product.service.ProductService;
 import com.devloop.pwt.entity.ProjectWithTutor;
 import com.devloop.pwt.enums.ProjectWithTutorStatus;
-import com.devloop.pwt.repository.ProjectWithTutorRepository;
+import com.devloop.pwt.service.ProjectWithTutorService;
 import com.devloop.stock.entity.Stock;
 import com.devloop.stock.repository.StockRepository;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +20,7 @@ public class StockService {
 
     private final StockRepository stockRepository;
     private final ProductService productService;
-    private final ProjectWithTutorRepository projectWithTutorRepository;
+    private final ProjectWithTutorService projectWithTutorService;
 
     @Transactional
     public void createStock(Long productId, Integer quantity) {
@@ -39,22 +39,27 @@ public class StockService {
     public void updateStock(Long productId) {
 
         // PWT 찾기
-        ProjectWithTutor pwt = projectWithTutorRepository.findById(productId)
-                .orElseThrow(()-> new ApiException(ErrorStatus._NOT_FOUND_PROJECT_WITH_TUTOR));
+        ProjectWithTutor pwt = projectWithTutorService.findByPwtId(productId);
 
-        //PWT 모집 중 인지 확인
-        if(pwt.getStatus().equals(ProjectWithTutorStatus.COMPLETED)){
+        // PWT 모집 중 인지 확인
+        if (pwt.getStatus().equals(ProjectWithTutorStatus.COMPLETED)) {
             throw new ApiException(ErrorStatus._ALREADY_FULL);
         }
 
-        //Stock 찾기
+        // Stock 찾기
         Stock stock = stockRepository.findByProductId(productId)
-                .orElseThrow(()-> new ApiException(ErrorStatus._NOT_FOUND_STOCK));
+                .orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_STOCK));
         stock.updateQuantity(stock.getQuantity());
 
-        //Stock 0 일 때 PWT 상태 변경
-        if(stock.getQuantity() == 0){
+        // Stock 0 일 때 PWT 상태 변경
+        if (stock.getQuantity() == 0) {
             pwt.changeStatus(ProjectWithTutorStatus.COMPLETED);
         }
+    }
+
+    // Utile Method
+    public Stock findByProductId(Long productId) {
+        return stockRepository.findByProductId(productId)
+                .orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_STOCK));
     }
 }

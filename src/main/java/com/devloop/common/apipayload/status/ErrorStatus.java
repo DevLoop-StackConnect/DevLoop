@@ -61,6 +61,7 @@ public enum ErrorStatus implements BaseCode {
 
     //Stock
     _NOT_FOUND_STOCK(HttpStatus.NOT_FOUND, "404", "해당 재고를 찾지 못했습니다."),
+    _STOCK_EMPTY(HttpStatus.CONFLICT, "409", "재고가 없습니다."),
 
     //Auth
     _NOT_AUTHENTICATIONPRINCIPAL_USER(HttpStatus.UNAUTHORIZED, "401", "인증되지 않은 유저입니다."),
@@ -82,7 +83,8 @@ public enum ErrorStatus implements BaseCode {
     _NOT_FOUND_LECTURE_REVIEW(HttpStatus.NOT_FOUND, "404", "존재하지 않는 강의 후기 입니다"),
     _NOT_FOUND_LECTURE_VIDEO(HttpStatus.NOT_FOUND, "404", "존재하지 않는 영상 입니다"),
     _INVALID_LECTURE_VIDEO(HttpStatus.BAD_REQUEST, "400", "영상이 존재하는 강의만 승인이 가능합니다"),
-
+    _INVALID_URL_FORMAT(HttpStatus.BAD_REQUEST,"400","URL 형식이 올바르지 않습니다."),
+    _SIGN_URL_GENERATION_FAILED(HttpStatus.INTERNAL_SERVER_ERROR,"500","Signed URL 생성이 실패했습니다"),
 
     //S3
     _S3_UPLOAD_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "500", "영상 업로드 중 실패하였습니다"),

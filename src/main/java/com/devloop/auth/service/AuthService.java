@@ -14,6 +14,7 @@ import com.devloop.user.enums.UserRole;
 import com.devloop.user.enums.UserStatus;
 import com.devloop.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,6 +24,7 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
+@Slf4j
 public class AuthService {
 
     private final BCryptPasswordEncoder passwordEncoders;
@@ -39,15 +41,16 @@ public class AuthService {
         if (existingUser.isPresent()) {
             throw new ApiException(ErrorStatus._INVALID_REQUEST);
         }
-
+        log.info("Creating user {}", signupRequest.getEmail());
         User user = User.of(signupRequest.getUsername(),
                 signupRequest.getEmail(),
                 encodedPassword,
                 signupRequest.getRole()
                 );
+        log.info("Saving user {}", user);
 
         User savedUser = userRepository.save(user);
-
+        log.info("Saved user {}", savedUser);
         return SignupResponse.of(
                 savedUser.getId(),
                 signupRequest.getEmail(),

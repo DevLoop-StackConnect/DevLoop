@@ -4,6 +4,7 @@ import com.devloop.common.Timestamped;
 import com.devloop.scheduleboard.entity.ScheduleBoard;
 import com.devloop.user.entity.User;
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -11,7 +12,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ScheduleTodo extends Timestamped {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,7 +24,7 @@ public class ScheduleTodo extends Timestamped {
     private ScheduleBoard scheduleBoard;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "created_by",nullable = false)
+    @JoinColumn(name = "created_by", nullable = false)
     private User createdBy;
 
     // Version 필드 추가_낙관적락
@@ -43,7 +44,7 @@ public class ScheduleTodo extends Timestamped {
                          LocalDateTime startDate,
                          LocalDateTime endDate) {
         this.scheduleBoard = scheduleBoard;
-        this.createdBy=createdBy;
+        this.createdBy = createdBy;
         this.title = title;
         this.content = content;
         this.startDate = startDate;
@@ -70,5 +71,4 @@ public class ScheduleTodo extends Timestamped {
         this.startDate = startDate;
         this.endDate = endDate;
     }
-
 }

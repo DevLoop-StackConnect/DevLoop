@@ -1,7 +1,7 @@
 package com.devloop.tutor.repository;
 
-import com.devloop.tutor.entity.TutorRequest;
 import com.devloop.common.enums.Approval;
+import com.devloop.tutor.entity.TutorRequest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

@@ -9,7 +9,6 @@ import com.devloop.pwt.enums.ProjectWithTutorStatus;
 import com.devloop.scheduleboard.entity.ScheduleBoard;
 import com.devloop.user.entity.User;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -22,43 +21,37 @@ import java.time.LocalDateTime;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ProjectWithTutor extends Product {
 
-
     @Enumerated(EnumType.STRING)
     private BoardType boardType = BoardType.PWT;
 
-    @NotNull
-    @Column(columnDefinition = "TEXT")
+    @Column(columnDefinition = "TEXT", nullable = false)
     private String description;
 
-    @NotNull
     @Enumerated(EnumType.STRING)
     private ProjectWithTutorStatus status = ProjectWithTutorStatus.IN_PROGRESS;
 
-    @NotNull
+    @Column(nullable = false)
     private LocalDateTime deadline;
 
-    @NotNull
+    @Column(nullable = false)
     private Integer maxParticipants;
 
-    @NotNull
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private Level level;
 
-    @NotNull
     @Enumerated(EnumType.STRING)
     private Approval approval = Approval.WAITE;
 
-    @NotNull
     @Enumerated(EnumType.STRING)
-    private Category category;
+    private Category category = Category.ETC;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @OneToOne(mappedBy = "projectWithTutor",cascade=CascadeType.ALL)
+    @OneToOne(mappedBy = "projectWithTutor", cascade = CascadeType.ALL)
     private ScheduleBoard scheduleBoard;
-
 
     private ProjectWithTutor(
             String title,
@@ -126,5 +119,9 @@ public class ProjectWithTutor extends Product {
 
     public void changeStatus(ProjectWithTutorStatus projectWithTutorStatus) {
         this.status = projectWithTutorStatus;
+    }
+
+    public void saveScheduleBoard(ScheduleBoard scheduleBoard) {
+        this.scheduleBoard = scheduleBoard;
     }
 }

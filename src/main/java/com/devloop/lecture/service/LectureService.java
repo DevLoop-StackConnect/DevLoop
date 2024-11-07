@@ -16,7 +16,6 @@ import com.devloop.lecture.response.SaveLectureResponse;
 import com.devloop.lecture.response.UpdateLectureResponse;
 import com.devloop.search.response.IntegrationSearchResponse;
 import com.devloop.user.entity.User;
-import com.devloop.user.enums.UserRole;
 import com.devloop.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -39,11 +38,6 @@ public class LectureService {
     public SaveLectureResponse saveLecture(AuthUser authUser, SaveLectureRequest saveLectureRequest) {
         //유저가 존재하는 지 확인
         User user= userService.findByUserId(authUser.getId());
-
-        //요청한 유저의 권한이 TUTOR 인지 확인
-        if(user.getUserRole().equals(UserRole.ROLE_USER)){
-            throw new ApiException(ErrorStatus._HAS_NOT_ACCESS_PERMISSION);
-        }
 
         //새로운 강의 생성
         Lecture newLecture=Lecture.from(saveLectureRequest, user);
@@ -126,7 +120,7 @@ public class LectureService {
 
     //강의 삭제
     @Transactional
-    public String deleteLecture(AuthUser authUser, Long lectureId) {
+    public void deleteLecture(AuthUser authUser, Long lectureId) {
         //유저가 존재하는 지 확인
         User user= userService.findByUserId(authUser.getId());
 
@@ -141,8 +135,6 @@ public class LectureService {
 
         //강의 삭제
         lectureRepository.delete(lecture);
-
-        return String.format("%s 강의를 삭제하였습니다.", lecture.getTitle());
     }
 
     //Util

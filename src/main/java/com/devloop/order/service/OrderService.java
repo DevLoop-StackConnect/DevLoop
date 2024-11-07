@@ -10,6 +10,9 @@ import com.devloop.order.entity.Order;
 import com.devloop.order.enums.OrderStatus;
 import com.devloop.order.repository.OrderRepository;
 import com.devloop.product.entity.Product;
+import com.devloop.pwt.entity.ProjectWithTutor;
+import com.devloop.pwt.enums.ProjectWithTutorStatus;
+import com.devloop.stock.entity.Stock;
 import com.devloop.stock.service.StockService;
 import com.devloop.user.entity.User;
 import com.devloop.user.service.UserService;
@@ -41,6 +44,24 @@ public class OrderService {
 
         // 장바구니 객체 가져오기
         Cart cart = cartService.findByUserId(authUser.getId());
+
+        //주문 전 재고 확인
+        for (CartItem cartItem : cart.getItems()) {
+            Product product = cartItem.getProduct();
+            if (product instanceof ProjectWithTutor) {
+                // PWT 모집 중 인지 확인
+                if (((ProjectWithTutor) product).getStatus().equals(ProjectWithTutorStatus.COMPLETED)) {
+                    throw new ApiException(ErrorStatus._ALREADY_FULL);
+                }
+                // Stock 찾기
+                Stock stock = stockService.findByProductId(product.getId());
+
+                // 재고 확인
+                if (stock.getQuantity() <= 0) {
+                    throw new ApiException(ErrorStatus._STOCK_EMPTY);
+                }
+            }
+        }
 
         // Order 객체 생성
         Order order = Order.of(
@@ -86,7 +107,7 @@ public class OrderService {
 
         List<CartItem> cartItems = order.getCart().getItems();
         Product product = (Product) Hibernate.unproxy(cartItems.get(0).getProduct());
-        if(product.getClass().getSimpleName().equals("ProjectWithTutor")) {
+        if (product.getClass().getSimpleName().equals("ProjectWithTutor")) {
             // 각 PWT의 Stock 업데이트
             for (CartItem cartItem : cartItems) {
                 stockService.updateStock(cartItem.getProduct().getId());
@@ -97,15 +118,13 @@ public class OrderService {
         orderItemService.saveOrderItem(orderRequestId);
     }
 
+    // Utile Method
     public Order findByOrderId(Long orderId) {
         return orderRepository.findById(orderId)
                 .orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_ORDER));
     }
 
     public Order findByOrderRequestId(String orderRequestId) {
-        return orderRepository.findByOrderRequestId(orderRequestId).orElseThrow(()->new ApiException(ErrorStatus._NOT_FOUND_ORDER));
+        return orderRepository.findByOrderRequestId(orderRequestId).orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_ORDER));
     }
-
-
-
 }
