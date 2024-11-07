@@ -177,13 +177,6 @@ public class PartyService {
         partyRepository.delete(party);
     }
 
-    /*
-    * UserService에서 사용
-    */
-    public List<Party> getPartiesByUserId(Long userId) {
-        return partyRepository.findAllByUserId(userId);
-    }
-
     /**
      * Search에서 사용
      */

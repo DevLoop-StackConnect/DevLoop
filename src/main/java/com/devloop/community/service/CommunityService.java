@@ -201,13 +201,6 @@ public class CommunityService {
                 .orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_COMMUNITY));
     }
 
-    /*
-     * UserService에서 사용
-     */
-    public List<Community> getCommunitiesByUserId(Long userId) {
-        return communityRepository.findAllByUserId(userId);
-    }
-
     /**
      * Search에서 사용
      */
