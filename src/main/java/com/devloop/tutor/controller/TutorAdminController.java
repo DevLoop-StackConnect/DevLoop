@@ -16,8 +16,8 @@ public class TutorAdminController {
     private final TutorAdminService tutorAdminService;
 
     // 튜터 신청 요청 조회 (ADMIN : 승인되지 않은 튜터 신청 요청 다건 조회)
-    @GetMapping("/v1/admin/tutor-request")
     @PreAuthorize("hasRole('ROLE_ADMIN')")  // ROLE_ADMIN인 경우 접근 가능
+    @GetMapping("/v1/admin/tutor-request")
     public ApiResponse<Page<TutorRequestListAdminResponse>> getAllTutorRequest(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size
@@ -26,8 +26,8 @@ public class TutorAdminController {
     }
 
     // 튜터 신청 승인 (ADMIN : 튜터로 사용자 권한 변경)
-    @PatchMapping("/v1/admin/users/{userId}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")  // ROLE_ADMIN인 경우 접근 가능
+    @PatchMapping("/v1/admin/users/{userId}")
     public ApiResponse<String> changeUserRoleToTutor(
             @PathVariable("userId") Long userId
     ) {
