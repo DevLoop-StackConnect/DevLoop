@@ -16,6 +16,7 @@ import com.devloop.lecture.response.SaveLectureResponse;
 import com.devloop.lecture.response.UpdateLectureResponse;
 import com.devloop.search.response.IntegrationSearchResponse;
 import com.devloop.user.entity.User;
+import com.devloop.user.enums.UserRole;
 import com.devloop.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -124,12 +125,15 @@ public class LectureService {
         //유저가 존재하는 지 확인
         User user= userService.findByUserId(authUser.getId());
 
+        //어드민인 지 확인
+        boolean isAdminUser = user.getUserRole().equals(UserRole.ROLE_ADMIN);
+
         //강의가 존재하는 지 확인
         Lecture lecture=lectureRepository.findById(lectureId).orElseThrow(()->
                 new ApiException(ErrorStatus._NOT_FOUND_LECTURE));
 
         //강의 등록한 유저 인지 확인
-        if(!user.getId().equals(lecture.getUser().getId())){
+        if(!user.getId().equals(lecture.getUser().getId()) && !isAdminUser){
             throw new ApiException(ErrorStatus._HAS_NOT_ACCESS_PERMISSION);
         }
 

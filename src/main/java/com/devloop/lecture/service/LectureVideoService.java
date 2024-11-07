@@ -278,7 +278,7 @@ public class LectureVideoService {
     //영상 삭제
     public void deleteLectureVideo(LectureVideo lectureVideo) {
         //S3 영상 파일 삭제
-        s3Service.delete(lectureVideo.getFileName());
+        s3Service.deleteVideo(lectureVideo.getFileName());
         lectureVideoRepository.delete(lectureVideo);
     }
 }
