@@ -10,6 +10,7 @@ import com.devloop.pwt.service.ProjectWithTutorService;
 import com.devloop.stock.entity.Stock;
 import com.devloop.stock.repository.StockRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
