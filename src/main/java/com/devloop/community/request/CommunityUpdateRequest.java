@@ -9,7 +9,6 @@ import jakarta.validation.constraints.NotBlank;
 import com.devloop.community.entity.ResolveStatus;
 
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 public class CommunityUpdateRequest {
     @NotBlank(message = "제목을 작성해 주세요")
