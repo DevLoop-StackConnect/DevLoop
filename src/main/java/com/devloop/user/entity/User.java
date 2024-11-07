@@ -43,7 +43,6 @@ public class User extends Timestamped {
     @Column(length = 50)
     private UserRole userRole = UserRole.ROLE_USER;
 
-
     private Long kakaoId;
     private String loginId;
 
