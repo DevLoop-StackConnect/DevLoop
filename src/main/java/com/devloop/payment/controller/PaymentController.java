@@ -31,7 +31,6 @@ import java.util.Base64;
 public class PaymentController {
 
     private final OrderService orderService;
-    private final PurchaseService purchaseService;
     private final PaymentService paymentService;
 
     @Value("${toss.payment.secret.key}")
@@ -128,13 +127,9 @@ public class PaymentController {
         responseStream.close();
 
         // 주문 객체 상태 변경 , 구매내역, 줌문 내역 객체 생성
+        // todo : 하나의 서비스 로직으로 묶어서 Transaction 적용
         if (isSuccess) {
-            // 구매 내역 생성
-            purchaseService.createPurchase(jsonObject.get("orderId").toString());
-            // 주문 상태 완료로 변경
-            orderService.orderApproved(jsonObject.get("orderId").toString());
-            // 결제 내역 생성
-            paymentService.createPayment(jsonObject);
+            paymentService.paymentCompletionLogic(jsonObject);
         }
 
         return ResponseEntity.status(code).body(jsonObject);
