@@ -44,8 +44,7 @@ public class PartyCommentController {
     }
 
     //스터디 파티 게시글 댓글 다건 조회
-    @GetMapping("/v1/search/parties/{partyId}/comments")
-    @PreAuthorize("permitAll()")
+    @GetMapping("/search/v1/parties/{partyId}/comments")
     public ApiResponse<Page<GetPartyCommentListResponse>> getPartyCommentList(
             @PathVariable("partyId") Long partyId,
             @RequestParam(defaultValue = "1") int page,
