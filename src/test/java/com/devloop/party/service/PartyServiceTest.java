@@ -1,8 +1,6 @@
 package com.devloop.party.service;
 
 import com.devloop.attachment.entity.PartyAttachment;
-import com.devloop.attachment.enums.FileFormat;
-import com.devloop.attachment.repository.PartyAMTRepository;
 import com.devloop.attachment.s3.S3Service;
 import com.devloop.attachment.service.PartyAttachmentService;
 import com.devloop.common.AuthUser;
@@ -11,24 +9,16 @@ import com.devloop.party.repository.PartyRepository;
 import com.devloop.party.request.SavePartyRequest;
 import com.devloop.party.request.UpdatePartyRequest;
 import com.devloop.party.response.GetPartyDetailResponse;
-import com.devloop.party.response.GetPartyListResponse;
 import com.devloop.party.response.SavePartyResponse;
-import com.devloop.party.response.UpdatePartyResponse;
 import com.devloop.user.entity.User;
-import com.devloop.user.enums.UserRole;
 import com.devloop.user.service.UserService;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.quality.Strictness;
-import org.springframework.security.core.parameters.P;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -36,7 +26,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Optional;
 
-import static org.awaitility.Awaitility.given;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
@@ -65,17 +54,17 @@ class PartyServiceTest {
     private PartyAttachment partyAttachment;
     private MultipartFile file;
 
-    @BeforeEach
-    public void setUp() throws MalformedURLException {
-        authUser=new AuthUser(1L,"abc@email.com",UserRole.ROLE_USER);
-        savePartyRequest=new SavePartyRequest("파티 제목","파티 내용","IN_PROGRESS","WEB_DEV");
-        updatePartyRequest=new UpdatePartyRequest("수정된 파티 제목","수정된 파티 내용","IN_PROGRESS","WEB_DEV");
-        user=User.of("홍길동","abc@eamil.com",passwordEncoder.encode("Abc1234!"),UserRole.ROLE_USER);
-        party=Party.from(savePartyRequest,user);
-        String imageURL="https://example.com/image.PNG";
-        file=mock(MultipartFile.class);
-        partyAttachment=PartyAttachment.of(1L, new URL(imageURL), FileFormat.PNG,"image.PNG");
-    }
+//    @BeforeEach
+//    public void setUp() throws MalformedURLException {
+//        authUser=new AuthUser(1L,"abc@email.com",UserRole.ROLE_USER);
+//        savePartyRequest=new SavePartyRequest("파티 제목","파티 내용","IN_PROGRESS","WEB_DEV");
+//        updatePartyRequest=new UpdatePartyRequest("수정된 파티 제목","수정된 파티 내용","IN_PROGRESS","WEB_DEV");
+//        user=User.of("홍길동","abc@eamil.com",passwordEncoder.encode("Abc1234!"),UserRole.ROLE_USER);
+//        party=Party.from(savePartyRequest,user);
+//        String imageURL="https://example.com/image.PNG";
+//        file=mock(MultipartFile.class);
+//        partyAttachment=PartyAttachment.of(1L, new URL(imageURL), FileFormat.PNG,"image.PNG");
+//    }
     @Test
     public void 파티_저장_정상동작(){
         //given
