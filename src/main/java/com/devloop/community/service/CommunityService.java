@@ -99,7 +99,7 @@ public class CommunityService {
         Community community = communityRepository.findById(communityId)
                 .orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_COMMUNITY));
         //첨부파일 url이 있는지 확인
-        String imageUrl = communityAttachmentService.getCommunityATMRepository(communityId) //첨부파일 있는지 조회
+        String imageUrl = communityAttachmentService.getCommunityAttachment(communityId) //첨부파일 있는지 조회
                 .map(CommunityAttachment::getImageURL)
                 .map(URL::toString)
                 .orElse(null);
@@ -187,7 +187,7 @@ public class CommunityService {
             throw new ApiException(ErrorStatus._PERMISSION_DENIED);
         }
         // 첨부파일 확인 및 삭제
-        communityAttachmentService.getCommunityATMRepository(communityId).ifPresent(attachment -> {
+        communityAttachmentService.getCommunityAttachment(communityId).ifPresent(attachment -> {
             s3Service.delete(attachment.getFileName());
             communityAttachmentService.deleteCommunityAttachment(attachment);
         });

@@ -31,7 +31,7 @@ public class CommunityAttachmentService {
         communityATMRepository.save(communityAttachment);
     }
 
-    public Optional<CommunityAttachment> getCommunityATMRepository(Long communityId) {
+    public Optional<CommunityAttachment> getCommunityAttachment(Long communityId) {
         return communityATMRepository.findByCommunityId(communityId);
     }
 }
