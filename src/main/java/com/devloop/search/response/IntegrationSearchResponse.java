@@ -3,6 +3,7 @@ package com.devloop.search.response;
 import com.devloop.common.apipayload.status.ErrorStatus;
 import com.devloop.common.exception.ApiException;
 import com.devloop.community.entity.Community;
+import com.devloop.lecture.entity.Lecture;
 import com.devloop.party.entity.Party;
 import com.devloop.pwt.entity.ProjectWithTutor;
 import lombok.Builder;
@@ -61,6 +62,16 @@ public class IntegrationSearchResponse {
 //                    .category(String.valueOf(pwt.get))
                     .username(pwt.getUser().getUsername())
                     .createdAt(pwt.getCreatedAt())
+                    .build();
+        } else if (data instanceof Lecture lecture) {
+            return IntegrationSearchResponse.builder()
+                    .id(lecture.getId())
+                    .boardType(boardType)
+                    .title(lecture.getTitle())
+                    .content(lecture.getDescription())
+                    .category(String.valueOf(lecture.getCategory()))
+                    .username(lecture.getUser().getUsername())
+                    .createdAt(lecture.getCreatedAt())
                     .build();
         }
 

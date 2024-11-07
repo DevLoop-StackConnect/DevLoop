@@ -15,7 +15,7 @@ import org.springframework.security.web.servletapi.SecurityContextHolderAwareReq
 @Configuration
 @RequiredArgsConstructor
 @EnableWebSecurity
-@EnableMethodSecurity(securedEnabled = true, prePostEnabled = true)
+@EnableMethodSecurity(securedEnabled = true)
 public class WebSecurityConfig {
 
     private final JwtSecurityFilter jwtSecurityFilter;
@@ -41,6 +41,7 @@ public class WebSecurityConfig {
                                         "/api/v1/auth/signup",
                                         "/api/v1/auth/login",
                                         "/api/v1/auth/kakao/login",
+                                        "/api/v1/auth/kakao",
                                         "/api/v1/main/search/**",
                                         "/api/v2/videos/**",
                                         "/api/v2/lectures/**",
@@ -65,6 +66,34 @@ public class WebSecurityConfig {
                                 )
                                 .hasAuthority(UserRole.authority.ADMIN)
                                 .anyRequest().authenticated()
+                        .requestMatchers(
+                                "/api/v1/auth/signup",
+                                "/api/v1/auth/login",
+                                "/api/v1/auth/**",
+                                "/api/v1/main/search/**",
+                                "/api/v2/videos/**",
+                                "/api/v2/lectures/**",
+                                // payments test 위해 열어두는 API
+                                "/payments/**",
+                                "/api/v2/orders",
+                                "/payments-success",
+                                "/payment-request",
+                                "/payments-request",
+                                "/payments-fail",
+                                "/favicon.ico",
+                                "/confirm",
+                                "/api/v2/orders-fail",
+                                "/payment-fail",
+                                "api/v1/pwts/**",
+                                "/actuator/**",
+                                "/api/v1/slack/**"
+                        )
+                        .permitAll()
+                        .requestMatchers(
+                                "/actuator/**"
+                        )
+                        .hasAuthority(UserRole.authority.ADMIN)
+                        .anyRequest().authenticated()
                 )
                 .build();
     }
