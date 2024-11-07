@@ -5,6 +5,8 @@ import com.devloop.common.exception.ApiException;
 import com.devloop.common.utils.SearchSpecificationUtil;
 import com.devloop.community.entity.Community;
 import com.devloop.community.service.CommunityService;
+import com.devloop.lecture.entity.Lecture;
+import com.devloop.lecture.service.LectureService;
 import com.devloop.party.entity.Party;
 import com.devloop.party.service.PartyService;
 import com.devloop.pwt.entity.ProjectWithTutor;
@@ -36,6 +38,7 @@ public class SearchService {
 
     private final PartyService partyService;
     private final CommunityService communityService;
+    private final LectureService lectureService;
     private final ProjectWithTutorService projectWithTutorService;
     private final RedisTemplate<String, String> rankingRedisTemplate;
     private static final String SEARCH_RANKING_KEY = "search:ranking";
@@ -61,6 +64,7 @@ public class SearchService {
             Specification<Party> partySpec = SearchSpecificationUtil.buildSpecification(request);
             Specification<Community> communitySpec = SearchSpecificationUtil.buildSpecification(request);
             Specification<ProjectWithTutor> pwtSpec = SearchSpecificationUtil.buildSpecification(request);
+            Specification<Lecture> lectureSpec = SearchSpecificationUtil.buildSpecification(request);
 
             Page<IntegrationSearchResponse> partyResults = partyService.getPartyWithPage(
                     partySpec, PageRequest.of(0, PREVIEW_SIZE, Sort.by("createdAt").descending()));
@@ -71,13 +75,18 @@ public class SearchService {
             Page<IntegrationSearchResponse> pwtResults = projectWithTutorService.getProjectWithTutorPage(
                     pwtSpec, PageRequest.of(0, PREVIEW_SIZE, Sort.by("createdAt").descending()));
 
+            Page<IntegrationSearchResponse> lectureResults = lectureService.getLectureWithPage(
+                    lectureSpec, PageRequest.of(0, PREVIEW_SIZE, Sort.by("createAt").descending()));
+
             return IntegratedSearchPreview.builder()
                     .partyPreview(partyResults.getContent())
                     .communityPreview(communityResults.getContent())
                     .pwtPreview(pwtResults.getContent())
+                    .lecturePreivew(lectureResults.getContent())
                     .totalCommunityCount(communityResults.getTotalElements())
                     .totalPartyCount(partyResults.getTotalElements())
                     .totalPwtCount(pwtResults.getTotalElements())
+                    .totalLectureCount(lectureResults.getTotalElements())
                     .build();
         } catch (Exception e) {
             log.error("Error during search preview", e);
@@ -102,6 +111,7 @@ public class SearchService {
             case "party" -> searchParty(request, pageable);
             case "community" -> searchCommunity(request, pageable);
             case "pwt" -> searchPwt(request, pageable);
+            case "lecture" -> searchLecture(request, pageable);
             default -> throw new ApiException(ErrorStatus._BAD_SEARCH_KEYWORD);
         };
     }
@@ -134,5 +144,10 @@ public class SearchService {
     private Page<IntegrationSearchResponse> searchPwt(IntegrationSearchRequest request, PageRequest pageable) {
         Specification<ProjectWithTutor> spec = SearchSpecificationUtil.buildSpecification(request);
         return projectWithTutorService.getProjectWithTutorPage(spec, pageable);
+    }
+
+    private Page<IntegrationSearchResponse> searchLecture(IntegrationSearchRequest request, PageRequest pageable) {
+        Specification<Lecture> spec = SearchSpecificationUtil.buildSpecification(request);
+        return lectureService.getLectureWithPage(spec, pageable);
     }
 }

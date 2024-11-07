@@ -40,7 +40,7 @@ public class WebSecurityConfig {
                         .requestMatchers(
                                 "/api/v1/auth/signup",
                                 "/api/v1/auth/login",
-                                "/api/v1/auth/kakao/login",
+                                "/api/v1/auth/**",
                                 "/api/v1/main/search/**",
                                 "/api/v2/videos/**",
                                 "/api/v2/lectures/**",
