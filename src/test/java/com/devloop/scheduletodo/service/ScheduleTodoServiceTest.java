@@ -53,7 +53,6 @@ class ScheduleTodoServiceTest {
 
     private ScheduleTodo scheduleTodo;
     private ScheduleBoard scheduleBoard;
-    private User currentUser;
     private ScheduleTodoRequest scheduleTodoRequest;
     private ProjectWithTutor projectWithTutor;
     private User tutor;
@@ -63,7 +62,7 @@ class ScheduleTodoServiceTest {
 
 
     @BeforeEach
-    public void setUp() {
+    public void setUp() throws Exception{
 
         // 유저 및 튜터 객체 생성
         user = User.of("일반유저", "user@example.com", "password123", UserRole.ROLE_USER);
@@ -87,6 +86,18 @@ class ScheduleTodoServiceTest {
         );
         // ScheduleBoard 객체 생성
         scheduleBoard = ScheduleBoard.from(projectWithTutor);
+
+        // 리플렉션으로 ScheduleTodoRequest 객체 생성
+        Constructor<ScheduleTodoRequest> constructor = ScheduleTodoRequest.class.getDeclaredConstructor(
+                String.class, String.class, LocalDateTime.class, LocalDateTime.class
+        );
+        constructor.setAccessible(true);
+        ScheduleTodoRequest scheduleTodoRequest = constructor.newInstance(
+                "제목",
+                "내용",
+                LocalDateTime.now(),
+                LocalDateTime.now().plusDays(1)
+        );
     }
 
 
@@ -179,8 +190,8 @@ class ScheduleTodoServiceTest {
         Long scheduleBoardId = 1L;
 
         // ScheduleTodo 객체들을 생성해서 스케줄 보드에 포함시킴
-        ScheduleTodo todo1 = ScheduleTodo.of(scheduleBoard, currentUser, "제목 1", "내용 1", LocalDateTime.now(), LocalDateTime.now().plusDays(1));
-        ScheduleTodo todo2 = ScheduleTodo.of(scheduleBoard, currentUser, "제목 2", "내용 2", LocalDateTime.now().plusDays(2), LocalDateTime.now().plusDays(3));
+        ScheduleTodo todo1 = ScheduleTodo.of(scheduleBoard, user, "제목 1", "내용 1", LocalDateTime.now(), LocalDateTime.now().plusDays(1));
+        ScheduleTodo todo2 = ScheduleTodo.of(scheduleBoard, user, "제목 2", "내용 2", LocalDateTime.now().plusDays(2), LocalDateTime.now().plusDays(3));
 
         Mockito.when(scheduleBoardService.findByScheduleBoardById(scheduleBoardId)).thenReturn(scheduleBoard);
         Mockito.when(scheduleTodoRepository.findByScheduleBoard(scheduleBoard)).thenReturn(Arrays.asList(todo1, todo2));
