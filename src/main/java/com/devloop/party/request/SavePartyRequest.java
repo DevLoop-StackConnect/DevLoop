@@ -19,8 +19,4 @@ public class SavePartyRequest {
     private PartyStatus status;
     @NotNull(message = "카테고리를 입력해주세요.")
     private Category category;
-
-    public static SavePartyRequest of(String title,String contents,PartyStatus status, Category category){
-        return new SavePartyRequest(title,contents,status,category);
-    }
 }
