@@ -319,7 +319,7 @@ class ScheduleTodoServiceTest {
     }
 
     @Test
-    void 일반유저_다른사람일정_수정_실패() throws Exception{
+    void 일반유저_튜터일정_수정_실패() throws Exception{
         // given
         // ScheduleTodo 객체 생성: 튜터가 작성한 일정
         scheduleTodo = ScheduleTodo.of(
@@ -343,11 +343,10 @@ class ScheduleTodoServiceTest {
                 LocalDateTime.now().plusDays(1)
         );
 
-        // given
         Mockito.when(scheduleTodoRepository.findById(scheduleTodo.getId())).thenReturn(Optional.of(scheduleTodo));
         Mockito.when(userService.findByUserId(authUser.getId())).thenReturn(user); // 일반 유저가 요청하는 경우
 
-        // 예외 발생을 테스트하는 코드
+        // when&then 예외 발생을 테스트하는 코드
         ApiException exception = Assertions.assertThrows(ApiException.class, () -> {
             scheduleTodoService.updateScheduleTodo(authUser, scheduleTodo.getId(), scheduleTodoRequest);
         });
@@ -356,17 +355,79 @@ class ScheduleTodoServiceTest {
         // 일정 수정이 호출되지 않았는지 검증
         Mockito.verify(scheduleTodoRepository, Mockito.times(0)).save(any(ScheduleTodo.class));
     }
-//
-//    @Test
-//    void 일정_삭제_성공(){ }
-//
-//
-//    @Test
-//    void 튜터_일반유저글_삭제_성공(){ }
-//
-//
-//    @Test
-//    void 일반유저_다른사람일정_삭제_실패(){ }
+
+    @Test
+    void 일정_삭제_성공(){
+        // given
+        // ScheduleTodo 객체 생성: 일반 유저가 작성한 일정
+        scheduleTodo = ScheduleTodo.of(
+                scheduleBoard,
+                user,  // 일반 유저가 작성자
+                "Original Title",
+                "Original Content",
+                LocalDateTime.now(),
+                LocalDateTime.now().plusDays(1)
+        );
+        Mockito.when(scheduleTodoRepository.findById(scheduleTodo.getId())).thenReturn(Optional.of(scheduleTodo));
+        Mockito.when(userService.findByUserId(authUser.getId())).thenReturn(user);
+
+        // when
+        scheduleTodoService.deleteScheduleTodo(scheduleTodo.getId(), authUser);
+
+        // then
+        Mockito.verify(scheduleTodoRepository, Mockito.times(1)).delete(scheduleTodo);
+    }
+
+
+    @Test
+    void 튜터_일반유저글_삭제_성공(){
+        // given
+        // 일반 유저가 작성한 스케줄Todo 생성
+        scheduleTodo = ScheduleTodo.of(
+                scheduleBoard,
+                user,  // 일반 유저가 작성자
+                "User's Schedule",
+                "Content",
+                LocalDateTime.now(),
+                LocalDateTime.now().plusDays(1)
+        );
+        // Mock 설정
+        Mockito.when(scheduleTodoRepository.findById(scheduleTodo.getId())).thenReturn(Optional.of(scheduleTodo));
+        Mockito.when(userService.findByUserId(authTutor.getId())).thenReturn(tutor); // 요청한 유저가 튜터임을 설정
+
+        // when
+        scheduleTodoService.deleteScheduleTodo(scheduleTodo.getId(), authTutor);
+
+        // then
+        Mockito.verify(scheduleTodoRepository, Mockito.times(1)).delete(scheduleTodo); // 삭제가 호출되었는지 검증
+    }
+
+
+    @Test
+    void 일반유저_다른사람일정_삭제_실패(){
+        // given
+        scheduleTodo = ScheduleTodo.of(
+                scheduleBoard,
+                tutor,
+                "Tutor's Schedule",
+                "Content",
+                LocalDateTime.now(),
+                LocalDateTime.now().plusDays(1)
+        );
+
+        Mockito.when(scheduleTodoRepository.findById(scheduleTodo.getId())).thenReturn(Optional.of(scheduleTodo));
+        Mockito.when(userService.findByUserId(authUser.getId())).thenReturn(user);
+
+        // when & then
+        ApiException exception = Assertions.assertThrows(ApiException.class, () -> {
+            scheduleTodoService.deleteScheduleTodo(scheduleTodo.getId(), authUser);
+        });
+//        Assertions.assertEquals("권한이 없습니다.", exception.getMessage());
+        System.out.println("예외 발생: " + exception.getMessage());
+
+        // verify that delete was not called
+        Mockito.verify(scheduleTodoRepository, Mockito.times(0)).delete(scheduleTodo);
+    }
 
 
 }
