@@ -12,7 +12,6 @@ import com.devloop.user.entity.User;
 import com.devloop.user.enums.UserRole;
 import com.devloop.user.repository.UserRepository;
 import com.devloop.user.response.UserResponse;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -37,6 +36,15 @@ class UserServiceTest {
 
     @Mock
     private UserRepository userRepository;
+
+    @Mock
+    private PartyRepository partyRepository;
+
+    @Mock
+    private S3Service s3Service;
+
+    @Mock
+    private CommunityRepository communityRepository;
 
     @Mock
     private ProfileATMRepository profileATMRepository;
