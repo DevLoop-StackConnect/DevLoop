@@ -15,8 +15,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.quality.Strictness;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -26,7 +24,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.LENIENT)
 class TutorServiceTest {
 
     @Mock
@@ -88,7 +85,7 @@ class TutorServiceTest {
     }
 
     @Test
-    void 튜터_신청_내역_가져오기_성공(){
+    void 튜터_신청_내역_가져오기_성공() {
         // given
         when(requestRepository.findByUserId(user.getId())).thenReturn(Optional.of(tutorRequest));
 
@@ -101,7 +98,7 @@ class TutorServiceTest {
     }
 
     @Test
-    void 튜터_신청_내역_가져오기_실패(){
+    void 튜터_신청_내역_가져오기_실패() {
         // given
         when(requestRepository.findByUserId(user.getId())).thenReturn(Optional.empty());
 
