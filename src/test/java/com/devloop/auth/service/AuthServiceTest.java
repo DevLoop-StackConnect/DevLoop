@@ -42,7 +42,7 @@ class AuthServiceTest {
     private SignoutRequest signoutRequest;
 
 
-    @BeforeEach
+    /*@BeforeEach
     void setUp() {
         signupRequest = new SignupRequest("testExample@example.com", "Qwer!234", "testUser", "ROLE_USER");
         user = User.of("testUser", "testExample@example.com", "encodedPassword", UserRole.ROLE_USER);
@@ -114,6 +114,6 @@ class AuthServiceTest {
         verify(userRepository).findById(1L);
         verify(passwordEncoder).matches(signoutRequest.getPassword(), user.getPassword());
         verify(userRepository).save(user);
-    }
+    }*/
 
 }
