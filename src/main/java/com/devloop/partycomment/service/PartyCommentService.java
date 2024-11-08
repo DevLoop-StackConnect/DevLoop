@@ -99,6 +99,7 @@ public class PartyCommentService {
         }
     }
 
+
     //스터디 파티 게시글 댓글 다건 조회
     public Page<GetPartyCommentListResponse> getPartyCommentList(Long partyId, int page, int size) {
         Pageable pageable = PageRequest.of(page - 1, size);
