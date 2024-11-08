@@ -93,39 +93,36 @@ class ScheduleTodoServiceTest {
     @Test
     void 구매자_일정_작성_성공() throws Exception {
         //given
-        User currentUser = User.of("권한있는유저", "test@naver.com", "qwer123", UserRole.ROLE_USER);
-        AuthUser authUser = new AuthUser(1L, "test@naver.com", UserRole.ROLE_USER);
-
         // 리플렉션으로 ScheduleTodoRequest 객체 생성
         Constructor<ScheduleTodoRequest> constructor = ScheduleTodoRequest.class.getDeclaredConstructor(
                 String.class, String.class, LocalDateTime.class, LocalDateTime.class
         );
         constructor.setAccessible(true);
         ScheduleTodoRequest scheduleTodoRequest = constructor.newInstance(
-                "권한있는 유저",
-                "성공",
+                "제목",
+                "내용",
                 LocalDateTime.now(),
                 LocalDateTime.now().plusDays(1)
         );
 
 
-        ScheduleTodo scheduleTodo = ScheduleTodo.of(
+        scheduleTodo = ScheduleTodo.of(
                 scheduleBoard,
-                currentUser,
-                scheduleTodoRequest.getTitle(),
-                scheduleTodoRequest.getContent(),
-                scheduleTodoRequest.getStartDate(),
-                scheduleTodoRequest.getEndDate()
+                user,
+                "제목",
+                "내용",
+                LocalDateTime.now(),
+                LocalDateTime.now().plusDays(1)
         );
 
         Mockito.when(scheduleBoardService.findByScheduleBoardById(scheduleBoard.getId())).thenReturn(scheduleBoard);
-        Mockito.when(userService.findByUserId(authUser.getId())).thenReturn(currentUser);
+        Mockito.when(userService.findByUserId(authUser.getId())).thenReturn(user);
         Mockito.when(boardAssignmentService.getBoardAssignmentRepository()).thenReturn(boardAssignmentRepository);
 
-        // currentUser와 projectWithTutor.getUser()가 다르다고 가정
-        if (!currentUser.equals(scheduleBoard.getProjectWithTutor().getUser())) {
+        // pwt게시글 작성자(튜터)가 아닐때(=일반유저일때)
+        if (!user.equals(scheduleBoard.getProjectWithTutor().getUser())) {
             Mockito.when(boardAssignmentService.getBoardAssignmentRepository()
-                            .existsByScheduleBoardAndPurchase_User(Mockito.eq(scheduleBoard), Mockito.eq(currentUser)))
+                            .existsByScheduleBoardAndPurchase_User(Mockito.eq(scheduleBoard), Mockito.eq(user)))
                     .thenReturn(true);
         }
         Mockito.when(scheduleTodoRepository.save(any(ScheduleTodo.class))).thenReturn(scheduleTodo);
@@ -142,9 +139,6 @@ class ScheduleTodoServiceTest {
     @Test
     void 미구매자_일정작성_실패() throws Exception {
         //given
-        User currentUser = User.of("권한없는유저", "test@naver.com", "qwer123", UserRole.ROLE_USER);
-        AuthUser authUser = new AuthUser(1L, "test@naver.com", UserRole.ROLE_USER);
-
         // 리플렉션으로 ScheduleTodoRequest 객체 생성
         Constructor<ScheduleTodoRequest> constructor = ScheduleTodoRequest.class.getDeclaredConstructor(
                 String.class, String.class, LocalDateTime.class, LocalDateTime.class
@@ -158,10 +152,10 @@ class ScheduleTodoServiceTest {
         );
 
         Mockito.when(scheduleBoardService.findByScheduleBoardById(scheduleBoard.getId())).thenReturn(scheduleBoard);
-        Mockito.when(userService.findByUserId(authUser.getId())).thenReturn(currentUser);
+        Mockito.when(userService.findByUserId(authUser.getId())).thenReturn(user);
         Mockito.when(boardAssignmentService.getBoardAssignmentRepository()).thenReturn(boardAssignmentRepository);
         Mockito.when(boardAssignmentRepository.existsByScheduleBoardAndPurchase_User(
-                Mockito.eq(scheduleBoard), Mockito.eq(currentUser))
+                Mockito.eq(scheduleBoard), Mockito.eq(user))
         ).thenReturn(false); // 권한이 없는 경우=false로 반환되게
 
         // when&then
@@ -171,12 +165,12 @@ class ScheduleTodoServiceTest {
         });
         System.out.println("예외발생 : " + exception.getMessage());
         //???근데 널값이 나옴??
-        //Assertions.assertEquals("권한이 없습니다.", exception.getMessage()); 하면 값이 다르다고 나옴
+        //Assertions.assertEquals("권한이 없습니다.", exception.getMessage()); 하면 값이 다르다고 에러발생
+        //????근데 널값이 나옴??????
 
         // 일정 생성이 호출되지 않았는지 검증
         Mockito.verify(scheduleTodoRepository, Mockito.times(0)).save(any(ScheduleTodo.class));
 
-        //????근데 널값이 나옴??????
     }
 
     @Test
@@ -185,8 +179,8 @@ class ScheduleTodoServiceTest {
         Long scheduleBoardId = 1L;
 
         // ScheduleTodo 객체들을 생성해서 스케줄 보드에 포함시킴
-        ScheduleTodo todo1 = ScheduleTodo.of(scheduleBoard, currentUser, "Title 1", "Content 1", LocalDateTime.now(), LocalDateTime.now().plusDays(1));
-        ScheduleTodo todo2 = ScheduleTodo.of(scheduleBoard, currentUser, "Title 2", "Content 2", LocalDateTime.now().plusDays(2), LocalDateTime.now().plusDays(3));
+        ScheduleTodo todo1 = ScheduleTodo.of(scheduleBoard, currentUser, "제목 1", "내용 1", LocalDateTime.now(), LocalDateTime.now().plusDays(1));
+        ScheduleTodo todo2 = ScheduleTodo.of(scheduleBoard, currentUser, "제목 2", "내용 2", LocalDateTime.now().plusDays(2), LocalDateTime.now().plusDays(3));
 
         Mockito.when(scheduleBoardService.findByScheduleBoardById(scheduleBoardId)).thenReturn(scheduleBoard);
         Mockito.when(scheduleTodoRepository.findByScheduleBoard(scheduleBoard)).thenReturn(Arrays.asList(todo1, todo2));
@@ -196,8 +190,8 @@ class ScheduleTodoServiceTest {
 
         //then
         Assertions.assertEquals(2, response.size());  // 결과 개수 화긴
-        Assertions.assertEquals("Title 1", response.get(0).getTitle());  // todo1 제목 확인
-        Assertions.assertEquals("Title 2", response.get(1).getTitle());  // todo2 제목 화긴
+        Assertions.assertEquals("제목 1", response.get(0).getTitle());  // todo1 제목 확인
+        Assertions.assertEquals("제목 2", response.get(1).getTitle());  // todo2 제목 화긴
         // 각각 todo1과 todo2의 startDate, endDate가 올바르게 매핑되었는지 확ㄱ인
         Assertions.assertEquals(todo1.getStartDate(), response.get(0).getStartDate());
         Assertions.assertEquals(todo1.getEndDate(), response.get(0).getEndDate());
@@ -214,8 +208,8 @@ class ScheduleTodoServiceTest {
         scheduleTodo = ScheduleTodo.of(
                 scheduleBoard,
                 user,
-                "Original Title",
-                "Original Content",
+                "제목",
+                "내용",
                 LocalDateTime.now(),
                 LocalDateTime.now().plusDays(1)
         );
@@ -241,8 +235,8 @@ class ScheduleTodoServiceTest {
         scheduleTodo = ScheduleTodo.of(
                 scheduleBoard,
                 user,
-                "Original Title",
-                "Original Content",
+                "제목",
+                "내용",
                 LocalDateTime.now(),
                 LocalDateTime.now().plusDays(1)
         );
@@ -252,8 +246,8 @@ class ScheduleTodoServiceTest {
                 String.class, String.class, LocalDateTime.class, LocalDateTime.class);
         constructor.setAccessible(true);
         scheduleTodoRequest = constructor.newInstance(
-                "Updated Title",
-                "Updated Content",
+                "제목수정",
+                "내용수정",
                 LocalDateTime.now(),
                 LocalDateTime.now().plusDays(1)
         );
@@ -265,8 +259,8 @@ class ScheduleTodoServiceTest {
         ScheduleTodoResponse response = scheduleTodoService.updateScheduleTodo(authUser, scheduleTodo.getId(), scheduleTodoRequest);
 
         // then
-        Assertions.assertEquals("Updated Title", response.getTitle());
-        Assertions.assertEquals("Updated Content", response.getContent());
+        Assertions.assertEquals("제목수정", response.getTitle());
+        Assertions.assertEquals("내용수정", response.getContent());
     }
 
     @Test
@@ -276,8 +270,8 @@ class ScheduleTodoServiceTest {
         scheduleTodo = ScheduleTodo.of(
                 scheduleBoard,
                 user,  // 일반 유저가 작성자
-                "Original Title",
-                "Original Content",
+                "제목",
+                "내용",
                 LocalDateTime.now(),
                 LocalDateTime.now().plusDays(1)
         );
@@ -288,8 +282,8 @@ class ScheduleTodoServiceTest {
         );
         constructor.setAccessible(true);
         scheduleTodoRequest = constructor.newInstance(
-                "Tutor Updated Title",
-                "Tutor Updated Content",
+                "튜터가 수정",
+                "튜터가 수정",
                 LocalDateTime.now(),
                 LocalDateTime.now().plusDays(1)
         );
@@ -302,8 +296,8 @@ class ScheduleTodoServiceTest {
         ScheduleTodoResponse response = scheduleTodoService.updateScheduleTodo(authTutor, scheduleTodo.getId(), scheduleTodoRequest);
 
         // then
-        Assertions.assertEquals("Tutor Updated Title", response.getTitle());
-        Assertions.assertEquals("Tutor Updated Content", response.getContent());
+        Assertions.assertEquals("튜터가 수정", response.getTitle());
+        Assertions.assertEquals("튜터가 수정", response.getContent());
     }
 
     @Test
@@ -313,8 +307,8 @@ class ScheduleTodoServiceTest {
         scheduleTodo = ScheduleTodo.of(
                 scheduleBoard,
                 tutor,  // 튜터가 작성자
-                "Original Title",
-                "Original Content",
+                "제목",
+                "내용",
                 LocalDateTime.now(),
                 LocalDateTime.now().plusDays(1)
         );
@@ -325,8 +319,8 @@ class ScheduleTodoServiceTest {
         );
         constructor.setAccessible(true);
         scheduleTodoRequest = constructor.newInstance(
-                "Unauthorized Update Title",
-                "Unauthorized Update Content",
+                "실패",
+                "실패",
                 LocalDateTime.now(),
                 LocalDateTime.now().plusDays(1)
         );
@@ -351,8 +345,8 @@ class ScheduleTodoServiceTest {
         scheduleTodo = ScheduleTodo.of(
                 scheduleBoard,
                 user,  // 일반 유저가 작성자
-                "Original Title",
-                "Original Content",
+                "제목",
+                "내용",
                 LocalDateTime.now(),
                 LocalDateTime.now().plusDays(1)
         );
@@ -374,8 +368,8 @@ class ScheduleTodoServiceTest {
         scheduleTodo = ScheduleTodo.of(
                 scheduleBoard,
                 user,  // 일반 유저가 작성자
-                "User's Schedule",
-                "Content",
+                "유저글",
+                "내용",
                 LocalDateTime.now(),
                 LocalDateTime.now().plusDays(1)
         );
@@ -392,13 +386,13 @@ class ScheduleTodoServiceTest {
 
 
     @Test
-    void 일반유저_다른사람일정_삭제_실패() {
+    void 일반유저_튜터일정_삭제_실패() {
         // given
         scheduleTodo = ScheduleTodo.of(
                 scheduleBoard,
                 tutor,
-                "Tutor's Schedule",
-                "Content",
+                "튜터글",
+                "삭제실패",
                 LocalDateTime.now(),
                 LocalDateTime.now().plusDays(1)
         );
