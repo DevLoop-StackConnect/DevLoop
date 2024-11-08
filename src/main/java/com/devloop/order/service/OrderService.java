@@ -10,6 +10,7 @@ import com.devloop.order.entity.Order;
 import com.devloop.order.enums.OrderStatus;
 import com.devloop.order.repository.OrderRepository;
 import com.devloop.product.entity.Product;
+import com.devloop.purchase.repository.PurchaseRepository;
 import com.devloop.pwt.entity.ProjectWithTutor;
 import com.devloop.pwt.enums.ProjectWithTutorStatus;
 import com.devloop.stock.entity.Stock;
@@ -18,6 +19,7 @@ import com.devloop.user.entity.User;
 import com.devloop.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.Hibernate;
+import org.hibernate.proxy.HibernateProxy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,6 +32,7 @@ import java.util.UUID;
 public class OrderService {
 
     private final OrderRepository orderRepository;
+    private final PurchaseRepository purchaseRepository; // 순환 참조로 인해 레파지토리 직접 주입
     private final UserService userService;
     private final CartService cartService;
     private final OrderItemService orderItemService;
@@ -46,12 +49,19 @@ public class OrderService {
         // 장바구니 객체 가져오기
         Cart cart = cartService.findByUserId(authUser.getId());
 
-        //주문 전 재고 확인
+        //주문 전 재고 확인 & 재구매 확인
         for (CartItem cartItem : cart.getItems()) {
-            Product product = cartItem.getProduct();
-            if (product instanceof ProjectWithTutor) {
+            Product product = (Product) ((HibernateProxy)cartItem.getProduct()).getHibernateLazyInitializer().getImplementation();
+            boolean isRepurchase = purchaseRepository.existsByUserIdAndProductId(user.getId(), product.getId());
+            // 재구매인 경우
+            if (isRepurchase) {
+                cartService.deleteProductItemFromCart(user, product.getId());
+                throw new ApiException(ErrorStatus._ALREADY_PURCHASE);
+            }
+            if (product.getClass() == ProjectWithTutor.class) {
                 // PWT 모집 중 인지 확인
                 if (((ProjectWithTutor) product).getStatus().equals(ProjectWithTutorStatus.COMPLETED)) {
+                    cartService.deleteProductItemFromCart(user, product.getId());
                     throw new ApiException(ErrorStatus._ALREADY_FULL);
                 }
                 // Stock 찾기
@@ -59,6 +69,7 @@ public class OrderService {
 
                 // 재고 확인
                 if (stock.getQuantity() <= 0) {
+                    cartService.deleteProductItemFromCart(user, product.getId());
                     throw new ApiException(ErrorStatus._STOCK_EMPTY);
                 }
             }
