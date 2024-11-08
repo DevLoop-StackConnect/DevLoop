@@ -19,7 +19,7 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping("/v1/users/profiles")
-    public ApiResponse<UserResponse> getUser(@AuthenticationPrincipal AuthUser authUser) throws MalformedURLException {
+    public ApiResponse<UserResponse> getUser(@AuthenticationPrincipal AuthUser authUser) {
         return ApiResponse.ok(userService.getUser(authUser));
     }
 

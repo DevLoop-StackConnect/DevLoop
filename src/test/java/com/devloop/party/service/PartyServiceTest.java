@@ -1,7 +1,6 @@
 package com.devloop.party.service;
 
 import com.devloop.attachment.entity.PartyAttachment;
-import com.devloop.attachment.enums.FileFormat;
 import com.devloop.attachment.s3.S3Service;
 import com.devloop.attachment.service.PartyAttachmentService;
 import com.devloop.common.AuthUser;
@@ -12,10 +11,8 @@ import com.devloop.party.request.UpdatePartyRequest;
 import com.devloop.party.response.GetPartyDetailResponse;
 import com.devloop.party.response.SavePartyResponse;
 import com.devloop.user.entity.User;
-import com.devloop.user.enums.UserRole;
 import com.devloop.user.service.UserService;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
