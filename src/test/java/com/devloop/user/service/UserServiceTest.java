@@ -44,14 +44,8 @@ class UserServiceTest {
     @Mock
     private TutorRequestRepository tutorRequestRepository;
 
-    @BeforeEach
-    void setUp() {
-
-    }
-
     @Nested
     class getUserTest {
-
         @Test
         void ROLE_USER_유저_반환_테스트() {
             // Given
@@ -72,7 +66,6 @@ class UserServiceTest {
             assertEquals(userResponse.getCommunityList().size(), 0);
             assertNull(userResponse.getTutorRequestSubUrl());
         }
-
         @Test
         void ROLE_TUTOR_유저_반환_테스트() {
             // Given
@@ -95,15 +88,16 @@ class UserServiceTest {
             assertEquals(userResponse.getCommunityList().size(), 0);
             assertEquals(userResponse.getTutorRequestSubUrl(), "https://exampleurl.net");
         }
-
         @Test
         void ROLE_ADMIN_유저_반환_테스트() {
             // Given
             AuthUser authUser = new AuthUser(1L, "skawlsgus2@naver.com", UserRole.ROLE_ADMIN);
             User user = User.of("남진현", "skawlsgus2@naver.com", "123!!", UserRole.ROLE_ADMIN);
             given(userRepository.findById(anyLong())).willReturn(Optional.of(user));
+
             // When
             UserResponse userResponse = userService.getUser(authUser);
+
             // Then
             assertNotNull(userResponse);
             assertEquals(userResponse.getUserEmail(), "skawlsgus2@naver.com");
@@ -115,12 +109,10 @@ class UserServiceTest {
             assertNull(userResponse.getTutorRequestSubUrl());
         }
     }
-
     @Nested
     class updateProfileImgTest{
-
         @Test
-        public void 다수_파일_보낼때_에러테스트(){
+        void 다수_파일_보낼때_에러테스트(){
             //Given
             AuthUser authUser = new AuthUser(1L, "skawlsgus2@naver.com", UserRole.ROLE_TUTOR);
             MockMultipartFile mockFile1 = new MockMultipartFile(
@@ -140,9 +132,8 @@ class UserServiceTest {
             // When and Then
             assertThrows(ApiException.class, () -> userService.updateProfileImg(multipartFiles, authUser));
         }
-
         @Test
-        public void 디퐆트이미지_업데이트_메서드호출_테스트(){
+        void 디퐆트이미지_업데이트_메서드호출_테스트(){
             //Given
             AuthUser authUser = new AuthUser(1L, "skawlsgus2@naver.com", UserRole.ROLE_TUTOR);
             MockMultipartFile mockFile1 = new MockMultipartFile(
@@ -154,6 +145,7 @@ class UserServiceTest {
             MultipartFile[] multipartFiles = new MockMultipartFile[]{mockFile1};
             User user = User.of("남진현", "skawlsgus2@naver.com", "123!!", UserRole.ROLE_TUTOR);
             given(userRepository.findById(anyLong())).willReturn(Optional.of(user));
+
             //When
             userService.updateProfileImg(multipartFiles, authUser);
 
