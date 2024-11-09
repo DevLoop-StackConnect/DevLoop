@@ -387,6 +387,9 @@ class ProjectWithTutorServiceTest {
             projectWithTutorService.deleteProjectWithTutor(authUser,projectId);
 
             //then
-            verify(projectWithTutorRepository, times(1)).delete((ProjectWithTutor) any());        }
+            verify(projectWithTutorRepository, times(1)).delete((ProjectWithTutor) any());
+        }
+        /*@Test
+        void 테스트코드_실패방지_테스트(){}*/
     }
 }
