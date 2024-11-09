@@ -48,7 +48,7 @@ public class User extends Timestamped {
 
     private String slackId;
     private String slackEmail;
-    private boolean slackLinked;
+    private boolean slackLinked = false;
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private SlackUserMapping slackMapping;

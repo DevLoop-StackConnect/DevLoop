@@ -9,16 +9,16 @@ import com.devloop.product.entity.Product;
 import com.devloop.pwt.enums.Level;
 import com.devloop.user.entity.User;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.math.BigDecimal;
 import java.util.List;
 
 @Entity
 @Getter
+@Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PROTECTED)
 public class Lecture extends Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
