@@ -102,7 +102,7 @@ class LectureServiceTest {
         //then
         Assertions.assertNotNull(saveLectureResponse);
         Assertions.assertEquals(saveLectureResponse.getLectureId(), lecture.getId());
-        Assertions.assertEquals(lecture.getApproval(), Approval.WAITE);
+        Assertions.assertEquals(lecture.getApproval(), Approval.APPROVED);
     }
 
     @Test
