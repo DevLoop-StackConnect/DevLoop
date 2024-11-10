@@ -7,11 +7,14 @@ import com.devloop.attachment.s3.S3Service;
 import com.devloop.attachment.service.CommunityAttachmentService;
 import com.devloop.common.AuthUser;
 import com.devloop.common.apipayload.dto.CommunitySimpleResponseDto;
+import com.devloop.common.apipayload.status.ErrorStatus;
 import com.devloop.common.enums.Category;
+import com.devloop.common.exception.ApiException;
 import com.devloop.community.entity.Community;
 import com.devloop.community.entity.ResolveStatus;
 import com.devloop.community.repository.CommunityRepository;
 import com.devloop.community.request.CommunitySaveRequest;
+import com.devloop.community.request.CommunityUpdateRequest;
 import com.devloop.community.response.CommunityDetailResponse;
 import com.devloop.community.response.CommunitySaveResponse;
 import com.devloop.community.response.CommunitySimpleResponse;
@@ -38,6 +41,7 @@ import java.net.URL;
 import java.util.List;
 import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 
@@ -67,6 +71,7 @@ class CommunityServiceTest {
     public void setUp() throws Exception {
 
         user = User.of("게시글 작성자", "user@example.com", "password123", UserRole.ROLE_USER);
+        user.setId(1L);
         authUser = new AuthUser(user.getId(), user.getEmail(), UserRole.ROLE_USER);
         community = Community.of(
                 "제목",
@@ -197,10 +202,78 @@ class CommunityServiceTest {
     }
 
     @Test
-    public void 다른사람글_수정_실패(){ }
+    public void 수정_성공() throws Exception {
+        // given
+        Long communityId = 1L;
+
+        // community 객체 초기화
+        community = Community.of("제목", "내용", Category.APP_DEV, user);
+
+        // CommunityUpdateRequest 객체 생성 (리플렉션 사용)
+        Constructor<CommunityUpdateRequest> constructor = CommunityUpdateRequest.class.getDeclaredConstructor(
+                String.class, String.class, ResolveStatus.class, Category.class
+        );
+        constructor.setAccessible(true);
+        CommunityUpdateRequest communityUpdateRequest = constructor.newInstance(
+                "수정된 제목", "수정된 내용", ResolveStatus.SOLVED, Category.APP_DEV
+        );
+
+        // Mock 설정: community 객체와 작성자가 동일함
+        Mockito.when(communityRepository.findById(communityId)).thenReturn(Optional.of(community));
+
+        // Mock 파일 설정 (file이 비어 있지 않은 경우)
+        Mockito.when(file.isEmpty()).thenReturn(false);
+
+        // when
+        CommunityDetailResponse response = communityService.updateCommunity(authUser, communityId, communityUpdateRequest, file);
+
+        // then
+        Assertions.assertEquals("수정된 제목", response.getTitle());
+        Assertions.assertEquals("수정된 내용", response.getContent());
+        Assertions.assertEquals(ResolveStatus.SOLVED.getDescription(), response.getStatus());
+        Assertions.assertEquals(Category.APP_DEV.getDescription(), response.getCategory());
+
+        // Mock 호출 검증
+        Mockito.verify(communityRepository, Mockito.times(1)).findById(communityId);
+        Mockito.verify(communityRepository, Mockito.times(1)).save(any(Community.class));
+        Mockito.verify(s3Service, Mockito.times(1)).uploadFile(file, user, community);
+    }
+    @Test
+    public void 다른사람글_삭제_성공() {
+        // given
+        Long communityId = 1L;
+
+        // 게시글 작성자 및 AuthUser 객체 설정
+        Mockito.when(communityRepository.findById(communityId)).thenReturn(Optional.of(community));
+
+        // when
+        communityService.deleteCommunity(authUser, communityId);
+
+        // then
+        // communityRepository.delete 메서드가 community 객체와 함께 호출되었는지 검증
+        Mockito.verify(communityRepository, Mockito.times(1)).delete(community);
+    }
 
     @Test
-    public void 다른사람글_삭제_실패(){ }
+    public void 게시글_삭제_실패_권한없음() {
+        // given
+        Long communityId = 1L;
+
+        // 다른 사용자 생성 (게시글 작성자가 아닌 사용자)
+        User otherUser = User.of("다른 사용자", "other@example.com", "password123", UserRole.ROLE_USER);
+        AuthUser authOtherUser = new AuthUser(otherUser.getId(), otherUser.getEmail(), UserRole.ROLE_USER);
+
+        Mockito.when(communityRepository.findById(communityId)).thenReturn(Optional.of(community));
+
+        // when & then
+        ApiException exception = Assertions.assertThrows(ApiException.class, () -> {
+            communityService.deleteCommunity(authOtherUser, communityId);
+        });
+
+        // 예외 메시지 검증
+        assertEquals(ErrorStatus._PERMISSION_DENIED, exception.getErrorCode());
+        Mockito.verify(communityRepository, Mockito.times(0)).delete(any(Community.class));
+    }
 
 }
 
