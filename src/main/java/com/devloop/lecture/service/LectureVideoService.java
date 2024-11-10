@@ -72,8 +72,8 @@ public class LectureVideoService {
             throw new ApiException(ErrorStatus._HAS_NOT_ACCESS_PERMISSION);
         }
 
-        //파일 타입 확인 (사진으로 테스트하기 위해 임시로 주석 처리)
-        //fileValidator.fileTypeValidator(multipartFile,lecture);
+        //파일 타입 확인(사진으로 테스트하기 위해 임시로 주석 처리)
+        fileValidator.fileTypeValidator(multipartFile,lecture);
         FileFormat fileType = fileValidator.mapStringToFileFormat(Objects.requireNonNull(multipartFile.getContentType()));
 
         //파일 사이즈 확인 (5GB까지 가능)
@@ -96,7 +96,6 @@ public class LectureVideoService {
             for (int i = 1; filePosition < fileSize; i++) {
                 //마지막 파트 크기가 partSize 미만일 경우 조정
                 long currentPartSize = Math.min(partSize, (fileSize - filePosition));
-                log.info("currentPartSize={}", currentPartSize);
 
                 //각 파트에 대한 객체 생성
                 UploadPartRequest uploadPartRequest = UploadPartRequest.builder()
