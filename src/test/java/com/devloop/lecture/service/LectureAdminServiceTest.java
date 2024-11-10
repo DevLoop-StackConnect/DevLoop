@@ -56,8 +56,8 @@ class LectureAdminServiceTest {
 
     @BeforeEach
     void setUp() throws Exception {
-        authUser = new AuthUser(1L, "test@email.com", UserRole.ROLE_USER);
-        user = User.of("홍길동", "Abc123!", "test@email.com", UserRole.ROLE_USER);
+        authUser = new AuthUser(1L, "test@email.com", UserRole.ROLE_ADMIN);
+        user = User.of("홍길동", "Abc123!", "test@email.com", UserRole.ROLE_ADMIN);
 
         //강의
         Constructor<SaveLectureRequest> lectureConstructor = SaveLectureRequest.class.getDeclaredConstructor(
