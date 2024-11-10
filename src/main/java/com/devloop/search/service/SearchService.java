@@ -40,24 +40,24 @@ public class SearchService {
     private final CommunityService communityService;
     private final LectureService lectureService;
     private final ProjectWithTutorService projectWithTutorService;
-    private final RedisTemplate<String, String> rankingRedisTemplate;
-    private static final String SEARCH_RANKING_KEY = "search:ranking";
+//    private final RedisTemplate<String, String> rankingRedisTemplate;
+//    private static final String SEARCH_RANKING_KEY = "search:ranking";
     private static final int PREVIEW_SIZE = 5;
-    @Value("${search.ranking.soze:10}")
-    private int rankingSize;
+//    @Value("${search.ranking.soze:10}")
+//    private int rankingSize;
 
-    @Cacheable(
-            value = "searchPreview",
-            key = "T(com.devloop.common.utils.CacheKeyGenerator).generateKey(#request)",
-            condition = "#request != null",
-            unless = "#result == null || #result.isEmpty()"
-    )
+//    @Cacheable(
+//            value = "searchPreview",
+//            key = "T(com.devloop.common.utils.CacheKeyGenerator).generateKey(#request)",
+//            condition = "#request != null",
+//            unless = "#result == null || #result.isEmpty()"
+//    )
     public IntegratedSearchPreview integratedSearchPreview(IntegrationSearchRequest request) {
         log.debug("Cache miss for search preview: {}", request);
 
         String searchKey = request.generateCompositeKey();
         if (!searchKey.isEmpty()) {
-            incrementSearchCount(searchKey);
+//            incrementSearchCount(searchKey);
         }
 
         try {
@@ -76,7 +76,7 @@ public class SearchService {
                     pwtSpec, PageRequest.of(0, PREVIEW_SIZE, Sort.by("createdAt").descending()));
 
             Page<IntegrationSearchResponse> lectureResults = lectureService.getLectureWithPage(
-                    lectureSpec, PageRequest.of(0, PREVIEW_SIZE, Sort.by("createAt").descending()));
+                    lectureSpec, PageRequest.of(0, PREVIEW_SIZE, Sort.by("createdAt").descending()));
 
             return IntegratedSearchPreview.builder()
                     .partyPreview(partyResults.getContent())
@@ -94,15 +94,15 @@ public class SearchService {
         }
     }
 
-    @Cacheable(
-            value = "searchDetail",
-            key = "T(com.devloop.common.utils.CacheKeyGenerator).generateCategoryKey(#category, #page, #request)",
-            condition = "#request != null && #page > 0",
-            unless = "#result == null || #result.isEmpty()"
-    )
+//    @Cacheable(
+//            value = "searchDetail",
+//            key = "T(com.devloop.common.utils.CacheKeyGenerator).generateCategoryKey(#category, #page, #request)",
+//            condition = "#request != null && #page > 0",
+//            unless = "#result == null || #result.isEmpty()"
+//    )
     public Page<IntegrationSearchResponse> searchByCategory(
             IntegrationSearchRequest request, String category, int page, int size) {
-        incrementSearchCount(request.getTitle());
+//        incrementSearchCount(request.getTitle());
 
         log.debug("Cache miss for category search: {} - page: {}", category, page);
 
@@ -115,21 +115,21 @@ public class SearchService {
             default -> throw new ApiException(ErrorStatus._BAD_SEARCH_KEYWORD);
         };
     }
-    //랭킹
-    public void incrementSearchCount(String keyword) {
-        ZSetOperations<String, String> zSetOps = rankingRedisTemplate.opsForZSet();
-        zSetOps.incrementScore(SEARCH_RANKING_KEY, keyword, 1);
-    }
-    //랭킹
-    public Set<ZSetOperations.TypedTuple<String>> getTopSearchKeywords() {
-        ZSetOperations<String, String> zSetOps = rankingRedisTemplate.opsForZSet();
-        return zSetOps.reverseRangeWithScores(SEARCH_RANKING_KEY, 0, rankingSize - 1);
-    }
-    //랭킹 시간 초기화
-    @Scheduled(cron = "0 0 0 * * ?")
-    public void resetSearchRanking() {
-        rankingRedisTemplate.delete(SEARCH_RANKING_KEY); // 랭킹 초기화
-    }
+//    //랭킹
+//    public void incrementSearchCount(String keyword) {
+//        ZSetOperations<String, String> zSetOps = rankingRedisTemplate.opsForZSet();
+//        zSetOps.incrementScore(SEARCH_RANKING_KEY, keyword, 1);
+//    }
+//    //랭킹
+//    public Set<ZSetOperations.TypedTuple<String>> getTopSearchKeywords() {
+//        ZSetOperations<String, String> zSetOps = rankingRedisTemplate.opsForZSet();
+//        return zSetOps.reverseRangeWithScores(SEARCH_RANKING_KEY, 0, rankingSize - 1);
+//    }
+//    //랭킹 시간 초기화
+//    @Scheduled(cron = "0 0 0 * * ?")
+//    public void resetSearchRanking() {
+//        rankingRedisTemplate.delete(SEARCH_RANKING_KEY); // 랭킹 초기화
+//    }
 
     private Page<IntegrationSearchResponse> searchParty(IntegrationSearchRequest request, PageRequest pageable) {
         Specification<Party> spec = SearchSpecificationUtil.buildSpecification(request);
