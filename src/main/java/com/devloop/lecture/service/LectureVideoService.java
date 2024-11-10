@@ -73,7 +73,7 @@ public class LectureVideoService {
         }
 
         //파일 타입 확인(사진으로 테스트하기 위해 임시로 주석 처리)
-        fileValidator.fileTypeValidator(multipartFile,lecture);
+        //fileValidator.fileTypeValidator(multipartFile,lecture);
         FileFormat fileType = fileValidator.mapStringToFileFormat(Objects.requireNonNull(multipartFile.getContentType()));
 
         //파일 사이즈 확인 (5GB까지 가능)
