@@ -65,7 +65,7 @@ class ScheduleBoardServiceTest {
     }
 
     @Test
-    void createScheduleBoard_스케줄_보드_생성_성공() {
+    void 스케줄_보드_생성_성공() {
         // given
         when(scheduleBoardRepository.save(any(ScheduleBoard.class))).thenAnswer(invocation -> {
             ScheduleBoard savedBoard = invocation.getArgument(0);
@@ -87,7 +87,7 @@ class ScheduleBoardServiceTest {
     }
 
     @Test
-    void getScheduleBoard_스케줄_보드_조회_성공() {
+    void 스케줄_보드_조회_성공() {
         // given
         when(projectWithTutorService.findByPwtId(projectWithTutor.getId())).thenReturn(projectWithTutor);
         when(scheduleBoardRepository.findByProjectWithTutor(projectWithTutor)).thenReturn(Optional.of(scheduleBoard));
@@ -102,7 +102,7 @@ class ScheduleBoardServiceTest {
     }
 
     @Test
-    void getScheduleBoard_스케줄_보드_조회_예외() {
+    void 스케줄_보드_조회_예외() {
         // given
         when(projectWithTutorService.findByPwtId(projectWithTutor.getId())).thenReturn(projectWithTutor);
         when(scheduleBoardRepository.findByProjectWithTutor(projectWithTutor)).thenReturn(Optional.empty());

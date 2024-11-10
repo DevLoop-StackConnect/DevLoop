@@ -165,7 +165,7 @@ class ScheduleTodoServiceTest {
         ApiException exception = Assertions.assertThrows(ApiException.class, () -> {
             scheduleTodoService.createScheduleTodo(scheduleBoard.getId(), scheduleTodoRequest, authUser);
         });
-//
+
         assertEquals(ErrorStatus._PERMISSION_DENIED, exception.getErrorCode());
 
         // 일정 생성이 호출되지 않았는지 검증

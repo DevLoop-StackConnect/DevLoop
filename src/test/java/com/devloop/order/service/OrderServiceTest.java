@@ -87,7 +87,7 @@ class OrderServiceTest {
     }
 
     @Test
-    void createOrder_정상_주문_생성() throws Exception {
+    void 정상_주문_생성() throws Exception {
         // given
         when(userService.findByUserId(user.getId())).thenReturn(user);
         when(cartService.findByUserId(user.getId())).thenReturn(cart);
@@ -116,7 +116,7 @@ class OrderServiceTest {
     }
 
     @Test
-    void createOrder_재구매_예외처리() throws Exception {
+    void 재구매_예외처리() throws Exception {
         // given
         when(userService.findByUserId(user.getId())).thenReturn(user);
         when(cartService.findByUserId(user.getId())).thenReturn(cart);
@@ -145,7 +145,7 @@ class OrderServiceTest {
 
 
     @Test
-    void orderRequested_정상_상태_변경() {
+    void 정상_상태_변경() {
         // given
         when(orderRepository.findByOrderRequestId(orderId)).thenReturn(Optional.of(order));
 
@@ -158,7 +158,7 @@ class OrderServiceTest {
     }
 
     @Test
-    void orderFailed_정상_주문_삭제() {
+    void 정상_주문_삭제() {
         // given
         when(orderRepository.findByOrderRequestId(orderId)).thenReturn(Optional.of(order));
 
@@ -171,7 +171,7 @@ class OrderServiceTest {
     }
 
     @Test
-    void orderApproved_정상_상태_변경_및_재고_차감() throws Exception {
+    void 정상_상태_변경_및_재고_차감() throws Exception {
         // given
         when(orderRepository.findByOrderRequestId(orderId)).thenReturn(Optional.of(order));
 
