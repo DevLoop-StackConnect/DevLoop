@@ -48,6 +48,7 @@ class LectureAdminServiceTest {
 
     @Mock
     private SaveLectureRequest saveLectureRequest;
+
     private Lecture lecture;
     private AuthUser authUser;
     private User user;
