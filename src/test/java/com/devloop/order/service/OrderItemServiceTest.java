@@ -80,7 +80,7 @@ class OrderItemServiceTest {
     }
 
     @Test
-    void 유효한_OrderRequestId로_주문_항목_저장_성공() {
+    void 유효한_주문아이디로_주문_항목_저장_성공() {
         // given
         when(orderRepository.findByOrderRequestId(orderId)).thenReturn(Optional.of(order));
 
