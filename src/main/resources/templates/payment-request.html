@@ -63,7 +63,7 @@
             await widgets.requestPayment({
                 orderId: orderRequestId,
                 orderName: orderName,
-                successUrl: window.location.origin + "/payments-success?orderRequestId="+orderRequestId,
+                successUrl: window.location.origin + "/payments-inprogress?orderRequestId="+orderRequestId,
                 failUrl: window.location.origin + "/api/v2/orders-fail?orderRequestId="+orderRequestId,
                 customerEmail: customerEmail,
                 customerName: customerName,
