@@ -11,6 +11,7 @@ import com.devloop.common.enums.Category;
 import com.devloop.common.exception.ApiException;
 import com.devloop.common.utils.SearchResponseUtil;
 import com.devloop.community.entity.Community;
+import com.devloop.community.entity.QCommunity;
 import com.devloop.community.entity.ResolveStatus;
 import com.devloop.community.repository.CommunityRepository;
 import com.devloop.community.request.CommunitySaveRequest;
@@ -21,6 +22,8 @@ import com.devloop.community.response.CommunitySimpleResponse;
 import com.devloop.search.response.IntegrationSearchResponse;
 import com.devloop.user.entity.User;
 import com.devloop.user.service.UserService;
+import com.querydsl.core.BooleanBuilder;
+import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -43,7 +46,7 @@ public class CommunityService {
     private final CommunityRepository communityRepository;
     private final UserService userService;
     private final S3Service s3Service;
-
+    private final JPAQueryFactory queryFactory;
     private final CommunityAttachmentService communityAttachmentService;
 
     //게시글 작성
@@ -204,17 +207,26 @@ public class CommunityService {
     /**
      * Search에서 사용
      */
-    public List<IntegrationSearchResponse> getAllCommunity(Specification<Community> spec) {
-        List<Community> communities = communityRepository.findAll(spec);
-        return SearchResponseUtil.wrapResponse(BoardType.COMMUNITY, communities);
-    }
+    public Page<IntegrationSearchResponse> getCommunityWithPage(BooleanBuilder condition, PageRequest pageable) {
+        QCommunity qCommunity = QCommunity.community;
 
-    public Page<IntegrationSearchResponse> getCommunityWithPage(Specification<Community> spec, PageRequest pageable) {
-        Page<Community> communityPage = communityRepository.findAll(spec, pageable);
-        List<IntegrationSearchResponse> response = SearchResponseUtil.wrapResponse(
-                BoardType.COMMUNITY,
-                communityPage.getContent()
-        );
-        return new PageImpl<>(response, pageable, communityPage.getTotalElements());
+        // QueryDSL로 조건에 맞는 Community 페이지 조회
+        List<Community> communities = queryFactory
+                .selectFrom(qCommunity)
+                .where(condition)
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+
+        // 전체 요소 수를 계산
+        long total = queryFactory
+                .select(qCommunity.id.count())  // 명시적으로 id의 count를 사용
+                .from(qCommunity)
+                .where(condition)
+                .fetchOne();
+
+        // IntegrationSearchResponse로 변환하여 반환
+        List<IntegrationSearchResponse> response = SearchResponseUtil.wrapResponse(BoardType.COMMUNITY, communities);
+        return new PageImpl<>(response, pageable, total);
     }
 }

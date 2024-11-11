@@ -30,14 +30,16 @@ public class SearchController {
         return ApiResponse.ok(searchService.integratedSearchPreview(request));
     }
 
-    @GetMapping("/v1/main/search/{category}")
+    @PostMapping("/v1/main/search/detail/{boardType}")
     @PreAuthorize("permitAll()")
-    public ApiResponse<Page<IntegrationSearchResponse>> searchByCategory(
-            @PathVariable String category,
+    public ApiResponse<Page<IntegrationSearchResponse>> searchDetail(
+            @PathVariable String boardType,
             @RequestBody IntegrationSearchRequest request,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size) {
-        return ApiResponse.ok(searchService.searchByCategory(request, category, page, size));
+        log.info("상세 검색 요청 - boardType: {}, request: {}, page: {}, size: {}",
+                boardType, request, page, size);
+        return ApiResponse.ok(searchService.searchByBoardType(request, boardType, page, size));
     }
 
 //    @GetMapping("/v1/main/search/ranking")
