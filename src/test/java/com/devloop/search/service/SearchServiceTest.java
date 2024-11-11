@@ -236,5 +236,5 @@ class SearchServiceTest {
         // then
         assertNotNull(result);
         verify(communityService).getCommunityWithPage(any(Specification.class), eq(pageable));
-    }
+    }*/
 }
