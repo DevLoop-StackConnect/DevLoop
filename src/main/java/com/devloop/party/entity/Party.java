@@ -10,18 +10,15 @@ import com.devloop.partycomment.entity.PartyComment;
 import com.devloop.user.entity.User;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.List;
 
 @Getter
 @Entity
 @Builder
-@AllArgsConstructor
-@NoArgsConstructor
+@AllArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Party extends Timestamped {
 
     @Id
@@ -71,8 +68,8 @@ public class Party extends Timestamped {
     public void update(UpdatePartyRequest request) {
         this.title = request.getTitle();
         this.contents = request.getContents();
-        this.status = PartyStatus.of(request.getStatus());
-        this.category = Category.of(request.getCategory());
+        this.status = request.getStatus();
+        this.category = request.getCategory();
     }
 
 }

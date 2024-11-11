@@ -50,6 +50,7 @@ public class PartyService {
 
         //새로운 파티 생성
         Party newParty=Party.from(savePartyRequest, user);
+
         partyRepository.save(newParty);
 
         //파일이 있을 때만 업로드
