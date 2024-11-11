@@ -58,7 +58,9 @@ public class WebSecurityConfig {
                                 "/api/v2/orders-fail",
                                 "/payment-fail",
                                 "/actuator/**",
-                                "/api/v1/slack/**"
+                                "/api/v1/slack/**",
+                                "/payments-inprogress",
+                                "/payment-inprogress"
                         )
                         .permitAll()
                         .requestMatchers(

@@ -12,7 +12,6 @@ import lombok.NoArgsConstructor;
 import java.math.BigDecimal;
 
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 public class SaveLectureRequest {
     @NotBlank(message = "제목을 작성해 주세요")
