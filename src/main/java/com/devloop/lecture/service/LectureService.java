@@ -95,6 +95,7 @@ public class LectureService {
                 lecture.getDescription(),
                 lecture.getRecommend(),
                 lecture.getCategory().getDescription(),
+                BoardType.LECTURE.getBoardType(),  // 수정된 부분: 직접 BoardType enum 사용
                 lecture.getLevel().getLevel(),
                 lecture.getPrice(),
                 lecture.getLectureVideos().size(),
@@ -120,6 +121,7 @@ public class LectureService {
                 lecture.getId(),
                 lecture.getTitle(),
                 lecture.getCategory().getDescription(),
+                BoardType.LECTURE.getBoardType(),
                 lecture.getLevel().getLevel(),
                 lecture.getPrice()
         ));
@@ -172,10 +174,7 @@ public class LectureService {
                 .fetchOne();
 
         // IntegrationSearchResponse로 변환하여 반환
-        List<IntegrationSearchResponse> response = lectures.stream()
-                .map(lecture -> IntegrationSearchResponse.of(lecture, BoardType.LECTURE.name().toLowerCase()))
-                .collect(Collectors.toList());
-
+        List<IntegrationSearchResponse> response = SearchResponseUtil.wrapResponse(BoardType.LECTURE, lectures);
         return new PageImpl<>(response, pageable, total);
     }
 }
