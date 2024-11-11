@@ -3,7 +3,6 @@ package com.devloop.payment.controller;
 import com.devloop.order.entity.Order;
 import com.devloop.order.service.OrderService;
 import com.devloop.payment.service.PaymentService;
-import com.devloop.purchase.service.PurchaseService;
 import lombok.RequiredArgsConstructor;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -56,11 +55,25 @@ public class PaymentController {
     }
 
     // 주문 성공 결제 승인 요청 (주문 요청됨)
-    @GetMapping("/payments-success")
-    public String paymentsSuccess(
+    @GetMapping("/payments-inprogress")
+    public String paymentsInProgress(
             @RequestParam("orderRequestId") String orderRequestId
     ) {
         orderService.orderRequested(orderRequestId);
+        return "payment-inprogress";
+    }
+
+    // 결제 성공
+    @GetMapping("/payments-success")
+    public String paymentsSuccess(
+            @RequestParam("paymentKey") String paymentKey,
+            @RequestParam("orderId") String orderId,
+            @RequestParam("amount") String amount,
+            Model model
+    ) {
+        model.addAttribute("paymentKey", paymentKey);
+        model.addAttribute("orderId", orderId);
+        model.addAttribute("amount", amount);
         return "payment-success";
     }
 

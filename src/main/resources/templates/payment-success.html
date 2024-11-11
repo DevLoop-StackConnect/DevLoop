@@ -1,49 +1,80 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="utf-8" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>주문 완료</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        .complete-container {
+            text-align: center;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            width: 90%;
+            max-width: 400px;
+        }
+        .complete-icon {
+            font-size: 50px;
+            color: #4CAF50;
+            margin-bottom: 15px;
+        }
+        .message {
+            font-size: 1.4em;
+            margin-bottom: 20px;
+        }
+        .buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+        .button {
+            padding: 10px 20px;
+            font-size: 1em;
+            color: #fff;
+            background-color: #3498db;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+        .button:hover {
+            background-color: #2980b9;
+        }
+        .button-secondary {
+            background-color: #2ecc71;
+        }
+        .button-secondary:hover {
+            background-color: #27ae60;
+        }
+    </style>
 </head>
 <body>
-<h2>결제 성공</h2>
-<p id="paymentKey"></p>
-<p id="orderId"></p>
-<p id="amount"></p>
 
+<div class="complete-container">
+    <div class="complete-icon">✔️</div>
+    <div class="message">주문이 완료되었습니다!</div>
+    <div class="message">
+        <p id="paymentKey"></p>
+        <p id="orderId"></p>
+        <p id="amount"></p>
+    </div>
+    <div class="buttons">
+        <a href="index.html" class="button">홈으로 돌아가기</a>
+        <a href="order_history.html" class="button button-secondary">주문 내역 보기</a>
+    </div>
+</div>
 <script>
-    // 쿼리 파라미터 값이 결제 요청할 때 보낸 데이터와 동일한지 반드시 확인하세요.
-    // 클라이언트에서 결제 금액을 조작하는 행위를 방지할 수 있습니다.
-    const urlParams = new URLSearchParams(window.location.search);
-    const paymentKey = urlParams.get("paymentKey");
-    const orderId = urlParams.get("orderId");
-    const amount = urlParams.get("amount");
-
-    async function confirm() {
-        const requestData = {
-            paymentKey: paymentKey,
-            orderId: orderId,
-            amount: amount,
-        };
-
-        const response = await fetch("/confirm", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(requestData),
-        });
-
-        const json = await response.json();
-
-        if (!response.ok) {
-            // 결제 실패 비즈니스 로직을 구현하세요.
-            console.log(json);
-            window.location.href = `/api/v2/orders-fail?orderRequestId=${orderId}&message=${json.message}&code=${json.code}`;
-        }
-
-        // 결제 성공 비즈니스 로직을 구현하세요.
-        console.log(json);
-    }
-    confirm();
 
     const paymentKeyElement = document.getElementById("paymentKey");
     const orderIdElement = document.getElementById("orderId");
@@ -52,6 +83,8 @@
     orderIdElement.textContent = "주문번호: " + orderId;
     amountElement.textContent = "결제 금액: " + amount;
     paymentKeyElement.textContent = "paymentKey: " + paymentKey;
+
 </script>
+
 </body>
 </html>
