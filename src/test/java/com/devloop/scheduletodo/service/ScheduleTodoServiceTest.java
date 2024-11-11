@@ -1,6 +1,7 @@
 package com.devloop.scheduletodo.service;
 
 import com.devloop.common.AuthUser;
+import com.devloop.common.apipayload.status.ErrorStatus;
 import com.devloop.common.enums.Category;
 import com.devloop.common.exception.ApiException;
 import com.devloop.pwt.entity.ProjectWithTutor;
@@ -33,6 +34,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 
 @ExtendWith(MockitoExtension.class)
@@ -87,17 +89,6 @@ class ScheduleTodoServiceTest {
         // ScheduleBoard 객체 생성
         scheduleBoard = ScheduleBoard.from(projectWithTutor);
 
-        // 리플렉션으로 ScheduleTodoRequest 객체 생성
-        Constructor<ScheduleTodoRequest> constructor = ScheduleTodoRequest.class.getDeclaredConstructor(
-                String.class, String.class, LocalDateTime.class, LocalDateTime.class
-        );
-        constructor.setAccessible(true);
-        ScheduleTodoRequest scheduleTodoRequest = constructor.newInstance(
-                "제목",
-                "내용",
-                LocalDateTime.now(),
-                LocalDateTime.now().plusDays(1)
-        );
     }
 
 
@@ -174,10 +165,8 @@ class ScheduleTodoServiceTest {
         ApiException exception = Assertions.assertThrows(ApiException.class, () -> {
             scheduleTodoService.createScheduleTodo(scheduleBoard.getId(), scheduleTodoRequest, authUser);
         });
-        System.out.println("예외발생 : " + exception.getMessage());
-        //???근데 널값이 나옴??
-        //Assertions.assertEquals("권한이 없습니다.", exception.getMessage()); 하면 값이 다르다고 에러발생
-        //????근데 널값이 나옴??????
+
+        assertEquals(ErrorStatus._PERMISSION_DENIED, exception.getErrorCode());
 
         // 일정 생성이 호출되지 않았는지 검증
         Mockito.verify(scheduleTodoRepository, Mockito.times(0)).save(any(ScheduleTodo.class));
@@ -343,7 +332,7 @@ class ScheduleTodoServiceTest {
         ApiException exception = Assertions.assertThrows(ApiException.class, () -> {
             scheduleTodoService.updateScheduleTodo(authUser, scheduleTodo.getId(), scheduleTodoRequest);
         });
-        System.out.println("예외 발생: " + exception.getMessage());
+        assertEquals(ErrorStatus._PERMISSION_DENIED, exception.getErrorCode());
 
         // 일정 수정이 호출되지 않았는지 검증
         Mockito.verify(scheduleTodoRepository, Mockito.times(0)).save(any(ScheduleTodo.class));
@@ -415,7 +404,7 @@ class ScheduleTodoServiceTest {
         ApiException exception = Assertions.assertThrows(ApiException.class, () -> {
             scheduleTodoService.deleteScheduleTodo(scheduleTodo.getId(), authUser);
         });
-        System.out.println("예외 발생: " + exception.getMessage());
+        assertEquals(ErrorStatus._PERMISSION_DENIED, exception.getErrorCode());
 
         // verify that delete was not called
         Mockito.verify(scheduleTodoRepository, Mockito.times(0)).delete(scheduleTodo);
