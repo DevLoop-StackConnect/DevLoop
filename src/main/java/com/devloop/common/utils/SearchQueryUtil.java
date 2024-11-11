@@ -1,6 +1,7 @@
 package com.devloop.common.utils;
 
 import com.devloop.common.apipayload.status.ErrorStatus;
+import com.devloop.common.enums.Approval;
 import com.devloop.common.enums.Category;
 import com.devloop.common.exception.ApiException;
 import com.devloop.community.entity.Community;
@@ -75,20 +76,58 @@ public class SearchQueryUtil {
             }
         }
 
+        // Lecture 조건 처리
+        if (StringUtils.hasText(request.getLecture())) {
+            BooleanExpression lectureCondition = buildLectureCondition(request.getLecture(), entityClass);
+            if (lectureCondition != null) {
+                builder.and(lectureCondition);
+                log.debug("lecture condition for {}: {}", entityClass.getSimpleName(), lectureCondition);
+            }
+        }
+
         // 검색 조건 추가 확인
         if (searchBuilder.hasValue()) {
             builder.and(searchBuilder);
             log.debug("Search conditions combined for {}: {}", entityClass.getSimpleName(), builder);
         }
 
-        // 기본 조건 추가 (검색 조건이 없을 때)
-        if (builder.getValue() == null) {
-            builder = buildDefaultCondition(entityClass, builder);
-            log.debug("Default condition applied for {}: {}", entityClass.getSimpleName(), builder);
-        }
-
         log.debug("Final generated conditions for {}: {}", entityClass.getSimpleName(), builder);
         return builder;
+    }
+    private static BooleanExpression buildBaseCondition(Class<?> entityClass) {
+        if (entityClass.equals(Party.class)) {
+            return QParty.party.id.isNotNull();
+        } else if (entityClass.equals(Community.class)) {
+            return QCommunity.community.id.isNotNull();
+        } else if (entityClass.equals(Lecture.class)) {
+            // Lecture의 경우 승인된 것만 검색되도록 추가 조건
+            return QLecture.lecture.id.isNotNull()
+                    .and(QLecture.lecture.approval.eq(Approval.APPROVED));
+        } else if (entityClass.equals(ProjectWithTutor.class)) {
+            return QProjectWithTutor.projectWithTutor.id.isNotNull();
+        }
+        return null;
+    }
+
+    private static BooleanExpression buildLectureCondition(String lecture, Class<?> entityClass) {
+        log.debug("Building title condition for entity: {} with lecture: {}", entityClass.getSimpleName(), lecture);
+
+        if (entityClass.equals(Community.class)) {
+            log.debug("Applying lecture condition for Community");
+            return QCommunity.community.title.containsIgnoreCase(lecture);
+        } else if (entityClass.equals(Party.class)) {
+            log.debug("Applying lecture condition for Party");
+            return QParty.party.title.containsIgnoreCase(lecture);
+        } else if (entityClass.equals(Lecture.class)) {
+            log.debug("Applying lecture condition for Lecture");
+            return QLecture.lecture.title.containsIgnoreCase(lecture);
+        } else if (entityClass.equals(ProjectWithTutor.class)) {
+            log.debug("Applying lecture condition for ProjectWithTutor");
+            return QProjectWithTutor.projectWithTutor.title.containsIgnoreCase(lecture);
+        }
+
+        log.debug("No matching entity class found for lecture condition, returning null");
+        return null;
     }
 
     private static BooleanExpression buildTitleCondition(String title, Class<?> entityClass) {
@@ -152,26 +191,24 @@ public class SearchQueryUtil {
     }
 
     private static BooleanExpression buildBoardTypeCondition(String boardType, Class<?> entityClass) {
+        // 각 엔티티에 대해 해당 boardType이 아닌 경우 isNull() 조건으로 결과 제외
         if (entityClass.equals(Party.class)) {
-            return QParty.party.boardType.stringValue().equalsIgnoreCase(boardType);
+            // party 게시판이 아닌 경우 검색에서 제외
+            return !boardType.equalsIgnoreCase("party") ?
+                    QParty.party.id.isNull() : null;
         } else if (entityClass.equals(Community.class)) {
-            return QCommunity.community.boardType.stringValue().equalsIgnoreCase(boardType);
+            // community 게시판이 아닌 경우 검색에서 제외
+            return !boardType.equalsIgnoreCase("community") ?
+                    QCommunity.community.id.isNull() : null;
+        } else if (entityClass.equals(Lecture.class)) {
+            // lecture 게시판이 아닌 경우 검색에서 제외
+            return !boardType.equalsIgnoreCase("lecture") ?
+                    QLecture.lecture.id.isNull() : null;
         } else if (entityClass.equals(ProjectWithTutor.class)) {
-            return QProjectWithTutor.projectWithTutor.boardType.stringValue().equalsIgnoreCase(boardType);
+            // pwt 게시판이 아닌 경우 검색에서 제외
+            return !boardType.equalsIgnoreCase("pwt") ?
+                    QProjectWithTutor.projectWithTutor.id.isNull() : null;
         }
         return null;
-    }
-
-    private static BooleanBuilder buildDefaultCondition(Class<?> entityClass, BooleanBuilder builder) {
-        if (entityClass.equals(Party.class)) {
-            return builder.and(QParty.party.id.isNull());
-        } else if (entityClass.equals(Community.class)) {
-            return builder.and(QCommunity.community.id.isNull());
-        } else if (entityClass.equals(Lecture.class)) {
-            return builder.and(QLecture.lecture.id.isNull());
-        } else if (entityClass.equals(ProjectWithTutor.class)) {
-            return builder.and(QProjectWithTutor.projectWithTutor.id.isNull());
-        }
-        return builder;
     }
 }

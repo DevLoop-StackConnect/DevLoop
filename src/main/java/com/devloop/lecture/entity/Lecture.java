@@ -1,6 +1,7 @@
 package com.devloop.lecture.entity;
 
 import com.devloop.common.enums.Approval;
+import com.devloop.common.enums.BoardType;
 import com.devloop.common.enums.Category;
 import com.devloop.lecture.request.SaveLectureRequest;
 import com.devloop.lecture.request.UpdateLectureRequest;
@@ -33,6 +34,9 @@ public class Lecture extends Product {
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private Category category;
+
+    @Enumerated(EnumType.STRING)
+    private BoardType boardType = BoardType.LECTURE;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
