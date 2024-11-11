@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 package com.devloop.party.service;
 
 import com.devloop.attachment.entity.PartyAttachment;
@@ -212,7 +211,7 @@ class PartyServiceTest {
     }
 
 }
-=======
+
 //package com.devloop.party.service;
 //
 //import com.devloop.attachment.entity.PartyAttachment;
@@ -327,4 +326,4 @@ class PartyServiceTest {
 //
 //    }
 //}
->>>>>>> 77f23c47b8174d83c7b95fd4c1f2f6a4cc379abe
+
