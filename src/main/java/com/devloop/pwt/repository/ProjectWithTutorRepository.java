@@ -8,9 +8,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 import org.springframework.data.repository.query.Param;
 
-public interface ProjectWithTutorRepository extends JpaRepository<ProjectWithTutor, Long>, JpaSpecificationExecutor<ProjectWithTutor> {
+public interface ProjectWithTutorRepository extends JpaRepository<ProjectWithTutor, Long>, QuerydslPredicateExecutor<ProjectWithTutor> {
 
     @Query(
             "SELECT new com.devloop.common.apipayload.dto.ProjectWithTutorResponseDto(p.id, p.title, p.price, p.status, p.deadline, p.maxParticipants, p.level, p.user)" +
