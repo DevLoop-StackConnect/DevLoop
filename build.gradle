@@ -41,6 +41,7 @@ dependencies {
 	runtimeOnly 'com.mysql:mysql-connector-j'
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'org.springframework.security:spring-security-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
 	//추가 의존성 목록
@@ -99,8 +100,8 @@ dependencies {
 	implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
 
 	//CloudFront
-    implementation 'software.amazon.awssdk:cloudfront:2.20.32' // 예시 버전
-    implementation 'software.amazon.awssdk:sts:2.20.32'       // 예시 버전
+    implementation 'software.amazon.awssdk:cloudfront:2.20.32'
+    implementation 'software.amazon.awssdk:sts:2.20.32'
 
     // json-simple : toss payment 에서 사용
     implementation 'com.googlecode.json-simple:json-simple:1.1.1'

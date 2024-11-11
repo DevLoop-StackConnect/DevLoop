@@ -32,15 +32,13 @@ public class ScheduleTodoController {
     }
 
     //일정 다건 조회
-    @GetMapping("/v2/{scheduleBoardId}/scheduleTodos")
-    @PreAuthorize("permitAll()")
+    @GetMapping("/search/v2/{scheduleBoardId}/scheduleTodos")
     public ApiResponse<List<ScheduleTodoSimpleResponse>> getTodoByScheduleBoard(@PathVariable Long scheduleBoardId) {
         return ApiResponse.ok(scheduleTodoService.getTodoByScheduleBoard(scheduleBoardId));
     }
 
     //일정 단건 조회
-    @GetMapping("/v2/{scheduleBoardId}/scheduleTodos/{scheduleTodoId}")
-    @PreAuthorize("permitAll()")
+    @GetMapping("/search/v2/{scheduleBoardId}/scheduleTodos/{scheduleTodoId}")
     public ApiResponse<ScheduleTodoResponse> getScheduleTodo(@PathVariable Long scheduleTodoId) {
         return ApiResponse.ok(scheduleTodoService.getScheduleTodo(scheduleTodoId));
     }
