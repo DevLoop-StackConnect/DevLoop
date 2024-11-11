@@ -9,6 +9,7 @@ import com.devloop.common.enums.BoardType;
 import com.devloop.common.exception.ApiException;
 import com.devloop.common.utils.SearchResponseUtil;
 import com.devloop.party.entity.Party;
+import com.devloop.party.entity.QParty;
 import com.devloop.party.repository.PartyRepository;
 import com.devloop.party.request.SavePartyRequest;
 import com.devloop.party.request.UpdatePartyRequest;
@@ -19,6 +20,8 @@ import com.devloop.party.response.UpdatePartyResponse;
 import com.devloop.search.response.IntegrationSearchResponse;
 import com.devloop.user.entity.User;
 import com.devloop.user.service.UserService;
+import com.querydsl.core.BooleanBuilder;
+import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -40,6 +43,7 @@ public class PartyService {
     private final PartyRepository partyRepository;
     private final UserService userService;
     private final S3Service s3Service;
+    private final JPAQueryFactory queryFactory;
     private final PartyAttachmentService partyAttachmentService;
 
     //스터디 파티 모집 게시글 등록
@@ -180,18 +184,28 @@ public class PartyService {
     /**
      * Search에서 사용
      */
-    public List<IntegrationSearchResponse> getParty(Specification<Party> spec) {
-        List<Party> parties = partyRepository.findAll(spec);
-        return SearchResponseUtil.wrapResponse(BoardType.PARTY, parties);
-    }
 
-    public Page<IntegrationSearchResponse> getPartyWithPage(Specification<Party> spec, PageRequest pageable) {
-        Page<Party> partyPage = partyRepository.findAll(spec, pageable);
-        List<IntegrationSearchResponse> response = SearchResponseUtil.wrapResponse(
-                BoardType.PARTY,
-                partyPage.getContent()
-        );
-        return new PageImpl<>(response, pageable, partyPage.getTotalElements());
+    public Page<IntegrationSearchResponse> getPartyWithPage(BooleanBuilder condition, PageRequest pageable) {
+        QParty qParty = QParty.party;
+
+        // QueryDSL로 조건에 맞는 Party 페이지 조회
+        List<Party> parties = queryFactory
+                .selectFrom(qParty)
+                .where(condition)
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+
+        // 전체 요소 수 계산 (명확한 경로 지정)
+        long total = queryFactory
+                .select(qParty.id.count())  // id의 count를 사용
+                .from(qParty)
+                .where(condition)
+                .fetchOne();
+
+        // IntegrationSearchResponse로 변환하여 반환
+        List<IntegrationSearchResponse> response = SearchResponseUtil.wrapResponse(BoardType.PARTY, parties);
+        return new PageImpl<>(response, pageable, total);
     }
 
     //스터디 파티 id로 조회

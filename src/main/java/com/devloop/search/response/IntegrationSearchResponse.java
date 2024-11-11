@@ -22,15 +22,21 @@ public class IntegrationSearchResponse {
     private String username;
     private LocalDateTime createdAt;
 
-    private IntegrationSearchResponse(Long id, String boardType, String title, String content, String category, String username, LocalDateTime createdAt) {
+    // 기본 생성자 추가
+    public IntegrationSearchResponse() {
+    }
+
+    // 모든 필드를 받는 생성자
+    public IntegrationSearchResponse(Long id, String boardType, String title, String content, String category, String username, LocalDateTime createdAt) {
         this.id = id;
         this.boardType = boardType;
         this.title = title;
         this.content = content;
         this.category = category;
         this.username = username;
-        this.createdAt = LocalDateTime.now();
+        this.createdAt = createdAt;
     }
+
 
     public static IntegrationSearchResponse of(Object data, String boardType) {
         if (data instanceof Community community) {
