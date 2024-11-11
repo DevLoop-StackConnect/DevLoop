@@ -40,10 +40,12 @@ public class WebSecurityConfig {
                         .requestMatchers(
                                 "/api/v1/auth/signup",
                                 "/api/v1/auth/login",
-                                "/api/v1/auth/**",
+                                "/api/v1/auth/kakao/login",
+                                "/api/v1/auth/kakao",
                                 "/api/v1/main/search/**",
                                 "/api/v2/videos/**",
                                 "/api/v2/lectures/**",
+                                "/api/search/**",
                                 // payments test 위해 열어두는 API
                                 "/payments/**",
                                 "/api/v2/orders",
@@ -57,7 +59,9 @@ public class WebSecurityConfig {
                                 "/payment-fail",
                                 "/api/v1/pwts/**",
                                 "/actuator/**",
-                                "/api/v1/slack/**"
+                                "/api/v1/slack/**",
+                                "/payments-inprogress",
+                                "/payment-inprogress"
                         )
                         .permitAll()
                         .requestMatchers(

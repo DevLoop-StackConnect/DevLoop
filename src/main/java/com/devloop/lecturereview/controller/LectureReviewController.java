@@ -41,8 +41,7 @@ public class LectureReviewController {
     }
 
     //강의 후기 다건 조회
-    @GetMapping("/v2/lectures/{lectureId}/reviews")
-    @PreAuthorize("permitAll()")
+    @GetMapping("search/v2/lectures/{lectureId}/reviews")
     public ApiResponse<Page<GetLectureReviewResponse>> getLectureReviewList(
             @PathVariable("lectureId") Long lectureId,
             @RequestParam(defaultValue = "1") int page,

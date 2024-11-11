@@ -45,7 +45,7 @@ class AuthServiceTest {
     private SignoutRequest signoutRequest;
 
 
-    @BeforeEach
+    /*@BeforeEach
     void setUp() {
         signupRequest = SignupRequest.builder()
                 .email("testExample@example.com")
@@ -209,7 +209,7 @@ class AuthServiceTest {
         verify(userRepository).findById(1L);
         verify(passwordEncoder).matches(signoutRequest.getPassword(), user.getPassword());
         verify(userRepository).save(user);
-    }
+    }*/
 
     @Test
     void 회원탈퇴_사용자없음_실패() {

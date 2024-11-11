@@ -154,8 +154,6 @@ class SearchServiceTest {
         lenient().when(zSetOperations.incrementScore(anyString(), anyString(), anyDouble())).thenReturn(1.0);
     }
 
-
-
     @Test
     void 통합검색_프리뷰_성공() {
         // given

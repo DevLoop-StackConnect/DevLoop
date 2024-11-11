@@ -17,24 +17,24 @@ public class LectureAdminController {
     private final LectureAdminService lectureAdminService;
 
     //강의 승인 (ADMIN)
-    @PatchMapping("/v2/admin/lectures/{lectureId}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PatchMapping("/v2/admin/lectures/{lectureId}")
     public ApiResponse<String> changeApproval(
             @PathVariable("lectureId") Long lectureId
     ) {
         return ApiResponse.ok(lectureAdminService.changeApproval(lectureId));
     }
     //강의 단건 조회 (ADMIN : User 정보 포함 단건 조회)
-    @GetMapping("/v2/admin/lectures/{lectureId}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @GetMapping("/v2/admin/lectures/{lectureId}")
     public ApiResponse<GetLectureDetailResponse> getLecture(
             @PathVariable("lectureId") Long lectureId
     ) {
         return ApiResponse.ok(lectureAdminService.getLecture(lectureId));
     }
     //승인 되지 않은 강의 다건 조회 (ADMIN)
-    @GetMapping("/v2/admin/lectures")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @GetMapping("/v2/admin/lectures")
     public ApiResponse<Page<GetLectureListResponse>> getLectureList(
             @RequestParam(required = false) String title,
             @RequestParam(defaultValue = "1") int page,

@@ -30,15 +30,13 @@ public class CommunityController {
     }
 
     //게시글 다건 조회
-    @GetMapping("/v1/communities")
-    @PreAuthorize("permitAll()")
+    @GetMapping("/search/v1/communities")
     public ApiResponse<Page<CommunitySimpleResponse>> getCommunities(@RequestParam(defaultValue = "1") int page, @RequestParam(defaultValue = "10") int size) {
         return ApiResponse.ok(communityService.getCommunities(page, size));
     }
 
     //게시글 단건 조회
-    @GetMapping("/v1/communities/{communityId}")
-    @PreAuthorize("permitAll()")
+    @GetMapping("/search/v1/communities/{communityId}")
     public ApiResponse<CommunityDetailResponse> getCommunity(@PathVariable Long communityId) {
         return ApiResponse.ok(communityService.getCommunity(communityId));
     }

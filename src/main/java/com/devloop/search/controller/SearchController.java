@@ -23,7 +23,6 @@ public class SearchController {
     private final SearchService searchService;
 
     @PostMapping("/v1/main/search/preview")
-    @PreAuthorize("permitAll()")
     public ApiResponse<IntegratedSearchPreview> previewSearch(
             @RequestBody IntegrationSearchRequest request) {
         log.info("검색 요청 받음: {}", request);

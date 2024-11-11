@@ -3,7 +3,6 @@ package com.devloop.payment.controller;
 import com.devloop.order.entity.Order;
 import com.devloop.order.service.OrderService;
 import com.devloop.payment.service.PaymentService;
-import com.devloop.purchase.service.PurchaseService;
 import lombok.RequiredArgsConstructor;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -31,7 +30,6 @@ import java.util.Base64;
 public class PaymentController {
 
     private final OrderService orderService;
-    private final PurchaseService purchaseService;
     private final PaymentService paymentService;
 
     @Value("${toss.payment.secret.key}")
@@ -57,11 +55,25 @@ public class PaymentController {
     }
 
     // 주문 성공 결제 승인 요청 (주문 요청됨)
-    @GetMapping("/payments-success")
-    public String paymentsSuccess(
+    @GetMapping("/payments-inprogress")
+    public String paymentsInProgress(
             @RequestParam("orderRequestId") String orderRequestId
     ) {
         orderService.orderRequested(orderRequestId);
+        return "payment-inprogress";
+    }
+
+    // 결제 성공
+    @GetMapping("/payments-success")
+    public String paymentsSuccess(
+            @RequestParam("paymentKey") String paymentKey,
+            @RequestParam("orderId") String orderId,
+            @RequestParam("amount") String amount,
+            Model model
+    ) {
+        model.addAttribute("paymentKey", paymentKey);
+        model.addAttribute("orderId", orderId);
+        model.addAttribute("amount", amount);
         return "payment-success";
     }
 
@@ -128,13 +140,9 @@ public class PaymentController {
         responseStream.close();
 
         // 주문 객체 상태 변경 , 구매내역, 줌문 내역 객체 생성
+        // todo : 하나의 서비스 로직으로 묶어서 Transaction 적용
         if (isSuccess) {
-            // 구매 내역 생성
-            purchaseService.createPurchase(jsonObject.get("orderId").toString());
-            // 주문 상태 완료로 변경
-            orderService.orderApproved(jsonObject.get("orderId").toString());
-            // 결제 내역 생성
-            paymentService.createPayment(jsonObject);
+            paymentService.paymentCompletionLogic(jsonObject);
         }
 
         return ResponseEntity.status(code).body(jsonObject);

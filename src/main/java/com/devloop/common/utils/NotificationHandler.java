@@ -136,8 +136,10 @@ public class NotificationHandler {
             }
         }
     }
-//    //실패한 알림을 재처리하는 스케줄링 메서드
+
+    //실패한 알림을 재처리하는 스케줄링 메서드
 //    @Scheduled(fixedDelay = 5000)
+
     public void processFailedNotifications() {
         //실패 큐에서 메시지 추출
         NotificationMessage failedNotification =

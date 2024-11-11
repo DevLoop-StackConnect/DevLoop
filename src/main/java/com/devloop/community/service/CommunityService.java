@@ -152,7 +152,7 @@ public class CommunityService {
             log.info("게시글이 상태 미해결 상태로 변경되엇습니다..");
         }
         //변경된 상태 확인 로그
-
+        communityRepository.save(community);
         //첨부파일 수정
         if (file != null && !file.isEmpty()) {
             // 기존 파일이 있는지 확인

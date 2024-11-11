@@ -6,9 +6,6 @@ import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.devloop.attachment.entity.*;
 import com.devloop.attachment.enums.FileFormat;
-import com.devloop.attachment.repository.CommunityATMRepository;
-import com.devloop.attachment.repository.PWTATMRepository;
-import com.devloop.attachment.repository.PartyAMTRepository;
 import com.devloop.attachment.repository.ProfileATMRepository;
 import com.devloop.attachment.service.CommunityAttachmentService;
 import com.devloop.attachment.service.PWTAttachmentService;
@@ -39,6 +36,8 @@ import java.util.UUID;
 @Transactional(readOnly = true)
 public class S3Service {
 
+    @Value("${cloud.aws.s3.bucketName}")
+    private String BucketName;
     @Value("${cloud.aws.s3.attachmentsBucketName}")
     private String attachmentsBucketName;
     @Value("${cloud.aws.cloudfront.attachmentsCloudFrontUrl}")
@@ -153,6 +152,17 @@ public class S3Service {
             }
         } else {
             throw new ApiException(ErrorStatus._ATTACHMENT_NOT_FOUND);
+        }
+    }
+    public void deleteVideo(String fileName) {
+        if (amazonS3Client.doesObjectExist(BucketName, fileName)) {
+            try {
+                amazonS3Client.deleteObject(new DeleteObjectRequest(BucketName, fileName));
+            } catch (AmazonServiceException e) {
+                throw new ApiException(ErrorStatus._HAS_NOT_ACCESS_PERMISSION);
+            }
+        } else {
+            throw new ApiException(ErrorStatus._NOT_FOUND_LECTURE_VIDEO);
         }
     }
 }
