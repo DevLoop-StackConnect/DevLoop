@@ -54,7 +54,6 @@ public class PartyService {
 
         //새로운 파티 생성
         Party newParty=Party.from(savePartyRequest, user);
-
         partyRepository.save(newParty);
 
         //파일이 있을 때만 업로드
@@ -197,9 +196,9 @@ public class PartyService {
                 .limit(pageable.getPageSize())
                 .fetch();
 
-        // 전체 요소 수 계산 (명확한 경로 지정)
+        // 전체 요소 수를 계산
         long total = queryFactory
-                .select(qParty.id.count())  // id의 count를 사용
+                .select(qParty.count())
                 .from(qParty)
                 .where(condition)
                 .fetchOne();

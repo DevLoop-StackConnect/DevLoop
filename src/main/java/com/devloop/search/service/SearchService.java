@@ -64,16 +64,24 @@ public class SearchService {
             BooleanBuilder pwtCondition = SearchQueryUtil.buildSearchCondition(request, ProjectWithTutor.class);
             BooleanBuilder lectureCondition = SearchQueryUtil.buildSearchCondition(request, Lecture.class);
 
+            log.debug("Party condition: {}", partyCondition);
+            log.debug("Community condition: {}", communityCondition);
+            log.debug("PWT condition: {}", pwtCondition);
+            log.debug("Lecture condition: {}", lectureCondition);
+
+            // 조건이 없으면 빈 결과 반환
+            if (!partyCondition.hasValue() && !communityCondition.hasValue()
+                    && !pwtCondition.hasValue() && !lectureCondition.hasValue()) {
+                return new IntegratedSearchPreview();
+            }
+
             // 각각의 엔티티에 맞는 서비스 메서드 호출
             Page<IntegrationSearchResponse> partyResults = partyService.getPartyWithPage(
                     partyCondition, PageRequest.of(0, PREVIEW_SIZE, Sort.by("createdAt").descending()));
-
             Page<IntegrationSearchResponse> communityResults = communityService.getCommunityWithPage(
                     communityCondition, PageRequest.of(0, PREVIEW_SIZE, Sort.by("createdAt").descending()));
-
             Page<IntegrationSearchResponse> pwtResults = projectWithTutorService.getProjectWithTutorPage(
                     pwtCondition, PageRequest.of(0, PREVIEW_SIZE, Sort.by("createdAt").descending()));
-
             Page<IntegrationSearchResponse> lectureResults = lectureService.getLectureWithPage(
                     lectureCondition, PageRequest.of(0, PREVIEW_SIZE, Sort.by("createdAt").descending()));
 
@@ -82,8 +90,8 @@ public class SearchService {
                     .communityPreview(communityResults.getContent())
                     .pwtPreview(pwtResults.getContent())
                     .lecturePreivew(lectureResults.getContent())
-                    .totalCommunityCount(communityResults.getTotalElements())
                     .totalPartyCount(partyResults.getTotalElements())
+                    .totalCommunityCount(communityResults.getTotalElements())
                     .totalPwtCount(pwtResults.getTotalElements())
                     .totalLectureCount(lectureResults.getTotalElements())
                     .build();
@@ -101,8 +109,7 @@ public class SearchService {
 //    )
     public Page<IntegrationSearchResponse> searchByBoardType(
             IntegrationSearchRequest request, String boardType, int page, int size) {
-        log.info("Cache miss - executing detailed search for boardType: {}, page: {}, key: {}",
-                boardType, page, CacheKeyGenerator.generateCategoryKey(boardType, page, request));
+        try {
 
 //        // 검색 랭킹 업데이트
 //        updateSearchRanking(request);
@@ -117,7 +124,11 @@ public class SearchService {
             case "lecture" -> searchLecture(request, pageable);
             default -> throw new ApiException(ErrorStatus._BAD_SEARCH_KEYWORD);
         };
+    } catch (Exception e) {
+        log.error("Error during search by board type", e);
+        throw e;
     }
+}
 
 //    //랭킹
 //    public void incrementSearchCount(String keyword) {
@@ -140,23 +151,28 @@ public class SearchService {
     // 각 게시판별 검색 메서드
     private Page<IntegrationSearchResponse> searchParty(IntegrationSearchRequest request, PageRequest pageable) {
         BooleanBuilder condition = SearchQueryUtil.buildSearchCondition(request, Party.class);
+        log.debug("Party search condition: {}", condition);
         return partyService.getPartyWithPage(condition, pageable);
     }
 
     private Page<IntegrationSearchResponse> searchCommunity(IntegrationSearchRequest request, PageRequest pageable) {
         BooleanBuilder condition = SearchQueryUtil.buildSearchCondition(request, Community.class);
+        log.debug("Community search condition: {}", condition);
         return communityService.getCommunityWithPage(condition, pageable);
     }
 
     private Page<IntegrationSearchResponse> searchPwt(IntegrationSearchRequest request, PageRequest pageable) {
         BooleanBuilder condition = SearchQueryUtil.buildSearchCondition(request, ProjectWithTutor.class);
+        log.debug("PWT search condition: {}", condition);
         return projectWithTutorService.getProjectWithTutorPage(condition, pageable);
     }
 
     private Page<IntegrationSearchResponse> searchLecture(IntegrationSearchRequest request, PageRequest pageable) {
         BooleanBuilder condition = SearchQueryUtil.buildSearchCondition(request, Lecture.class);
+        log.debug("Lecture search condition: {}", condition);
         return lectureService.getLectureWithPage(condition, pageable);
     }
+
 
 
     //    private void updateSearchRanking(IntegrationSearchRequest request) {

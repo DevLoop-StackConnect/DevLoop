@@ -25,7 +25,9 @@ public class SearchController {
     @PostMapping("/v1/main/search/preview")
     public ApiResponse<IntegratedSearchPreview> previewSearch(
             @RequestBody IntegrationSearchRequest request) {
-        log.info("검색 요청 받음: {}", request);
+        log.debug("Received search request with fields - Title: {}, Content: {}, Username: {}, Category: {}, Lecture: {}",
+                request.getTitle(), request.getContent(), request.getUsername(), request.getCategory(), request.getLecture());
+
         return ApiResponse.ok(searchService.integratedSearchPreview(request));
     }
 

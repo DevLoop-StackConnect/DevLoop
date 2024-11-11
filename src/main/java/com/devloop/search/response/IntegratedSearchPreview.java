@@ -10,7 +10,7 @@ import java.util.List;
 
 @Getter
 @Builder
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS)
 public class IntegratedSearchPreview implements Serializable {
     private List<IntegrationSearchResponse> partyPreview;

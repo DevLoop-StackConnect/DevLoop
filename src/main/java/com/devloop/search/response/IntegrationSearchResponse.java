@@ -22,25 +22,10 @@ public class IntegrationSearchResponse {
     private String username;
     private LocalDateTime createdAt;
 
-    // 기본 생성자 추가
-    public IntegrationSearchResponse() {
-    }
-
-    // 모든 필드를 받는 생성자
-    public IntegrationSearchResponse(Long id, String boardType, String title, String content, String category, String username, LocalDateTime createdAt) {
-        this.id = id;
-        this.boardType = boardType;
-        this.title = title;
-        this.content = content;
-        this.category = category;
-        this.username = username;
-        this.createdAt = createdAt;
-    }
-
-
     public static IntegrationSearchResponse of(Object data, String boardType) {
+        IntegrationSearchResponse response;
         if (data instanceof Community community) {
-            return IntegrationSearchResponse.builder()
+            response = IntegrationSearchResponse.builder()
                     .id(community.getId())
                     .boardType(boardType)
                     .title(community.getTitle())
@@ -50,7 +35,7 @@ public class IntegrationSearchResponse {
                     .createdAt(community.getCreatedAt())
                     .build();
         } else if (data instanceof Party party) {
-            return IntegrationSearchResponse.builder()
+            response = IntegrationSearchResponse.builder()
                     .id(party.getId())
                     .boardType(boardType)
                     .title(party.getTitle())
@@ -60,17 +45,17 @@ public class IntegrationSearchResponse {
                     .createdAt(party.getCreatedAt())
                     .build();
         } else if (data instanceof ProjectWithTutor pwt) {
-            return IntegrationSearchResponse.builder()
+            response = IntegrationSearchResponse.builder()
                     .id(pwt.getId())
                     .boardType(boardType)
                     .title(pwt.getTitle())
                     .content(pwt.getDescription())
-//                    .category(String.valueOf(pwt.get))
+                    .category(String.valueOf(pwt.getCategory()))
                     .username(pwt.getUser().getUsername())
                     .createdAt(pwt.getCreatedAt())
                     .build();
         } else if (data instanceof Lecture lecture) {
-            return IntegrationSearchResponse.builder()
+            response = IntegrationSearchResponse.builder()
                     .id(lecture.getId())
                     .boardType(boardType)
                     .title(lecture.getTitle())
@@ -79,8 +64,12 @@ public class IntegrationSearchResponse {
                     .username(lecture.getUser().getUsername())
                     .createdAt(lecture.getCreatedAt())
                     .build();
+        } else {
+            throw new ApiException(ErrorStatus._UNSUPPORTED_DATA_TYPE);
         }
 
-        throw new ApiException(ErrorStatus._UNSUPPORTED_DATA_TYPE);
+        // 디버그 로그 추가
+        System.out.println("Converted response: " + response);
+        return response;
     }
 }
