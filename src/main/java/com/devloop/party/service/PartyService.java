@@ -172,7 +172,7 @@ public class PartyService {
         //파일이 있는지 확인
         if(partyAttachment.isPresent()){
             //파일 삭제 (S3, 로컬)
-            s3Service.delete(partyAttachment.get().getFileName());
+            s3Service.delete(partyAttachment.get());
             partyAttachmentService.deletePartyAttachment(partyAttachment.get());
         }
         partyRepository.delete(party);
