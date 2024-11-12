@@ -188,7 +188,7 @@ public class CommunityService {
         }
         // 첨부파일 확인 및 삭제
         communityAttachmentService.getCommunityAttachment(communityId).ifPresent(attachment -> {
-            s3Service.delete(attachment.getFileName());
+            s3Service.delete(attachment);
             communityAttachmentService.deleteCommunityAttachment(attachment);
         });
         //삭제
