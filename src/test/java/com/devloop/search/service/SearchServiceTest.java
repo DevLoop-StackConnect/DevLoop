@@ -1,11 +1,15 @@
 package com.devloop.search.service;
 
+import com.devloop.common.enums.Approval;
 import com.devloop.common.enums.BoardType;
 import com.devloop.common.enums.Category;
 import com.devloop.common.exception.ApiException;
+import com.devloop.common.utils.SearchQueryUtil;
 import com.devloop.community.entity.Community;
 import com.devloop.community.entity.ResolveStatus;
 import com.devloop.community.service.CommunityService;
+import com.devloop.lecture.entity.Lecture;
+import com.devloop.lecture.service.LectureService;
 import com.devloop.party.entity.Party;
 import com.devloop.party.enums.PartyStatus;
 import com.devloop.party.service.PartyService;
@@ -13,9 +17,12 @@ import com.devloop.pwt.entity.ProjectWithTutor;
 import com.devloop.pwt.enums.Level;
 import com.devloop.pwt.service.ProjectWithTutorService;
 import com.devloop.search.request.IntegrationSearchRequest;
+import com.devloop.search.response.IntegratedSearchPreview;
 import com.devloop.search.response.IntegrationSearchResponse;
+import com.devloop.search.service.SearchService;
 import com.devloop.user.entity.User;
 import com.devloop.user.enums.UserRole;
+import com.querydsl.core.BooleanBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -27,38 +34,50 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ZSetOperations;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class SearchServiceTest {
 
-    /*@Mock
+    @Mock(lenient = true)
     private PartyService partyService;
-
-    @Mock
+    @Mock(lenient = true)
     private CommunityService communityService;
-
-    @Mock
+    @Mock(lenient = true)
     private ProjectWithTutorService projectWithTutorService;
+    @Mock(lenient = true)
+    private LectureService lectureService;
+    @Mock(lenient = true)
+    private RedisTemplate<String, String> rankingRedisTemplate;
 
     @InjectMocks
     private SearchService searchService;
 
-    private IntegrationSearchRequest integrationSearchRequest;
-    private List<IntegrationSearchResponse> partyResult;
-    private List<IntegrationSearchResponse> communityResult;
-    private List<IntegrationSearchResponse> pwtResult;
+    private IntegrationSearchRequest request;
+    private List<IntegrationSearchResponse> partyResults;
+    private List<IntegrationSearchResponse> communityResults;
+    private List<IntegrationSearchResponse> pwtResults;
+    private List<IntegrationSearchResponse> lectureResults;
 
     private User user;
     private Community community;
     private ProjectWithTutor pwt;
     private Party party;
+    private Lecture lecture;
+
+    @SuppressWarnings("unchecked")
+    private ZSetOperations<String, String> zSetOperations = mock(ZSetOperations.class);
 
     @BeforeEach
     void setUp() {
@@ -73,7 +92,7 @@ class SearchServiceTest {
 
         community = Community.builder()
                 .id(1L)
-                .title("test community")
+                .title("test Community")
                 .content("test content")
                 .category(Category.WEB_DEV)
                 .user(user)
@@ -95,7 +114,7 @@ class SearchServiceTest {
         pwt = ProjectWithTutor.of(
                 "test pwt",
                 "test description",
-                50000,
+                BigDecimal.valueOf(50000),
                 LocalDateTime.now().plusDays(7),
                 5,
                 Level.EASY,
@@ -103,138 +122,105 @@ class SearchServiceTest {
                 user
         );
 
-        integrationSearchRequest = new IntegrationSearchRequest();
-        integrationSearchRequest.setBoardType(BoardType.COMMUNITY.name().toLowerCase());
-        integrationSearchRequest.setTitle("test title");
-        integrationSearchRequest.setUsername("testMan");
-        integrationSearchRequest.setCategory(Category.WEB_DEV.name());
+        lecture = Lecture.builder()
+                .id(1L)
+                .description("test description")
+                .recommend("추천대상")
+                .category(Category.WEB_DEV)
+                .level(Level.EASY)
+                .approval(Approval.WAITE)
+                .user(user)
+                .lectureVideos(new ArrayList<>())
+                .lectureReviews(new ArrayList<>())
+                .build();
 
-        partyResult = List.of(IntegrationSearchResponse.of(party, BoardType.PARTY.name()));
-        communityResult = List.of(IntegrationSearchResponse.of(community, BoardType.COMMUNITY.name()));
-        pwtResult = List.of(IntegrationSearchResponse.of(pwt, BoardType.PWT.name()));
+        request = IntegrationSearchRequest.builder()
+                .boardType(null)
+                .title("test")
+                .content("test content")
+                .username("testMan")
+                .category(Category.WEB_DEV.name())
+                .lecture(null)
+                .build();
+
+        partyResults = List.of(IntegrationSearchResponse.of(party, BoardType.PARTY.name()));
+        communityResults = List.of(IntegrationSearchResponse.of(community, BoardType.COMMUNITY.name()));
+        pwtResults = List.of(IntegrationSearchResponse.of(pwt, BoardType.PWT.name()));
+        lectureResults = List.of(IntegrationSearchResponse.of(lecture, "LECTURE"));
+
+        when(rankingRedisTemplate.opsForZSet()).thenReturn(zSetOperations);
     }
 
     @Test
-    void 커뮤니티_검색_성공여부() {
+    void 통합검색_프리뷰_성공() {
         // given
-        integrationSearchRequest.setBoardType("community");
-        PageRequest pageable = PageRequest.of(0, 10, Sort.by("createdAt").descending());
-        doReturn(new PageImpl<>(communityResult))
-                .when(communityService)
-                .getCommunityWithPage(any(Specification.class), eq(pageable));
+        PageRequest previewPageable = PageRequest.of(0, 5, Sort.by("createdAt").descending());
+        BooleanBuilder partyCondition = SearchQueryUtil.buildSearchCondition(request, Party.class);
+        BooleanBuilder communityCondition = SearchQueryUtil.buildSearchCondition(request, Community.class);
+        BooleanBuilder pwtCondition = SearchQueryUtil.buildSearchCondition(request, ProjectWithTutor.class);
+        BooleanBuilder lectureCondition = SearchQueryUtil.buildSearchCondition(request, Lecture.class);
+
+        when(partyService.getPartyWithPage(eq(partyCondition), any(PageRequest.class)))
+                .thenReturn(new PageImpl<>(partyResults, previewPageable, partyResults.size()));
+        when(communityService.getCommunityWithPage(eq(communityCondition), any(PageRequest.class)))
+                .thenReturn(new PageImpl<>(communityResults, previewPageable, communityResults.size()));
+        when(projectWithTutorService.getProjectWithTutorPage(eq(pwtCondition), any(PageRequest.class)))
+                .thenReturn(new PageImpl<>(pwtResults, previewPageable, pwtResults.size()));
+        when(lectureService.getLectureWithPage(eq(lectureCondition), any(PageRequest.class)))
+                .thenReturn(new PageImpl<>(lectureResults, previewPageable, lectureResults.size()));
 
         // when
-        Page<IntegrationSearchResponse> result = searchService.integrationSearch(integrationSearchRequest, 1, 10);
+        IntegratedSearchPreview result = searchService.integratedSearchPreview(request);
+
+        // then
+        assertNotNull(result);
+        assertEquals(1, result.getPartyPreview().size());
+        assertEquals(1, result.getCommunityPreview().size());
+        assertEquals(1, result.getPwtPreview().size());
+        assertEquals(1, result.getLecturePreivew().size());
+    }
+
+    @Test
+    void 카테고리별_검색_파티_성공() {
+        // given
+        PageRequest pageable = PageRequest.of(0, 10, Sort.by("createdAt").descending());
+        BooleanBuilder condition = SearchQueryUtil.buildSearchCondition(request, Party.class);
+
+        when(partyService.getPartyWithPage(eq(condition), any(PageRequest.class)))
+                .thenReturn(new PageImpl<>(partyResults, pageable, partyResults.size()));
+
+        // when
+        Page<IntegrationSearchResponse> result = searchService.searchByBoardType(request, "party", 1, 10);
 
         // then
         assertNotNull(result);
         assertEquals(1, result.getTotalElements());
-        verify(communityService).getCommunityWithPage(any(Specification.class), eq(pageable));
+        verify(partyService).getPartyWithPage(eq(condition), any(PageRequest.class));
     }
 
     @Test
-    void 파티_검색_성공여부() {
+    void 카테고리별_검색_커뮤니티_성공() {
         // given
-        integrationSearchRequest.setBoardType("party");
         PageRequest pageable = PageRequest.of(0, 10, Sort.by("createdAt").descending());
-        doReturn(new PageImpl<>(partyResult))
-                .when(partyService)
-                .getPartyWithPage(any(Specification.class), eq(pageable));
+        BooleanBuilder condition = SearchQueryUtil.buildSearchCondition(request, Community.class);
+
+        when(communityService.getCommunityWithPage(eq(condition), any(PageRequest.class)))
+                .thenReturn(new PageImpl<>(communityResults, pageable, communityResults.size()));
 
         // when
-        Page<IntegrationSearchResponse> result = searchService.integrationSearch(integrationSearchRequest, 1, 10);
+        Page<IntegrationSearchResponse> result = searchService.searchByBoardType(request, "community", 1, 10);
 
         // then
         assertNotNull(result);
         assertEquals(1, result.getTotalElements());
-        verify(partyService).getPartyWithPage(any(Specification.class), eq(pageable));
+        verify(communityService).getCommunityWithPage(eq(condition), any(PageRequest.class));
     }
 
     @Test
-    void PWT_검색_성공여부() {
-        // given
-        integrationSearchRequest.setBoardType("project");  // PWT는 project로 검색해야 함
-        PageRequest pageable = PageRequest.of(0, 10, Sort.by("createdAt").descending());
-        doReturn(new PageImpl<>(pwtResult))
-                .when(projectWithTutorService)
-                .getProjectWithTutorPage(any(Specification.class), eq(pageable));
-
-        // when
-        Page<IntegrationSearchResponse> result = searchService.integrationSearch(integrationSearchRequest, 1, 10);
-
-        // then
-        assertNotNull(result);
-        assertEquals(1, result.getTotalElements());
-        verify(projectWithTutorService).getProjectWithTutorPage(any(Specification.class), eq(pageable));
-    }
-
-    @Test
-    void 통합검색_성공여부() {
-        // given
-        integrationSearchRequest.setBoardType("");  // 빈 문자열로 설정하여 통합검색
-        PageRequest pageable = PageRequest.of(0, 10, Sort.by("createdAt").descending());
-
-        doReturn(partyResult)
-                .when(partyService)
-                .getParty(any(Specification.class));
-
-        doReturn(communityResult)
-                .when(communityService)
-                .getAllCommunity(any(Specification.class));
-
-        doReturn(pwtResult)
-                .when(projectWithTutorService)
-                .getProjectWithTutor(any(Specification.class));
-
-        // when
-        Page<IntegrationSearchResponse> result = searchService.integrationSearch(integrationSearchRequest, 1, 10);
-
-        // then
-        assertNotNull(result);
-        assertEquals(3, result.getTotalElements());
-        verify(communityService).getAllCommunity(any(Specification.class));
-        verify(partyService).getParty(any(Specification.class));
-        verify(projectWithTutorService).getProjectWithTutor(any(Specification.class));
-    }
-
-    @Test
-    void 잘못된_게시판_타입_검색시_예외발생() {
-        // given
-        integrationSearchRequest.setBoardType("INVALID_TYPE");
-
+    void 잘못된_카테고리_검색시_예외발생() {
         // when & then
         assertThrows(ApiException.class, () ->
-                searchService.integrationSearch(integrationSearchRequest, 1, 10)
-        );
-
-        verifyNoInteractions(communityService, partyService, projectWithTutorService);
-    }
-
-    @Test
-    void 페이지_파라미터가_음수일때_예외발생() {
-        // when & then
-        assertThrows(IllegalArgumentException.class, () ->
-                searchService.integrationSearch(integrationSearchRequest, 0, 10)  // 1미만이면 예외 발생
+                searchService.searchByBoardType(request, "invalid", 1, 10)
         );
     }
-
-    @Test
-    void 검색어가_null일때_전체_검색() {
-        // given
-        integrationSearchRequest.setTitle(null);
-        integrationSearchRequest.setUsername(null);
-        integrationSearchRequest.setCategory(null);
-        PageRequest pageable = PageRequest.of(0, 10, Sort.by("createdAt").descending());
-
-        doReturn(new PageImpl<>(communityResult))
-                .when(communityService)
-                .getCommunityWithPage(any(Specification.class), eq(pageable));
-
-        // when
-        Page<IntegrationSearchResponse> result = searchService.integrationSearch(integrationSearchRequest, 1, 10);
-
-        // then
-        assertNotNull(result);
-        verify(communityService).getCommunityWithPage(any(Specification.class), eq(pageable));
-    }*/
 }

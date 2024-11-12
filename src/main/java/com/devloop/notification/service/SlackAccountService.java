@@ -111,13 +111,10 @@ public class SlackAccountService {
     @Transactional
     public void verifyAndLinkAccount(Long userId, String slackId, String slackEmail) {
         try {
-            // Slack 사용자 검증
             if (!slackUserService.verifySlackUser(slackId)) {
                 throw new ApiException(ErrorStatus._INVALID_SLACK_USER);
             }
-            // 매핑 생성
             createMapping(userId, slackId, slackEmail);
-            // 연동 완료 알림
             NotificationMessage message = NotificationMessage.builder()
                     .type(NotificationType.GENERAL)
                     .notificationTarget("@" + slackId)
@@ -133,21 +130,15 @@ public class SlackAccountService {
         }
     }
 
-    //Slack 매핑 정보 생성 메서드
     @Transactional
     public void createMapping(Long userId, String slackId, String slackEmail) {
         User user = userService.findById(userId);
-
-        // 기존 매핑 비활성화
         mappingRepository.deactivateAllByUserId(user.getId());
-
-        // 새 매핑 생성
-        SlackUserMapping mapping = SlackUserMapping.of(
-                user, slackId, slackEmail
-        );
-
+        SlackUserMapping mapping = SlackUserMapping.of(user, slackId, slackEmail);
         mappingRepository.save(mapping);
+
         user.updateSlackInfo(slackId, slackEmail);
+        userService.save(user); // 수정된 부분
     }
 
     //Slack 채널 가입 메서드
@@ -172,14 +163,9 @@ public class SlackAccountService {
     public void unlinkSlackAccount(Long userId) {
         try {
             User user = userService.findById(userId);
-
-            // 기존 매핑 모두 비활성화
             mappingRepository.deactivateAllByUserId(user.getId());
-
-            // 사용자의 Slack 정보 초기화
             user.unlinkSlack();
             userService.save(user);
-
             log.info("Slack 계정 연동 해제 완료. userId: {}", userId);
         } catch (Exception e) {
             log.error("Slack 계정 연동 해제 실패", e);
@@ -187,13 +173,10 @@ public class SlackAccountService {
         }
     }
 
-    //Slack 계정 연동 상태 확인 메서드
     public boolean isSlackLinked(Long userId) {
         try {
             User user = userService.findById(userId);
-
-            return user.isSlackLinked() &&
-                    mappingRepository.findByUserIdAndActiveTrue(userId).isPresent();
+            return user.isSlackLinked() && mappingRepository.findByUserIdAndActiveTrue(userId).isPresent();
         } catch (Exception e) {
             log.error("Slack 연동 상태 확인 실패. userId: {}", userId);
             return false;
@@ -209,8 +192,11 @@ public class SlackAccountService {
 
             JsonNode event = objectMapper.readTree(requestBody);
 
+            // JSON 노드에 "challenge" 키가 있는지 검사
             if (event.has("challenge")) {
-                return ResponseEntity.ok(event.get("challenge").asText());
+                String challenge = event.get("challenge").asText();
+                log.info("Received challenge: {}", challenge);
+                return ResponseEntity.ok(challenge);
             }
 
             handleSlackEvent(event);
