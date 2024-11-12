@@ -7,6 +7,7 @@ import com.devloop.common.enums.BoardType;
 import com.devloop.common.exception.ApiException;
 import com.devloop.common.utils.SearchResponseUtil;
 import com.devloop.lecture.entity.Lecture;
+import com.devloop.lecture.entity.QLecture;
 import com.devloop.lecture.repository.LectureRepository;
 import com.devloop.lecture.request.SaveLectureRequest;
 import com.devloop.lecture.request.UpdateLectureRequest;
@@ -18,14 +19,18 @@ import com.devloop.search.response.IntegrationSearchResponse;
 import com.devloop.user.entity.User;
 import com.devloop.user.enums.UserRole;
 import com.devloop.user.service.UserService;
+import com.querydsl.core.BooleanBuilder;
+import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -33,6 +38,7 @@ import java.util.List;
 public class LectureService {
     private final LectureRepository lectureRepository;
     private final UserService userService;
+    private final JPAQueryFactory queryFactory;
 
     //강의 등록 (유저의 권한이 TUTOR 일 경우에만 가능)
     @Transactional
@@ -89,6 +95,7 @@ public class LectureService {
                 lecture.getDescription(),
                 lecture.getRecommend(),
                 lecture.getCategory().getDescription(),
+                BoardType.LECTURE.getBoardType(),  // 수정된 부분: 직접 BoardType enum 사용
                 lecture.getLevel().getLevel(),
                 lecture.getPrice(),
                 lecture.getLectureVideos().size(),
@@ -114,6 +121,7 @@ public class LectureService {
                 lecture.getId(),
                 lecture.getTitle(),
                 lecture.getCategory().getDescription(),
+                BoardType.LECTURE.getBoardType(),
                 lecture.getLevel().getLevel(),
                 lecture.getPrice()
         ));
@@ -147,15 +155,26 @@ public class LectureService {
                 new ApiException(ErrorStatus._NOT_FOUND_LECTURE));
     }
 
-    public List<IntegrationSearchResponse> getAllLecture(Specification<Lecture> spec) {
-        List<Lecture> lectures = lectureRepository.findAll(spec);
-        return SearchResponseUtil.wrapResponse(BoardType.LECTURE, lectures);
-    }
+    public Page<IntegrationSearchResponse> getLectureWithPage(BooleanBuilder condition, PageRequest pageable) {
+        QLecture qLecture = QLecture.lecture;
 
-    public Page<IntegrationSearchResponse> getLectureWithPage(Specification<Lecture> spec, PageRequest pageable) {
-        Page<Lecture> lectures = lectureRepository.findAll(spec, pageable);
-        return lectures.map(lecture ->
-                IntegrationSearchResponse.of(lecture, BoardType.LECTURE.name().toLowerCase())
-        );
+        // QueryDSL로 조건에 맞는 Lecture 페이지 조회
+        List<Lecture> lectures = queryFactory
+                .selectFrom(qLecture)
+                .where(condition)
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+
+        // 전체 요소 수 계산 (명확한 경로 지정)
+        long total = queryFactory
+                .select(qLecture.id.count())  // id의 count를 사용
+                .from(qLecture)
+                .where(condition)
+                .fetchOne();
+
+        // IntegrationSearchResponse로 변환하여 반환
+        List<IntegrationSearchResponse> response = SearchResponseUtil.wrapResponse(BoardType.LECTURE, lectures);
+        return new PageImpl<>(response, pageable, total);
     }
 }
