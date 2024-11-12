@@ -1,6 +1,14 @@
 spring:
   profiles:
     active: local
+
+kakao:
+  client:
+    id: ${KAKAO_CLIENT_ID}
+    redirect-uri: ${KAKAO_REDIRECT_URI}
+  auth:
+    base-url: ${KAKAO_BASE_URL}
+
 slack:
   webhook-url: ${SLACK_WEBHOOK_URL}
   app:

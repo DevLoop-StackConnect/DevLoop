@@ -9,7 +9,9 @@ import com.devloop.auth.service.AuthService;
 import com.devloop.auth.service.KakaoService;
 import com.devloop.common.AuthUser;
 import com.devloop.common.apipayload.ApiResponse;
+import com.devloop.config.KakaoProperties;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -18,6 +20,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api")
@@ -25,12 +29,17 @@ public class AuthController {
 
     private final AuthService authService;
     private final KakaoService kakaoService;
-
-    private static final String KAKAO_LOGIN_URL = "https://kauth.kakao.com/oauth/authorize?client_id=3d49a145e53a056301badcfd23ac5373&redirect_uri=http://localhost:8080/api/v1/auth/kakao/login&response_type=code&prompt=login";
+    private final KakaoProperties kakaoProperties;
 
     @GetMapping("/v1/auth/kakao")
-    public String kakaoLoginPage() {
-        return "redirect:" + KAKAO_LOGIN_URL;
+    @PreAuthorize("permitAll()")
+    public void kakaoLoginPage(HttpServletResponse response) throws IOException {
+        String kakaoLoginUrl = String.format("%s/oauth/authorize?client_id=%s&redirect_uri=%s&response_type=code",
+                kakaoProperties.getAuth().getBaseUrl(),
+                kakaoProperties.getClient().getId(),
+                kakaoProperties.getClient().getRedirectUri());
+
+        response.sendRedirect(kakaoLoginUrl);
     }
 
     @PostMapping("/v1/auth/signup")

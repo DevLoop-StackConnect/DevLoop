@@ -57,6 +57,7 @@ public class WebSecurityConfig {
                                 "/confirm",
                                 "/api/v2/orders-fail",
                                 "/payment-fail",
+                                "/api/v1/pwts/**",
                                 "/actuator/**",
                                 "/api/v1/slack/**",
                                 "/payments-inprogress",

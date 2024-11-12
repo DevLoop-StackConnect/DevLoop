@@ -6,6 +6,7 @@ import com.devloop.search.response.IntegratedSearchPreview;
 import com.devloop.search.response.IntegrationSearchResponse;
 import com.devloop.search.service.SearchService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Set;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api")
@@ -20,23 +22,30 @@ public class SearchController {
 
     private final SearchService searchService;
 
-    @GetMapping("/v1/main/search/preview")
+    @PostMapping("/v1/main/search/preview")
     public ApiResponse<IntegratedSearchPreview> previewSearch(
             @RequestBody IntegrationSearchRequest request) {
+        log.debug("Received search request with fields - Title: {}, Content: {}, Username: {}, Category: {}, Lecture: {}",
+                request.getTitle(), request.getContent(), request.getUsername(), request.getCategory(), request.getLecture());
+
         return ApiResponse.ok(searchService.integratedSearchPreview(request));
     }
 
-    @GetMapping("/v2/main/search/{category}")
-    public ApiResponse<Page<IntegrationSearchResponse>> searchByCategory(
-            @PathVariable String category,
+    @PostMapping("/v1/main/search/detail/{boardType}")
+    @PreAuthorize("permitAll()")
+    public ApiResponse<Page<IntegrationSearchResponse>> searchDetail(
+            @PathVariable String boardType,
             @RequestBody IntegrationSearchRequest request,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size) {
-        return ApiResponse.ok(searchService.searchByCategory(request, category, page, size));
+        log.info("상세 검색 요청 - boardType: {}, request: {}, page: {}, size: {}",
+                boardType, request, page, size);
+        return ApiResponse.ok(searchService.searchByBoardType(request, boardType, page, size));
     }
 
-    @GetMapping("/v2/main/search/ranking")
-    public ApiResponse<Set<ZSetOperations.TypedTuple<String>>> getRankingKeyword(){
-        return ApiResponse.ok(searchService.getTopSearchKeywords());
-    }
+//    @GetMapping("/v1/main/search/ranking")
+//    @PreAuthorize("permitAll()")
+//    public ApiResponse<Set<ZSetOperations.TypedTuple<String>>> getRankingKeyword(){
+//        return ApiResponse.ok(searchService.getTopSearchKeywords());
+//    }
 }
