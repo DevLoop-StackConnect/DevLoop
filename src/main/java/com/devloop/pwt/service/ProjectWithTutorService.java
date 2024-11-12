@@ -211,7 +211,7 @@ public class ProjectWithTutorService {
         }
 
         // S3에 첨부파일 삭제
-        s3Service.delete(pwtAttachment.getFileName());
+        s3Service.delete(pwtAttachment);
 
         // PWT 첨부파일 삭제
         pwtAttachmentService.deletePwtAttachment(pwtAttachment);
