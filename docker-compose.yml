@@ -3,20 +3,20 @@ services:
     image: jenkins/jenkins:jdk17
 
     ports:
-      - "8081:8080"
-      - "50000:50000"
+      - "8081:8080" # local 8081 포트를 컨테이너의 8080 포트 (Jenkins 웹 UI)에 매핑
+      - "50000:50000" # Jenkins 에이전트 통신용 포트를 컨테이너의 50000 포트에 매핑
     volumes:
-      - ${HOST_JENKINS_HOME}:/var/jenkins_home  #docker 컨테이너에서의 파일이 저장될 로컬 경로
-      - /var/run/docker.sock:/var/run/docker.sock
+      - ${HOST_JENKINS_HOME}:/var/jenkins_home  # docker 컨테이너에서의 파일이 저장될 로컬 경로 : Jenkins 데이터를 저장하여 데이터 지속성 유지, 호스트의 ${HOST_JENKINS_HOME} 디렉토리를 Jenkins 컨테이너의 /var/jenkins_home 디렉토리에 마운트(연결)
+#      - /var/run/docker.sock:/var/run/docker.sock
 
 #    links:
 #      - worker-1
 
-  worker-1:
-    image: jenkins/ssh-agent:latest-jdk17
+  worker-1: # Jenkins 에이전트(Jenkins Agent) : Jenkins 서버가 빌드 작업을 분산하여 실행할 수 있도록 도와주는 노드
+    image: jenkins/ssh-agent:latest-jdk17   # Jenkins SSH 에이전트 이미지
     volumes:
-      - ${HOST_JENKINS_WORKER_1}:/home/jenkins
-    environment:
+      - ${HOST_JENKINS_WORKER_1}:/home/jenkins    # 호스트의 ${HOST_JENKINS_WORKER_1} 디렉토리를 에이전트 컨테이너의 /home/jenkins 디렉토리에 마운트(연결)
+    environment:    # Jenkins 서버가 worker-1 에이전트에 SSH로 접근할 수 있도록 하는 공개 키입니다. 이 공개 키가 worker-1 서비스의 SSH 에이전트에 설정됩니다.
       - JENKINS_SLAVE_SSH_PUBKEY=ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDVo4KafREGoD5ooQEV0TX4yerjb0aRC3sbwQhWm+enqj0dX/wawYR0sKyhvR0wMecX4NYd+LSnY4xFcvP+xKCCmtb829mE9xHUWYDZqFT+171lZ+lJj58c4ZDmnwGCNFYJgsadKHJh+Zuuyx4J9HZ8azI1mKVkM8CHDUvah2kH/Uj6WUcLc9Pld8Ao8rc/fCk0otG/+H8AlzB5HgBXbPY48IfSzaijkmwaAoL0iDVQEvctlpCD7lLRQsEGOJFOkoCzRjUgwMNC2q+TsyGHttasXnQI08VWnDHp454UOC+dRzjpYR2LrHOAdtsEGAxjLQihlhkQu2J1rEX3d46FcIsvY5/8+XqEcdpBEmgc5jPdCxCTi1ovT1LPqt6CEhg+VLSw4Vs3i2XalYaiYxk4hJdxx7vixb0+Iww0s1CyDOr8pPorVhpIp9Lgu7oEjlZOs8aSYoIFBNDrsO1WdULEZb1GzJmlDIZKlz7Q/U78D05G39FITIO6aZQlZKyMBDl9RAc=
 
 #  sonarqube:
