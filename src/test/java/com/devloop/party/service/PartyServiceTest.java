@@ -192,7 +192,7 @@ class PartyServiceTest {
         partyService.deleteParty(authUser, partyId);
 
         //then
-        verify(s3Service, times(1)).delete(partyAttachment.getFileName());
+        verify(s3Service, times(1)).delete(partyAttachment);
         verify(partyAttachmentService, times(1)).deletePartyAttachment(partyAttachment);
         verify(partyRepository, times(1)).delete(party);
     }
