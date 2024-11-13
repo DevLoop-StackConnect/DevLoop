@@ -12,6 +12,7 @@ public class GetLectureDetailResponse {
     private final String description;
     private final String recommend;
     private final String category;
+    private final String boardType;
     private final String level;
     private final BigDecimal price;
     private final Integer videoCount;
@@ -25,6 +26,7 @@ public class GetLectureDetailResponse {
             String description,
             String recommend,
             String category,
+            String boardType,
             String level,
             BigDecimal price,
             Integer videoCount,
@@ -37,6 +39,7 @@ public class GetLectureDetailResponse {
         this.description = description;
         this.recommend = recommend;
         this.category = category;
+        this.boardType = boardType;
         this.level = level;
         this.price = price;
         this.videoCount = videoCount;
@@ -50,6 +53,7 @@ public class GetLectureDetailResponse {
             String description,
             String recommend,
             String category,
+            String boardType,
             String level,
             BigDecimal price,
             Integer videoCount,
@@ -63,6 +67,7 @@ public class GetLectureDetailResponse {
                 description,
                 recommend,
                 category,
+                boardType,
                 level,
                 price,
                 videoCount,
