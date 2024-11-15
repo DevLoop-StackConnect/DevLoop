@@ -25,6 +25,7 @@ public class Party extends Timestamped {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Builder.Default
     @Enumerated(EnumType.STRING)
     private BoardType boardType = BoardType.PARTY;
 
@@ -34,9 +35,11 @@ public class Party extends Timestamped {
     @Column(columnDefinition = "TEXT", nullable = false)
     private String contents;
 
+    @Builder.Default
     @Enumerated(EnumType.STRING)
     private PartyStatus status = PartyStatus.IN_PROGRESS;
 
+    @Builder.Default
     @Enumerated(EnumType.STRING)
     private Category category = Category.ETC;
 
@@ -71,5 +74,6 @@ public class Party extends Timestamped {
         this.status = request.getStatus();
         this.category = request.getCategory();
     }
+
 
 }

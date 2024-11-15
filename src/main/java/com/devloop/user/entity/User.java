@@ -21,6 +21,7 @@ public class User extends Timestamped {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Builder.Default
     @Enumerated(EnumType.STRING)
     private LoginType loginType = LoginType.LOCAL;
 
@@ -36,9 +37,11 @@ public class User extends Timestamped {
     @Column(nullable = false)
     private String password;
 
+    @Builder.Default
     @Enumerated(EnumType.STRING)
     private UserStatus status = UserStatus.ACTIVE;
 
+    @Builder.Default
     @Enumerated(EnumType.STRING)
     @Column(length = 50)
     private UserRole userRole = UserRole.ROLE_USER;
