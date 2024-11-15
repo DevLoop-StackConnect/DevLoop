@@ -17,6 +17,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 
 import java.lang.reflect.Constructor;
 import java.math.BigDecimal;
@@ -26,6 +27,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
@@ -82,38 +84,39 @@ class ScheduleTodoConcurrentTest {
     }
 
     @Test
-    void 낙관적락_적용전_동시성문제발생() throws InterruptedException, Exception {
+    void 낙관적락_적용후_동시성문제발생() throws Exception{
         //스레드 수 : 일반 유저와 튜터로 총 두개
-        int thredCount = 2;
-        ExecutorService executorService = Executors.newFixedThreadPool(thredCount);
-        CountDownLatch latch = new CountDownLatch(thredCount);
+        int threadCount = 2;
+        ExecutorService executorService = Executors.newFixedThreadPool(threadCount);
+        CountDownLatch latch = new CountDownLatch(threadCount);
 
         //수정이 제대로 된 스레드 수를 추적
-        AtomicInteger successCount = new AtomicInteger(0);
+        AtomicInteger optimisticLockExceptionCount = new AtomicInteger(0);
 
         // 리플렉션을 사용하여 ScheduleTodoRequest 인스턴스 생성
         Constructor<ScheduleTodoRequest> constructor = ScheduleTodoRequest.class.getDeclaredConstructor(
                 String.class, String.class, LocalDateTime.class, LocalDateTime.class
         );
-        constructor.setAccessible(true); // 접근 허용
+        constructor.setAccessible(true);
 
-        //일반유저 스레드
-        executorService.submit(() -> {
+        //일반 유저 스레드
+        executorService.submit(()->{
             try {
                 ScheduleTodoRequest request = constructor.newInstance(
-                        "일반 유저 수정 제목", "일반 유저 수정 내용", LocalDateTime.now(), LocalDateTime.now().plusDays(5)
+                        "일반 유저가 수정한 제목","일반 유저가 수정한 내용",LocalDateTime.now(), LocalDateTime.now().plusDays(5)
                 );
-                AuthUser authUser = new AuthUser(user.getId(), user.getEmail(), UserRole.ROLE_USER);
-                scheduleTodoService.updateScheduleTodo(authUser, scheduleTodoId, request);
-                successCount.incrementAndGet();
-            } catch (Exception e) {
+                AuthUser authUser = new AuthUser(user.getId(),user.getEmail(),UserRole.ROLE_USER);
+                scheduleTodoService.updateScheduleTodo(authUser,scheduleTodoId,request);
+            } catch (ObjectOptimisticLockingFailureException e){
+                optimisticLockExceptionCount.incrementAndGet();
+            }catch (Exception e){
                 e.printStackTrace();
-            } finally {
+            }finally {
                 latch.countDown();
             }
         });
 
-        // 튜터의 스레드
+        //튜터 스레드
         executorService.submit(() -> {
             try {
                 ScheduleTodoRequest request = constructor.newInstance(
@@ -121,7 +124,8 @@ class ScheduleTodoConcurrentTest {
                 );
                 AuthUser authUser = new AuthUser(tutor.getId(), tutor.getEmail(), UserRole.ROLE_TUTOR);
                 scheduleTodoService.updateScheduleTodo(authUser, scheduleTodoId, request);
-                successCount.incrementAndGet();
+            } catch (ObjectOptimisticLockingFailureException e) {
+                optimisticLockExceptionCount.incrementAndGet();
             } catch (Exception e) {
                 e.printStackTrace();
             } finally {
@@ -132,16 +136,68 @@ class ScheduleTodoConcurrentTest {
         latch.await();
         executorService.shutdown();
 
-        ScheduleTodo updatedScheduleTodo = scheduleTodoRepository.findById(scheduleTodoId).orElseThrow();
-        System.out.println("최종 제목: " + updatedScheduleTodo.getTitle());
-        System.out.println("최종 내용: " + updatedScheduleTodo.getContent());
-        System.out.println("성공한 업데이트 수: " + successCount.get());
+        System.out.println("발생한 낙관적 락 예외 수: " + optimisticLockExceptionCount.get());
+        assertTrue(optimisticLockExceptionCount.get() > 0, "낙관적 락 충돌이 발생해야 합니다.");
 
-        assertTrue(
-                updatedScheduleTodo.getTitle().equals("일반 유저 수정 제목") ||
-                        updatedScheduleTodo.getTitle().equals("튜터 수정 제목"),
-                "동시성 문제로 인해 하나의 수정만 반영되어야함"
-        );
     }
 
+//    @Test
+//    void 낙관적락_적용전_동시성문제발생() throws InterruptedException, Exception {
+//        //스레드 수 : 일반 유저와 튜터로 총 두개
+//        int thredCount = 2;
+//        ExecutorService executorService = Executors.newFixedThreadPool(thredCount);
+//        CountDownLatch latch = new CountDownLatch(thredCount);
+//
+//        //수정이 제대로 된 스레드 수를 추적
+//        AtomicInteger successCount = new AtomicInteger(0);
+//
+//        // 리플렉션을 사용하여 ScheduleTodoRequest 인스턴스 생성
+//        Constructor<ScheduleTodoRequest> constructor = ScheduleTodoRequest.class.getDeclaredConstructor(
+//                String.class, String.class, LocalDateTime.class, LocalDateTime.class
+//        );
+//        constructor.setAccessible(true); // 접근 허용
+//
+//        //일반유저 스레드
+//        executorService.submit(() -> {
+//            try {
+//                ScheduleTodoRequest request = constructor.newInstance(
+//                        "일반 유저 수정 제목", "일반 유저 수정 내용", LocalDateTime.now(), LocalDateTime.now().plusDays(5)
+//                );
+//                AuthUser authUser = new AuthUser(user.getId(), user.getEmail(), UserRole.ROLE_USER);
+//                scheduleTodoService.updateScheduleTodo(authUser, scheduleTodoId, request);
+//                successCount.incrementAndGet();
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            } finally {
+//                latch.countDown();
+//            }
+//        });
+//
+//        // 튜터의 스레드
+//        executorService.submit(() -> {
+//            try {
+//                ScheduleTodoRequest request = constructor.newInstance(
+//                        "튜터 수정 제목", "튜터 수정 내용", LocalDateTime.now(), LocalDateTime.now().plusDays(5)
+//                );
+//                AuthUser authUser = new AuthUser(tutor.getId(), tutor.getEmail(), UserRole.ROLE_TUTOR);
+//                scheduleTodoService.updateScheduleTodo(authUser, scheduleTodoId, request);
+//                successCount.incrementAndGet();
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            } finally {
+//                latch.countDown();
+//            }
+//        });
+//
+//        latch.await();
+//        executorService.shutdown();
+//
+//        ScheduleTodo updatedScheduleTodo = scheduleTodoRepository.findById(scheduleTodoId).orElseThrow();
+//        System.out.println("최종 제목: " + updatedScheduleTodo.getTitle());
+//        System.out.println("최종 내용: " + updatedScheduleTodo.getContent());
+//        System.out.println("성공한 업데이트 수: " + successCount.get());
+//
+//        assertEquals(1,successCount.get());
+//
+//    }
 }
