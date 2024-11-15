@@ -2,7 +2,8 @@ package com.devloop.search.service;
 
 import com.devloop.common.apipayload.status.ErrorStatus;
 import com.devloop.common.exception.ApiException;
-import com.devloop.common.utils.SearchSpecificationUtil;
+import com.devloop.common.utils.CacheKeyGenerator;
+import com.devloop.common.utils.SearchQueryUtil;
 import com.devloop.community.entity.Community;
 import com.devloop.community.service.CommunityService;
 import com.devloop.lecture.entity.Lecture;
@@ -14,21 +15,17 @@ import com.devloop.pwt.service.ProjectWithTutorService;
 import com.devloop.search.request.IntegrationSearchRequest;
 import com.devloop.search.response.IntegratedSearchPreview;
 import com.devloop.search.response.IntegrationSearchResponse;
+import com.querydsl.core.BooleanBuilder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.ZSetOperations;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Set;
 
 @Slf4j
 @Service
@@ -43,111 +40,166 @@ public class SearchService {
     private final RedisTemplate<String, String> rankingRedisTemplate;
     private static final String SEARCH_RANKING_KEY = "search:ranking";
     private static final int PREVIEW_SIZE = 5;
-    @Value("${search.ranking.soze:10}")
+
+    @Value("${search.ranking.size:10}")
     private int rankingSize;
 
-    @Cacheable(
-            value = "searchPreview",
-            key = "T(com.devloop.common.utils.CacheKeyGenerator).generateKey(#request)",
-            condition = "#request != null",
-            unless = "#result == null || #result.isEmpty()"
-    )
-    public IntegratedSearchPreview integratedSearchPreview(IntegrationSearchRequest request) {
-        log.debug("Cache miss for search preview: {}", request);
 
-        String searchKey = request.generateCompositeKey();
-        if (!searchKey.isEmpty()) {
-            incrementSearchCount(searchKey);
-        }
+    //    @Cacheable(
+//            value = "searchPreview",
+//            key = "T(com.devloop.common.utils.CacheKeyGenerator).generateKey(#request)",
+//            condition = "#request != null",
+//            unless = "#result == null"
+//    )
+    public IntegratedSearchPreview integratedSearchPreview(IntegrationSearchRequest request) {
+        log.info("Cache miss - executing search for key: {}",
+                CacheKeyGenerator.generateKey(request));
 
         try {
-            Specification<Party> partySpec = SearchSpecificationUtil.buildSpecification(request);
-            Specification<Community> communitySpec = SearchSpecificationUtil.buildSpecification(request);
-            Specification<ProjectWithTutor> pwtSpec = SearchSpecificationUtil.buildSpecification(request);
-            Specification<Lecture> lectureSpec = SearchSpecificationUtil.buildSpecification(request);
+//            // 검색 랭킹 업데이트
+//            updateSearchRanking(request);
 
+            BooleanBuilder partyCondition = SearchQueryUtil.buildSearchCondition(request, Party.class);
+            BooleanBuilder communityCondition = SearchQueryUtil.buildSearchCondition(request, Community.class);
+            BooleanBuilder pwtCondition = SearchQueryUtil.buildSearchCondition(request, ProjectWithTutor.class);
+            BooleanBuilder lectureCondition = SearchQueryUtil.buildSearchCondition(request, Lecture.class);
+
+            log.debug("Party condition: {}", partyCondition);
+            log.debug("Community condition: {}", communityCondition);
+            log.debug("PWT condition: {}", pwtCondition);
+            log.debug("Lecture condition: {}", lectureCondition);
+
+            // 조건이 없으면 빈 결과 반환
+            if (!partyCondition.hasValue() && !communityCondition.hasValue()
+                    && !pwtCondition.hasValue() && !lectureCondition.hasValue()) {
+                return new IntegratedSearchPreview();
+            }
+
+            // 각각의 엔티티에 맞는 서비스 메서드 호출
             Page<IntegrationSearchResponse> partyResults = partyService.getPartyWithPage(
-                    partySpec, PageRequest.of(0, PREVIEW_SIZE, Sort.by("createdAt").descending()));
-
+                    partyCondition, PageRequest.of(0, PREVIEW_SIZE, Sort.by("createdAt").descending()));
             Page<IntegrationSearchResponse> communityResults = communityService.getCommunityWithPage(
-                    communitySpec, PageRequest.of(0, PREVIEW_SIZE, Sort.by("createdAt").descending()));
-
+                    communityCondition, PageRequest.of(0, PREVIEW_SIZE, Sort.by("createdAt").descending()));
             Page<IntegrationSearchResponse> pwtResults = projectWithTutorService.getProjectWithTutorPage(
-                    pwtSpec, PageRequest.of(0, PREVIEW_SIZE, Sort.by("createdAt").descending()));
-
+                    pwtCondition, PageRequest.of(0, PREVIEW_SIZE, Sort.by("createdAt").descending()));
             Page<IntegrationSearchResponse> lectureResults = lectureService.getLectureWithPage(
-                    lectureSpec, PageRequest.of(0, PREVIEW_SIZE, Sort.by("createAt").descending()));
+                    lectureCondition, PageRequest.of(0, PREVIEW_SIZE, Sort.by("createdAt").descending()));
 
             return IntegratedSearchPreview.builder()
                     .partyPreview(partyResults.getContent())
                     .communityPreview(communityResults.getContent())
                     .pwtPreview(pwtResults.getContent())
                     .lecturePreivew(lectureResults.getContent())
-                    .totalCommunityCount(communityResults.getTotalElements())
                     .totalPartyCount(partyResults.getTotalElements())
+                    .totalCommunityCount(communityResults.getTotalElements())
                     .totalPwtCount(pwtResults.getTotalElements())
                     .totalLectureCount(lectureResults.getTotalElements())
                     .build();
         } catch (Exception e) {
             log.error("Error during search preview", e);
-            return IntegratedSearchPreview.builder().build();
+            throw e;
         }
     }
 
-    @Cacheable(
-            value = "searchDetail",
-            key = "T(com.devloop.common.utils.CacheKeyGenerator).generateCategoryKey(#category, #page, #request)",
-            condition = "#request != null && #page > 0",
-            unless = "#result == null || #result.isEmpty()"
-    )
-    public Page<IntegrationSearchResponse> searchByCategory(
-            IntegrationSearchRequest request, String category, int page, int size) {
-        incrementSearchCount(request.getTitle());
+    //    @Cacheable(
+//            value = "searchDetail",
+//            key = "T(com.devloop.common.utils.CacheKeyGenerator).generateCategoryKey(#boardType, #page, #request)",
+//            condition = "#request != null && #page > 0",
+//            unless = "#result == null"
+//    )
+    public Page<IntegrationSearchResponse> searchByBoardType(
+            IntegrationSearchRequest request, String boardType, int page, int size) {
+        try {
 
-        log.debug("Cache miss for category search: {} - page: {}", category, page);
+//        // 검색 랭킹 업데이트
+//        updateSearchRanking(request);
 
+        request.setBoardType(boardType);
         PageRequest pageable = PageRequest.of(page - 1, size, Sort.by("createdAt").descending());
-        return switch (category.toLowerCase()) {
+
+        return switch (boardType.toLowerCase()) {
             case "party" -> searchParty(request, pageable);
             case "community" -> searchCommunity(request, pageable);
             case "pwt" -> searchPwt(request, pageable);
             case "lecture" -> searchLecture(request, pageable);
             default -> throw new ApiException(ErrorStatus._BAD_SEARCH_KEYWORD);
         };
+    } catch (Exception e) {
+        log.error("Error during search by board type", e);
+        throw e;
     }
-    //랭킹
-    public void incrementSearchCount(String keyword) {
-        ZSetOperations<String, String> zSetOps = rankingRedisTemplate.opsForZSet();
-        zSetOps.incrementScore(SEARCH_RANKING_KEY, keyword, 1);
-    }
-    //랭킹
-    public Set<ZSetOperations.TypedTuple<String>> getTopSearchKeywords() {
-        ZSetOperations<String, String> zSetOps = rankingRedisTemplate.opsForZSet();
-        return zSetOps.reverseRangeWithScores(SEARCH_RANKING_KEY, 0, rankingSize - 1);
-    }
-    //랭킹 시간 초기화
-    @Scheduled(cron = "0 0 0 * * ?")
-    public void resetSearchRanking() {
-        rankingRedisTemplate.delete(SEARCH_RANKING_KEY); // 랭킹 초기화
-    }
+}
 
+//    //랭킹
+//    public void incrementSearchCount(String keyword) {
+//        ZSetOperations<String, String> zSetOps = rankingRedisTemplate.opsForZSet();
+//        zSetOps.incrementScore(SEARCH_RANKING_KEY, keyword, 1);
+//    }
+//
+//    //랭킹
+//    public Set<ZSetOperations.TypedTuple<String>> getTopSearchKeywords() {
+//        ZSetOperations<String, String> zSetOps = rankingRedisTemplate.opsForZSet();
+//        return zSetOps.reverseRangeWithScores(SEARCH_RANKING_KEY, 0, rankingSize - 1);
+//    }
+//
+//    //랭킹 시간 초기화
+//    @Scheduled(cron = "0 0 0 * * ?")
+//    public void resetSearchRanking() {
+//        rankingRedisTemplate.delete(SEARCH_RANKING_KEY); // 랭킹 초기화
+//    }
+
+    // 각 게시판별 검색 메서드
     private Page<IntegrationSearchResponse> searchParty(IntegrationSearchRequest request, PageRequest pageable) {
-        Specification<Party> spec = SearchSpecificationUtil.buildSpecification(request);
-        return partyService.getPartyWithPage(spec, pageable);
+        BooleanBuilder condition = SearchQueryUtil.buildSearchCondition(request, Party.class);
+        log.debug("Party search condition: {}", condition);
+        return partyService.getPartyWithPage(condition, pageable);
     }
 
     private Page<IntegrationSearchResponse> searchCommunity(IntegrationSearchRequest request, PageRequest pageable) {
-        Specification<Community> spec = SearchSpecificationUtil.buildSpecification(request);
-        return communityService.getCommunityWithPage(spec, pageable);
+        BooleanBuilder condition = SearchQueryUtil.buildSearchCondition(request, Community.class);
+        log.debug("Community search condition: {}", condition);
+        return communityService.getCommunityWithPage(condition, pageable);
     }
 
     private Page<IntegrationSearchResponse> searchPwt(IntegrationSearchRequest request, PageRequest pageable) {
-        Specification<ProjectWithTutor> spec = SearchSpecificationUtil.buildSpecification(request);
-        return projectWithTutorService.getProjectWithTutorPage(spec, pageable);
+        BooleanBuilder condition = SearchQueryUtil.buildSearchCondition(request, ProjectWithTutor.class);
+        log.debug("PWT search condition: {}", condition);
+        return projectWithTutorService.getProjectWithTutorPage(condition, pageable);
     }
 
     private Page<IntegrationSearchResponse> searchLecture(IntegrationSearchRequest request, PageRequest pageable) {
-        Specification<Lecture> spec = SearchSpecificationUtil.buildSpecification(request);
-        return lectureService.getLectureWithPage(spec, pageable);
+        BooleanBuilder condition = SearchQueryUtil.buildSearchCondition(request, Lecture.class);
+        log.debug("Lecture search condition: {}", condition);
+        return lectureService.getLectureWithPage(condition, pageable);
     }
+
+
+
+    //    private void updateSearchRanking(IntegrationSearchRequest request) {
+//        // title 검색어 랭킹
+//        if (request.getTitle() != null && !request.getTitle().isEmpty()) {
+//            incrementSearchCount("title:" + request.getTitle());
+//        }
+//
+//        // content 검색어 랭킹
+//        if (request.getContent() != null && !request.getContent().isEmpty()) {
+//            incrementSearchCount("content:" + request.getContent());
+//        }
+//
+//        // username 검색어 랭킹
+//        if (request.getUsername() != null && !request.getUsername().isEmpty()) {
+//            incrementSearchCount("user:" + request.getUsername());
+//        }
+//
+//        // category 검색어 랭킹
+//        if (request.getCategory() != null && !request.getCategory().isEmpty()) {
+//            incrementSearchCount("category:" + request.getCategory());
+//        }
+//
+//        // lecture 검색어 랭킹
+//        if (request.getLecture() != null && !request.getLecture().isEmpty()) {
+//            incrementSearchCount("lecture:" + request.getLecture());
+//        }
+//    }
+
 }

@@ -4,6 +4,7 @@ import com.amazonaws.AmazonServiceException;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.devloop.attachment.cloudfront.CloudFrontService;
 import com.devloop.attachment.entity.*;
 import com.devloop.attachment.enums.FileFormat;
 import com.devloop.attachment.repository.ProfileATMRepository;
@@ -36,6 +37,7 @@ import java.util.UUID;
 @Transactional(readOnly = true)
 public class S3Service {
 
+    private final CloudFrontService cloudFrontService;
     @Value("${cloud.aws.s3.bucketName}")
     private String BucketName;
     @Value("${cloud.aws.s3.attachmentsBucketName}")
@@ -50,7 +52,7 @@ public class S3Service {
     private final PWTAttachmentService pwtAttachmentService;
 
     public String makeFileName(MultipartFile file) {
-        return UUID.randomUUID() + file.getOriginalFilename();
+        return UUID.randomUUID().toString();
     }
 
     @Transactional
@@ -117,7 +119,8 @@ public class S3Service {
     @Transactional
     public <T extends Attachment, U> void updateUploadFile(MultipartFile file, T attachment, U object) {
         // 기존 S3 첨부파일 삭제
-        delete(attachment.getFileName());
+        delete(attachment);
+        cloudFrontService.invalidateCache(attachment.getImageURL().getPath());
 
         // 새로운 첨부파일 file S3에 업로드
         fileValidator.fileTypeValidator(file, object);
@@ -143,10 +146,11 @@ public class S3Service {
         }
     }
 
-    public void delete(String fileName) {
-        if (amazonS3Client.doesObjectExist(attachmentsBucketName, fileName)) {
+    public void delete(Attachment attachment) {
+        if (amazonS3Client.doesObjectExist(attachmentsBucketName, attachment.getFileName())) {
             try {
-                amazonS3Client.deleteObject(new DeleteObjectRequest(attachmentsBucketName, fileName));
+                amazonS3Client.deleteObject(new DeleteObjectRequest(attachmentsBucketName, attachment.getFileName()));
+                cloudFrontService.invalidateCache(attachment.getImageURL().getPath());
             } catch (AmazonServiceException e) {
                 throw new ApiException(ErrorStatus._HAS_NOT_ACCESS_PERMISSION);
             }

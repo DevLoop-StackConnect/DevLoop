@@ -11,6 +11,7 @@ import com.devloop.common.enums.BoardType;
 import com.devloop.common.exception.ApiException;
 import com.devloop.common.utils.SearchResponseUtil;
 import com.devloop.pwt.entity.ProjectWithTutor;
+import com.devloop.pwt.entity.QProjectWithTutor;
 import com.devloop.pwt.repository.ProjectWithTutorRepository;
 import com.devloop.pwt.request.ProjectWithTutorSaveRequest;
 import com.devloop.pwt.request.ProjectWithTutorUpdateRequest;
@@ -23,6 +24,8 @@ import com.devloop.stock.service.StockService;
 import com.devloop.user.entity.User;
 import com.devloop.user.enums.UserRole;
 import com.devloop.user.service.UserService;
+import com.querydsl.core.BooleanBuilder;
+import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.slack.api.model.event.ErrorEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -49,6 +52,7 @@ public class ProjectWithTutorService {
     private final UserService userService;
     private final S3Service s3Service;
     private final PWTAttachmentService pwtAttachmentService;
+    private final JPAQueryFactory queryFactory;
 
     // 튜터랑 함께하는 협업 프로젝트 게시글 생성
     @Transactional
@@ -207,7 +211,7 @@ public class ProjectWithTutorService {
         }
 
         // S3에 첨부파일 삭제
-        s3Service.delete(pwtAttachment.getFileName());
+        s3Service.delete(pwtAttachment);
 
         // PWT 첨부파일 삭제
         pwtAttachmentService.deletePwtAttachment(pwtAttachment);
@@ -231,16 +235,27 @@ public class ProjectWithTutorService {
     /**
      * Search에서 사용
      */
-    public List<IntegrationSearchResponse> getProjectWithTutor(Specification<ProjectWithTutor> spec) {
-        List<ProjectWithTutor> pwts = projectWithTutorRepository.findAll(spec);
-        return SearchResponseUtil.wrapResponse(BoardType.PWT, pwts);
-    }
 
-    public Page<IntegrationSearchResponse> getProjectWithTutorPage(Specification<ProjectWithTutor> spec, PageRequest pageable) {
-        Page<ProjectWithTutor> pwtPage = projectWithTutorRepository.findAll(spec, pageable);
-        List<IntegrationSearchResponse> response = SearchResponseUtil.wrapResponse(
-                BoardType.PWT, pwtPage.getContent()
-        );
-        return new PageImpl<>(response, pageable, pwtPage.getTotalElements());
+    public Page<IntegrationSearchResponse> getProjectWithTutorPage(BooleanBuilder condition, PageRequest pageable) {
+        QProjectWithTutor qPwt = QProjectWithTutor.projectWithTutor;
+
+        // QueryDSL로 조건에 맞는 ProjectWithTutor 페이지 조회
+        List<ProjectWithTutor> projects = queryFactory
+                .selectFrom(qPwt)
+                .where(condition)
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+
+        // 전체 요소 수 계산 (명확한 경로 지정)
+        long total = queryFactory
+                .select(qPwt.id.count())  // id의 count를 사용
+                .from(qPwt)
+                .where(condition)
+                .fetchOne();
+
+        // IntegrationSearchResponse로 변환하여 반환
+        List<IntegrationSearchResponse> response = SearchResponseUtil.wrapResponse(BoardType.PWT, projects);
+        return new PageImpl<>(response, pageable, total);
     }
 }

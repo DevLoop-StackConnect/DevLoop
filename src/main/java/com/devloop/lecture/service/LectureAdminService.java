@@ -54,6 +54,7 @@ public class LectureAdminService {
                 lecture.getDescription(),
                 lecture.getRecommend(),
                 lecture.getCategory().getDescription(),
+                lecture.getBoardType().getBoardType(),
                 lecture.getLevel().getLevel(),
                 lecture.getPrice(),
                 lecture.getLectureVideos().size(),
@@ -78,6 +79,7 @@ public class LectureAdminService {
                 lecture.getId(),
                 lecture.getTitle(),
                 lecture.getCategory().getDescription(),
+                lecture.getBoardType().getBoardType(),
                 lecture.getLevel().getLevel(),
                 lecture.getPrice()
         ));

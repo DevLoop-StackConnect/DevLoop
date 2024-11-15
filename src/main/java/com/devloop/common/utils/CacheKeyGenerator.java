@@ -17,6 +17,15 @@ public class CacheKeyGenerator {
         if (StringUtils.hasText(request.getCategory())) {
             keyBuilder.append(":category:").append(request.getCategory());
         }
+        // content 필드 추가
+        if (StringUtils.hasText(request.getContent())) {
+            keyBuilder.append(":content:").append(request.getContent());
+        }
+        // lecture 필드 추가
+        if (StringUtils.hasText(request.getLecture())) {
+            keyBuilder.append(":lecture:").append(request.getLecture());
+        }
+
         return keyBuilder.length() > 0 ? keyBuilder.toString() : "all";
     }
 
@@ -25,5 +34,3 @@ public class CacheKeyGenerator {
                 category, page, generateKey(request));
     }
 }
-
-
