@@ -8,9 +8,9 @@ services:
 
   jenkins:
     image: jenkins/jenkins:jdk17
-
     ports:
       - "8081:8080" # local 8081 포트를 컨테이너의 8080 포트 (Jenkins 웹 UI)에 매핑
       - "50000:50000" # Jenkins 에이전트 통신용 포트를 컨테이너의 50000 포트에 매핑
     volumes:
       - ./jenkins:/var/jenkins_home  # docker 컨테이너에서의 파일이 저장될 로컬 경로 : Jenkins 데이터를 저장하여 데이터 지속성 유지, 호스트의 ${HOST_JENKINS_HOME} 디렉토리를 Jenkins 컨테이너의
+      - /var/run/docker.sock:/var/run/docker.sock
