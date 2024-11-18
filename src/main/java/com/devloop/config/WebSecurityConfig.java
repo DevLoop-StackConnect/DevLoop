@@ -38,6 +38,7 @@ public class WebSecurityConfig {
                 .logout(logout -> logout.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
+                                "/",
                                 "/api/v1/auth/signup",
                                 "/api/v1/auth/login",
                                 "/api/v1/auth/kakao/login",

@@ -118,7 +118,7 @@ public class ScheduleTodoService {
     //수정
     @Transactional
     public ScheduleTodoResponse updateScheduleTodo(AuthUser authUser, Long scheduleTodoId, ScheduleTodoRequest scheduleTodoRequest) {
-        try {
+//        try {
             ScheduleTodo scheduleTodo = scheduleTodoRepository.findById(scheduleTodoId)
                     .orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_SCHEDULE_TODO));
             ScheduleBoard scheduleBoard = scheduleTodo.getScheduleBoard();
@@ -165,10 +165,10 @@ public class ScheduleTodoService {
                     scheduleTodo.getStartDate(),
                     scheduleTodo.getEndDate()
             );
-        } catch (OptimisticLockException e) {
-            //낙관적 락 예외처리
-            throw new ApiException(ErrorStatus._CONFLICT);
-        }
+//        } catch (OptimisticLockException e) {
+//            //낙관적 락 예외처리
+//            throw new ApiException(ErrorStatus._CONFLICT);
+//        }
     }
 
     //삭제기능
