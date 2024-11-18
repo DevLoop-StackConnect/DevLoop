@@ -78,9 +78,9 @@ public class CommunityControllerTest {
         CommunitySaveResponse mockResponse = CommunitySaveResponse.of(1L, "Test Title", "Test Content", "SOLVED", "Category", LocalDateTime.now());
         MockMultipartFile file = new MockMultipartFile("file", "test.jpg", "image/jpeg", "Test Content".getBytes());
 
-//        Constructor<CommunitySaveRequest> constructor = CommunitySaveRequest.class.getDeclaredConstructor(String.class, String.class, Category.class);
-//        constructor.setAccessible(true); // protected 접근 허용
-//        CommunitySaveRequest expectedRequest = constructor.newInstance("Test Title", "Test Content", Category.APP_DEV);
+        Constructor<CommunitySaveRequest> constructor = CommunitySaveRequest.class.getDeclaredConstructor(String.class, String.class, Category.class);
+        constructor.setAccessible(true); // protected 접근 허용
+        CommunitySaveRequest expectedRequest = constructor.newInstance("Test Title", "Test Content", Category.APP_DEV);
 
         // Mock 설정
         Mockito.when(communityService.createCommunity(
