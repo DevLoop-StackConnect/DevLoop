@@ -5,7 +5,7 @@ import com.devloop.common.enums.Approval;
 import com.devloop.common.exception.ApiException;
 import com.devloop.lecture.entity.Lecture;
 import com.devloop.lecture.entity.LectureVideo;
-import com.devloop.lecture.repository.LectureRepository;
+import com.devloop.lecture.repository.jpa.LectureRepository;
 import com.devloop.lecture.response.GetLectureDetailResponse;
 import com.devloop.lecture.response.GetLectureListResponse;
 import lombok.RequiredArgsConstructor;

@@ -21,10 +21,11 @@ slack:
       error-channel: "#에러-모니터링"       # 에러 알림을 받을 채널
       admin-channel: "#데브루프-관리자"          # 관리자 알림용 채널
       general-channel: "#데브루프"
-##logging:
-##  config: classpath:logback-spring.xml
+#logging:
+#  config: classpath:logback-spring.xml
 #  level:
 #    root: INFO
+
 management:
   endpoints:
     web:
@@ -35,6 +36,7 @@ management:
       show-details: always
     prometheus:
       enabled: true
+
 jwt:
   secret:
     key: ${JWT_SECRET_KEY}

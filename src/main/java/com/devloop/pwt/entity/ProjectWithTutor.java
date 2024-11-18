@@ -12,16 +12,25 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.data.elasticsearch.annotations.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Getter
 @Entity
+@Document(indexName = "pwt")
+@Setting(settingPath = "/elasticsearch/setting.json")
+@Mapping(mappingPath = "/elasticsearch/pwt-mapping.json")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ProjectWithTutor extends Product {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
     @Enumerated(EnumType.STRING)
+    @Field(type = FieldType.Keyword, name = "board_type")
     private BoardType boardType = BoardType.PWT;
 
     @Column(columnDefinition = "TEXT", nullable = false)
@@ -46,7 +55,8 @@ public class ProjectWithTutor extends Product {
     @Enumerated(EnumType.STRING)
     private Category category = Category.ETC;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
+    @Field(type = FieldType.Object, includeInParent = true)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 

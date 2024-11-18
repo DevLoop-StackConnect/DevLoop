@@ -11,7 +11,7 @@ import com.devloop.common.validator.FileValidator;
 import com.devloop.lecture.entity.Lecture;
 import com.devloop.lecture.entity.LectureVideo;
 import com.devloop.lecture.enums.VideoStatus;
-import com.devloop.lecture.repository.LectureVideoRepository;
+import com.devloop.lecture.repository.jpa.LectureVideoRepository;
 import com.devloop.lecture.response.GetLectureVideoDetailResponse;
 import com.devloop.lecture.response.GetLectureVideoListResponse;
 import com.devloop.purchase.service.PurchaseService;

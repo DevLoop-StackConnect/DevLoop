@@ -12,7 +12,10 @@ import com.devloop.common.exception.ApiException;
 import com.devloop.common.utils.SearchResponseUtil;
 import com.devloop.pwt.entity.ProjectWithTutor;
 import com.devloop.pwt.entity.QProjectWithTutor;
-import com.devloop.pwt.repository.ProjectWithTutorRepository;
+import com.devloop.pwt.event.PwtCreatedEvent;
+import com.devloop.pwt.event.PwtDeletedEvent;
+import com.devloop.pwt.event.PwtUpdatedEvent;
+import com.devloop.pwt.repository.jpa.ProjectWithTutorRepository;
 import com.devloop.pwt.request.ProjectWithTutorSaveRequest;
 import com.devloop.pwt.request.ProjectWithTutorUpdateRequest;
 import com.devloop.pwt.response.ProjectWithTutorDetailResponse;
@@ -20,21 +23,18 @@ import com.devloop.pwt.response.ProjectWithTutorListResponse;
 import com.devloop.search.response.IntegrationSearchResponse;
 import com.devloop.stock.entity.Stock;
 import com.devloop.stock.repository.StockRepository;
-import com.devloop.stock.service.StockService;
 import com.devloop.user.entity.User;
 import com.devloop.user.enums.UserRole;
 import com.devloop.user.service.UserService;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.slack.api.model.event.ErrorEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.annotation.Lazy;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -51,11 +51,11 @@ public class ProjectWithTutorService {
     private final StockRepository stockRepository;  // 순환 참조 막기 위해 레파이토리 주입
     private final UserService userService;
     private final S3Service s3Service;
+    private final ApplicationEventPublisher eventPublisher;
     private final PWTAttachmentService pwtAttachmentService;
     private final JPAQueryFactory queryFactory;
 
     // 튜터랑 함께하는 협업 프로젝트 게시글 생성
-    @Transactional
     public String saveProjectWithTutor(
             AuthUser authUser,
             MultipartFile file,
@@ -81,6 +81,8 @@ public class ProjectWithTutorService {
                 user
         );
         projectWithTutorRepository.save(projectWithTutor);
+
+        eventPublisher.publishEvent(new PwtCreatedEvent(projectWithTutor));
 
         // 첨부파일 저장
         s3Service.uploadFile(file, user, projectWithTutor);
@@ -170,8 +172,9 @@ public class ProjectWithTutorService {
                 // PWT 첨부파일 수정
                 s3Service.updateUploadFile(file, pwtAttachment, projectWithTutor);
             }
-
         }
+
+        eventPublisher.publishEvent(new PwtUpdatedEvent(projectWithTutor));
 
         // 변경사항 업데이트
         projectWithTutor.update(
@@ -221,7 +224,7 @@ public class ProjectWithTutorService {
             Stock stock = stockRepository.findByProductId(projectWithTutor.getId()).orElseThrow(()->new ApiException(ErrorStatus._NOT_FOUND_STOCK));
             stockRepository.delete(stock);
         }
-
+        eventPublisher.publishEvent(new PwtDeletedEvent(projectWithTutor));
         // PWT 게시글 삭제
         projectWithTutorRepository.delete(projectWithTutor);
     }
@@ -232,10 +235,11 @@ public class ProjectWithTutorService {
                 .orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_PROJECT_WITH_TUTOR));
     }
 
-    /**
-     * Search에서 사용
-     */
+    public Page<ProjectWithTutor> findAllWithPagination(PageRequest pageRequest){
+        return projectWithTutorRepository.findAll(pageRequest);
+    }
 
+    //search에서 사용
     public Page<IntegrationSearchResponse> getProjectWithTutorPage(BooleanBuilder condition, PageRequest pageable) {
         QProjectWithTutor qPwt = QProjectWithTutor.projectWithTutor;
 

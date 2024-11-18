@@ -1,0 +1,29 @@
+{
+  "analysis": {
+    "analyzer": {
+      "korean_and_english": {
+        "type": "custom",
+        "tokenizer": "nori_tokenizer",
+        "filter": [
+          "nori_readingform",
+          "lowercase",
+          "korean_stop",
+          "stemmer"
+        ]
+      }
+    },
+    "filter": {
+      "korean_stop": {
+        "type": "stop",
+        "stopwords": ["은", "는", "이", "가", "을", "를", "의", "에", "에서", "로"]
+      }
+    },
+    "normalizer": {
+      "lowercase_normalizer": {
+        "type": "custom",
+        "char_filter": [],
+        "filter": ["lowercase"]
+      }
+    }
+  }
+}

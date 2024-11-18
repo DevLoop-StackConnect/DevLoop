@@ -1,4 +1,4 @@
-package com.devloop.lecture.repository;
+package com.devloop.lecture.repository.jpa;
 
 import com.devloop.lecture.entity.LectureVideo;
 import org.springframework.data.jpa.repository.JpaRepository;

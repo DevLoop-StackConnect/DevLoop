@@ -9,10 +9,14 @@ import com.devloop.common.apipayload.dto.ProjectWithTutorResponseDto;
 import com.devloop.common.enums.Approval;
 import com.devloop.common.enums.Category;
 import com.devloop.common.exception.ApiException;
+import com.devloop.party.event.PartyCreatedEvent;
 import com.devloop.pwt.entity.ProjectWithTutor;
 import com.devloop.pwt.enums.Level;
 import com.devloop.pwt.enums.ProjectWithTutorStatus;
-import com.devloop.pwt.repository.ProjectWithTutorRepository;
+import com.devloop.pwt.event.PwtCreatedEvent;
+import com.devloop.pwt.event.PwtDeletedEvent;
+import com.devloop.pwt.event.PwtUpdatedEvent;
+import com.devloop.pwt.repository.jpa.ProjectWithTutorRepository;
 import com.devloop.pwt.request.ProjectWithTutorSaveRequest;
 import com.devloop.pwt.request.ProjectWithTutorUpdateRequest;
 import com.devloop.pwt.response.ProjectWithTutorDetailResponse;
@@ -25,7 +29,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.http.MediaType;
@@ -64,6 +70,9 @@ class ProjectWithTutorServiceTest {
 
     @InjectMocks
     private ProjectWithTutorService projectWithTutorService;
+
+    @Mock
+    private ApplicationEventPublisher eventPublisher;
 
     private AuthUser authUser;
     private MockMultipartFile mockFile;
@@ -124,6 +133,7 @@ class ProjectWithTutorServiceTest {
                     projectWithTutorService.saveProjectWithTutor(authUser,mockFile,(ProjectWithTutorSaveRequest) instance));
             verify(projectWithTutorRepository, times(1)).save(any(ProjectWithTutor.class));
             verify(s3Service, times(1)).uploadFile(any(),any(),any());
+            Mockito.verify(eventPublisher, Mockito.times(1)).publishEvent(any(PwtCreatedEvent.class));
         }
     }
     @Nested
@@ -328,6 +338,7 @@ class ProjectWithTutorServiceTest {
 
             //then
             assertEquals(String.format("%s 게시글이 수정되었습니다.", projectWithTutor.getTitle()), response);
+            Mockito.verify(eventPublisher, Mockito.times(1)).publishEvent(any(PwtUpdatedEvent.class));
 
         }
     }
@@ -388,6 +399,7 @@ class ProjectWithTutorServiceTest {
 
             //then
             verify(projectWithTutorRepository, times(1)).delete((ProjectWithTutor) any());
+            Mockito.verify(eventPublisher, Mockito.times(1)).publishEvent(any(PwtDeletedEvent.class));
         }
         /*@Test
         void 테스트코드_실패방지_테스트(){}*/

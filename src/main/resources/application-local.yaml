@@ -5,19 +5,35 @@ spring:
     password: ${LOCAL_DB_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
 
+  elasticsearch:
+    uris: ${ELASTICSEARCH_URIS}
+    username: ${ELASTICSEARCH_USERNAME}
+    password: ${ELASTICSEARCH_PASSWORD}
+    connection-timeout: 5000
+    socket-timeout: 60000
+    repositories:
+      auto-create-index: true # 인덱스를 자동 생성
+      rest:
+        repositories:
+          delete-before-create: true # 기존 인덱스를 삭제 후 재생성
+
   data:
+    elasticsearch:
+      repositories:
+        enabled: true
+
     redis:
-      host: localhost        # Redis 서버 호스트 (Docker Desktop에서 실행 중)
-      port: 6379            # Redis 포트 (Docker Desktop에서 설정한 포트)
-      password:             # Docker Desktop에서 설정한 비밀번호 (설정한 경우)
-      database: 0           # Redis DB 번호
-      timeout: 60000        # 작업 타임아웃 (ms)
-      lettuce: # Redis 클라이언트 설정
+      host: localhost
+      port: 6379
+      password:
+      database: 0
+      timeout: 60000
+      lettuce:
         pool:
-          max-active: 10    # 최대 활성 연결 수
-          max-idle: 10      # 최대 유휴 연결 수
-          min-idle: 2       # 최소 유휴 연결 수
-          max-wait: -1      # 연결 대기 시간 (-1: 무한 대기)
+          max-active: 10
+          max-idle: 10
+          min-idle: 2
+          max-wait: -1
 
   servlet:
     multipart:
@@ -37,11 +53,10 @@ spring:
 
 logging:
   level:
-    org:
-      springframework:
-        security: DEBUG
-      hibernate:
-        SQL: DEBUG                     # SQL 실행 로그 활성화
-        type.descriptor.sql.BasicBinder: TRACE  # SQL 파라미터 바인딩 로그 활성화
-    com:
-      devloop: DEBUG
+    com.devloop.search.service: DEBUG
+
+search:
+  elasticsearch:
+    enabled: true
+  ranking:
+    size: 10
