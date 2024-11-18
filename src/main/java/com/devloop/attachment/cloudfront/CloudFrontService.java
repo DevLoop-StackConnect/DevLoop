@@ -3,8 +3,12 @@ package com.devloop.attachment.cloudfront;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import software.amazon.awssdk.services.cloudfront.CloudFrontClient;
 import software.amazon.awssdk.services.cloudfront.CloudFrontUtilities;
 import software.amazon.awssdk.services.cloudfront.model.CannedSignerRequest;
+import software.amazon.awssdk.services.cloudfront.model.CreateInvalidationRequest;
+import software.amazon.awssdk.services.cloudfront.model.CreateInvalidationResponse;
+import software.amazon.awssdk.services.cloudfront.model.Paths;
 import software.amazon.awssdk.services.cloudfront.url.SignedUrl;
 
 import java.net.URLEncoder;
@@ -25,6 +29,11 @@ public class CloudFrontService {
     @Value("${cloud.aws.cloudfront.privateKeyPath}")
     private String PRIVATE_KEY_PATH;
 
+    @Value("${cloud.aws.cloudfront.distributionId}")
+    private String DISTRIBUTION_ID;
+
+    private final CloudFrontClient cloudFrontClient;
+
     public String generateSignedUrl(String resourcePath, long expirationMinutes) throws Exception {
         CloudFrontUtilities cloudFrontUtilities = CloudFrontUtilities.create();
         Instant expirationDate = Instant.now().plus(expirationMinutes, ChronoUnit.MINUTES);
@@ -40,6 +49,21 @@ public class CloudFrontService {
         SignedUrl signedUrl = cloudFrontUtilities.getSignedUrlWithCannedPolicy(request);
 
         return signedUrl.url();
+    }
+
+    public String invalidateCache(String path) {
+        CreateInvalidationRequest invalidationRequest = CreateInvalidationRequest.builder()
+                .distributionId(DISTRIBUTION_ID)
+                .invalidationBatch(builder -> builder
+                        .paths(Paths.builder()
+                                .quantity(1)
+                                .items(path)
+                                .build())
+                        .callerReference(String.valueOf(System.currentTimeMillis())))
+                .build();
+
+        CreateInvalidationResponse response = cloudFrontClient.createInvalidation(invalidationRequest);
+        return "Invalidation created: " + response.invalidation().id();
     }
 }
 

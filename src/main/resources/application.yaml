@@ -57,6 +57,7 @@ cloud:
       keyPairId: ${CLOUDFRONT_KEY_PAIR_ID}
       privateKeyPath: ${CLOUDFRONT_PRIVATE_KEY_PATH}
       attachmentsCloudFrontUrl: ${ATTACHMENTS_CLOUD_FRONT_URL}
+      distributionId: ${DISTRIBUTION_ID}
 toss:
   payment:
     secret:

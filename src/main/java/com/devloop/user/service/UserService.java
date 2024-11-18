@@ -89,7 +89,7 @@ public class UserService {
             ProfileAttachment currentImg = profileATMRepository.findById(user.getAttachmentId())
                     .orElseThrow(() -> new ApiException(ErrorStatus._ATTACHMENT_NOT_FOUND));
             String currentImgName = currentImg.getFileName();
-            s3Service.delete(currentImgName);
+            s3Service.delete(currentImg);
             profileATMRepository.delete(currentImg);
         }
         s3Service.uploadFile(file, user, user);
