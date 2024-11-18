@@ -1,20 +1,19 @@
 package com.devloop.communitycomment.controller;
 
-import jakarta.validation.Valid;
 import com.devloop.common.AuthUser;
-import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
 import com.devloop.common.apipayload.ApiResponse;
-import com.devloop.communitycomment.response.CommentResponse;
 import com.devloop.communitycomment.request.CommentSaveRequest;
-import org.springframework.security.access.prepost.PreAuthorize;
 import com.devloop.communitycomment.request.CommentUpdateRequest;
+import com.devloop.communitycomment.response.CommentResponse;
 import com.devloop.communitycomment.response.CommentSaveResponse;
 import com.devloop.communitycomment.response.CommentUpdateResponse;
 import com.devloop.communitycomment.service.CommunityCommentService;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
