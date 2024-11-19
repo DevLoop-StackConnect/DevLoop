@@ -25,6 +25,7 @@ spring:
     redis:
       host: ${REDIS_HOST}
       port: 6379
+      password: ""
       timeout: 10000
       lettuce:
         pool:
