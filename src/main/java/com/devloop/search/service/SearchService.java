@@ -86,6 +86,13 @@ public class SearchService {
     @Value("${search.elasticsearch.enabled}")
     private boolean elasticsearchEnabled; //Elasticsearch 활성화 여부 가져오기
 
+
+    @Cacheable(
+            value = "searchPreview",
+            key = "T(com.devloop.common.utils.CacheKeyGenerator).generateKey(#request)",
+            condition = "#request != null",
+            unless = "#result == null"
+    )
     public IntegratedSearchPreview integratedSearchPreview(IntegrationSearchRequest request) {
         log.info("Entering integratedSearchPreview method in SearchService");
         log.info("Starting integrated search preview with request: {}", request);
@@ -182,6 +189,12 @@ public class SearchService {
                 .build();
     }
 
+    @Cacheable(
+            value = "searchDetail",
+            key = "T(com.devloop.common.utils.CacheKeyGenerator).generateCategoryKey(#boardType, #page, #request)",
+            condition = "#request != null && #page > 0",
+            unless = "#result == null"
+    )
     public Page<IntegrationSearchResponse> searchByBoardType(IntegrationSearchRequest request, String boardType, int page, int size) {
         try {
             updateSearchRanking(request);
@@ -389,13 +402,7 @@ public class SearchService {
                 .collect(Collectors.toList());
     }
 
-    //데이터베이스를 통한 검색 실행 메서드
-    @Cacheable(
-            value = "searchPreview",
-            key = "T(com.devloop.common.utils.CacheKeyGenerator).generateKey(#request)",
-            condition = "#request != null",
-            unless = "#result == null"
-    )
+
     public IntegratedSearchPreview searchWithDatabase(IntegrationSearchRequest request) {
         log.info("Cache miss - executing search for key: {}",
                 CacheKeyGenerator.generateKey(request));
@@ -442,12 +449,7 @@ public class SearchService {
         }
     }
 
-    @Cacheable(
-            value = "searchDetail",
-            key = "T(com.devloop.common.utils.CacheKeyGenerator).generateCategoryKey(#boardType, #page, #request)",
-            condition = "#request != null && #page > 0",
-            unless = "#result == null"
-    )
+
     public Page<IntegrationSearchResponse> searchByBoardTypeWithDatabase(
             IntegrationSearchRequest request, String boardType, int page, int size) {
         try {
