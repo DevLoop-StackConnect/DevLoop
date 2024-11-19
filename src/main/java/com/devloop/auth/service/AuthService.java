@@ -1,6 +1,5 @@
 package com.devloop.auth.service;
 
-
 import com.devloop.auth.request.LoginRequest;
 import com.devloop.auth.request.SignoutRequest;
 import com.devloop.auth.request.SignupRequest;
@@ -60,7 +59,6 @@ public class AuthService {
     }
 
     public String login(LoginRequest loginRequest) {
-
         User user = userRepository.findByEmail(loginRequest.getEmail())
                 .orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_USER));
 

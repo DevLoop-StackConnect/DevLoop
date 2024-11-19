@@ -2,8 +2,10 @@ package com.devloop.common.enums;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.elasticsearch.annotations.Document;
 
 @Getter
+
 @RequiredArgsConstructor
 public enum BoardType {
     PARTY("스터디 모집 게시판"),

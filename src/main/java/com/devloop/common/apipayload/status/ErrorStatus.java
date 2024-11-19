@@ -75,6 +75,7 @@ public enum ErrorStatus implements BaseCode {
     //Search
     _BAD_SEARCH_KEYWORD(HttpStatus.BAD_REQUEST, "400", "검색 오류"),
     _UNSUPPORTED_DATA_TYPE(HttpStatus.BAD_REQUEST, "400", "데이터 타입이 올바르지 않습니다"),
+    _ELASTICSEARCH_ERROR(HttpStatus.BAD_GATEWAY, "510", "엘라스틱서치 실행에 실패했습니다"),
 
     //Community
     _NOT_FOUND_COMMUNITY(HttpStatus.NOT_FOUND, "404", "존재하지 않는 게시글입니다"),

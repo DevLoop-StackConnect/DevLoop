@@ -12,7 +12,9 @@ import com.devloop.common.enums.Category;
 import com.devloop.common.exception.ApiException;
 import com.devloop.community.entity.Community;
 import com.devloop.community.entity.ResolveStatus;
-import com.devloop.community.repository.CommunityRepository;
+import com.devloop.community.event.CommunityCreatedEvent;
+import com.devloop.community.event.CommunityUpdatedEvent;
+import com.devloop.community.repository.jpa.CommunityRepository;
 import com.devloop.community.request.CommunitySaveRequest;
 import com.devloop.community.request.CommunityUpdateRequest;
 import com.devloop.community.response.CommunityDetailResponse;
@@ -29,11 +31,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.lang.reflect.Constructor;
@@ -56,6 +59,9 @@ class CommunityServiceTest {
     private S3Service s3Service;
     @Mock
     private CommunityAttachmentService communityAttachmentService;
+
+    @Mock
+    private ApplicationEventPublisher eventPublisher;
 
     @InjectMocks
     private CommunityService communityService;
@@ -108,11 +114,13 @@ class CommunityServiceTest {
         // when
         CommunitySaveResponse response = communityService.createCommunity(authUser, null, communitySaveRequest);
 
+
         // then
         Assertions.assertEquals(community.getId(), response.getCommunityId());
         Assertions.assertEquals(community.getTitle(), response.getTitle());
         Mockito.verify(communityRepository, Mockito.times(1)).save(any(Community.class));
         Mockito.verify(s3Service, Mockito.times(0)).uploadFile(any(MultipartFile.class), any(User.class), any(Community.class));
+        Mockito.verify(eventPublisher, Mockito.times(1)).publishEvent(any(CommunityCreatedEvent.class));
     }
 
     @Test
@@ -131,7 +139,7 @@ class CommunityServiceTest {
         Assertions.assertEquals(community.getTitle(), response.getTitle());
         Mockito.verify(communityRepository, Mockito.times(1)).save(any(Community.class));
         Mockito.verify(s3Service, Mockito.times(1)).uploadFile(eq(file), eq(user), any(Community.class));
-
+        Mockito.verify(eventPublisher, Mockito.times(1)).publishEvent(any(CommunityCreatedEvent.class));
     }
 
     @Test
@@ -237,6 +245,8 @@ class CommunityServiceTest {
         Mockito.verify(communityRepository, Mockito.times(1)).findById(communityId);
         Mockito.verify(communityRepository, Mockito.times(1)).save(any(Community.class));
         Mockito.verify(s3Service, Mockito.times(1)).uploadFile(file, user, community);
+        Mockito.verify(eventPublisher, Mockito.times(1)).publishEvent(any(CommunityUpdatedEvent.class)); // 추가
+
     }
     @Test
     public void 다른사람글_삭제_성공() {

@@ -9,14 +9,17 @@ import com.devloop.party.request.UpdatePartyRequest;
 import com.devloop.partycomment.entity.PartyComment;
 import com.devloop.user.entity.User;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
 import lombok.*;
+import org.springframework.data.elasticsearch.annotations.*;
 
 import java.util.List;
 
 @Getter
 @Entity
 @Builder
+@Document(indexName = "party")
+@Setting(settingPath = "/elasticsearch/setting.json")
+@Mapping(mappingPath = "/elasticsearch/party-mapping.json")
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Party extends Timestamped {
@@ -26,6 +29,7 @@ public class Party extends Timestamped {
     private Long id;
 
     @Enumerated(EnumType.STRING)
+    @Field(type = FieldType.Keyword, name = "board_type")
     private BoardType boardType = BoardType.PARTY;
 
     @Column(length = 20, nullable = false)
@@ -40,7 +44,8 @@ public class Party extends Timestamped {
     @Enumerated(EnumType.STRING)
     private Category category = Category.ETC;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
+    @Field(type = FieldType.Object, includeInParent = true)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
@@ -71,5 +76,4 @@ public class Party extends Timestamped {
         this.status = request.getStatus();
         this.category = request.getCategory();
     }
-
 }

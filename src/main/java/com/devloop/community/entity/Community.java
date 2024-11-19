@@ -11,10 +11,14 @@ import com.devloop.common.Timestamped;
 import com.devloop.common.enums.Category;
 import com.devloop.common.enums.BoardType;
 import com.devloop.communitycomment.entity.CommunityComment;
+import org.springframework.data.elasticsearch.annotations.*;
 
 @Entity
 @Getter
 @Builder
+@Document(indexName = "community")
+@Setting(settingPath = "/elasticsearch/setting.json")
+@Mapping(mappingPath = "/elasticsearch/community-mapping.json")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 public class Community extends Timestamped {
@@ -25,6 +29,7 @@ public class Community extends Timestamped {
     private Long id;
 
     @Enumerated(EnumType.STRING)
+    @Field(type = FieldType.Keyword, name = "board_type")
     private BoardType boardType = BoardType.COMMUNITY;
 
     @Column(length = 50, nullable = false)
@@ -44,6 +49,7 @@ public class Community extends Timestamped {
     private List<CommunityComment> communityComments = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @Field(type = FieldType.Object, includeInParent = true)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 

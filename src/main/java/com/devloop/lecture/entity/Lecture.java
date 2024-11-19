@@ -11,6 +11,8 @@ import com.devloop.pwt.enums.Level;
 import com.devloop.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.BatchSize;
+import org.springframework.data.elasticsearch.annotations.*;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -18,12 +20,19 @@ import java.util.List;
 @Entity
 @Getter
 @Builder
+@Document(indexName = "lecture")
+@Setting(settingPath = "/elasticsearch/setting.json")
+@Mapping(mappingPath = "/elasticsearch/lecture-mapping.json")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 public class Lecture extends Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Enumerated(EnumType.STRING)
+    @Field(type = FieldType.Keyword, name = "board_type")
+    private BoardType boardType = BoardType.LECTURE;
 
     @Column(columnDefinition = "TEXT", nullable = false)
     private String description;
@@ -35,9 +44,6 @@ public class Lecture extends Product {
     @Enumerated(EnumType.STRING)
     private Category category;
 
-    @Enumerated(EnumType.STRING)
-    private BoardType boardType = BoardType.LECTURE;
-
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private Level level;
@@ -46,12 +52,15 @@ public class Lecture extends Product {
     private Approval approval = Approval.WAITE;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @Field(type = FieldType.Object, includeInParent = true)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
+    @BatchSize(size = 100)
     @OneToMany(mappedBy = "lecture", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<LectureVideo> lectureVideos;
 
+    @BatchSize(size = 100)
     @OneToMany(mappedBy = "lecture", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<LectureReview> lectureReviews;
 

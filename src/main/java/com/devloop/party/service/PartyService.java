@@ -10,7 +10,10 @@ import com.devloop.common.exception.ApiException;
 import com.devloop.common.utils.SearchResponseUtil;
 import com.devloop.party.entity.Party;
 import com.devloop.party.entity.QParty;
-import com.devloop.party.repository.PartyRepository;
+import com.devloop.party.event.PartyCreatedEvent;
+import com.devloop.party.event.PartyDeletedEvent;
+import com.devloop.party.event.PartyUpdatedEvent;
+import com.devloop.party.repository.jpa.PartyRepository;
 import com.devloop.party.request.SavePartyRequest;
 import com.devloop.party.request.UpdatePartyRequest;
 import com.devloop.party.response.GetPartyDetailResponse;
@@ -24,10 +27,10 @@ import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -44,6 +47,7 @@ public class PartyService {
     private final UserService userService;
     private final S3Service s3Service;
     private final JPAQueryFactory queryFactory;
+    private final ApplicationEventPublisher eventPublisher;
     private final PartyAttachmentService partyAttachmentService;
 
     //스터디 파티 모집 게시글 등록
@@ -60,6 +64,8 @@ public class PartyService {
         if(file!=null && !file.isEmpty()){
             s3Service.uploadFile(file,user,newParty);
         }
+
+        eventPublisher.publishEvent(new PartyCreatedEvent(newParty));
 
         return SavePartyResponse.of(
                 newParty.getId(),
@@ -104,6 +110,8 @@ public class PartyService {
         }
 
         party.update(updatePartyRequest);
+
+        eventPublisher.publishEvent(new PartyUpdatedEvent(party));
 
         return UpdatePartyResponse.of(
                 party.getId(),
@@ -179,11 +187,9 @@ public class PartyService {
             partyAttachmentService.deletePartyAttachment(partyAttachment.get());
         }
         partyRepository.delete(party);
-    }
 
-    /**
-     * Search에서 사용
-     */
+        eventPublisher.publishEvent(new PartyDeletedEvent(party));
+    }
 
     public Page<IntegrationSearchResponse> getPartyWithPage(BooleanBuilder condition, PageRequest pageable) {
         QParty qParty = QParty.party;
@@ -212,5 +218,9 @@ public class PartyService {
     public Party findById(Long id){
         return partyRepository.findById(id).orElseThrow(()->
                 new ApiException(ErrorStatus._NOT_FOUND_PARTY));
+    }
+
+    public Page<Party> findAllWithPagination(PageRequest pageRequest) {
+        return partyRepository.findAll(pageRequest);
     }
 }

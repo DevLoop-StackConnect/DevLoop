@@ -25,10 +25,8 @@ public class SearchController {
     @PostMapping("/v1/main/search/preview")
     public ApiResponse<IntegratedSearchPreview> previewSearch(
             @RequestBody IntegrationSearchRequest request) {
-        log.debug("Received search request with fields - Title: {}, Content: {}, Username: {}, Category: {}, Lecture: {}",
-                request.getTitle(), request.getContent(), request.getUsername(), request.getCategory(), request.getLecture());
-
-        return ApiResponse.ok(searchService.integratedSearchPreview(request));
+        IntegratedSearchPreview result = searchService.integratedSearchPreview(request);
+        return ApiResponse.ok(result);
     }
 
     @PostMapping("/v1/main/search/detail/{boardType}")
@@ -38,14 +36,12 @@ public class SearchController {
             @RequestBody IntegrationSearchRequest request,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size) {
-        log.info("상세 검색 요청 - boardType: {}, request: {}, page: {}, size: {}",
-                boardType, request, page, size);
         return ApiResponse.ok(searchService.searchByBoardType(request, boardType, page, size));
     }
 
-//    @GetMapping("/v1/main/search/ranking")
-//    @PreAuthorize("permitAll()")
-//    public ApiResponse<Set<ZSetOperations.TypedTuple<String>>> getRankingKeyword(){
-//        return ApiResponse.ok(searchService.getTopSearchKeywords());
-//    }
+    @GetMapping("/v1/main/search/ranking")
+    @PreAuthorize("permitAll()")
+    public ApiResponse<Set<ZSetOperations.TypedTuple<String>>> getRankingKeyword(){
+        return ApiResponse.ok(searchService.getTopSearchKeywords());
+    }
 }
