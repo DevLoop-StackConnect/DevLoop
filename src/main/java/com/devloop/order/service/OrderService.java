@@ -51,19 +51,9 @@ public class OrderService {
         // 장바구니 객체 가져오기
         Cart cart = cartService.findByUserId(authUser.getId());
 
-        // product 리스트 만들기
-        List<Product> products = cart.getItems().stream()
-                .map(CartItem::getProduct)
-                .toList();
-
-        //  Stock 리스트 만들기
-        List<Stock> stocks = stockService.findByProductIdsWithLock(products.stream()
-                .map(Product::getId)
-                .toList());
-
         //주문 전 재고 확인 & 재구매 확인
-        for (Product product : products) {
-            product = (Product) ((HibernateProxy)product).getHibernateLazyInitializer().getImplementation();
+        for (CartItem cartItem : cart.getItems()) {
+            Product product = (Product) ((HibernateProxy)cartItem.getProduct()).getHibernateLazyInitializer().getImplementation();
             boolean isRepurchase = purchaseRepository.existsByUserIdAndProductId(user.getId(), product.getId());
             // 재구매인 경우
             if (isRepurchase) {
@@ -77,12 +67,7 @@ public class OrderService {
                     throw new ApiException(ErrorStatus._ALREADY_FULL);
                 }
                 // Stock 찾기
-                Product finalProduct = product;
-                Stock stock = stocks.stream()
-                        .filter(s -> s.getProduct().getId().equals(finalProduct.getId()))
-                        .findFirst()
-                        .orElseThrow(() -> new ApiException(ErrorStatus._STOCK_EMPTY));
-                System.out.println(stock.getQuantity());
+                Stock stock = stockService.findByProductId(product.getId());
 
                 // 재고 확인
                 if (stock.getQuantity() <= 0) {
@@ -135,14 +120,12 @@ public class OrderService {
         order.updateStatus(OrderStatus.APPROVED);
 
         List<CartItem> cartItems = order.getCart().getItems();
-        Product product = (Product) Hibernate.unproxy(cartItems.get(0).getProduct());
-        if (product.getClass().getSimpleName().equals("ProjectWithTutor")) {
-            // 각 PWT의 Stock 업데이트
-            for (CartItem cartItem : cartItems) {
-                stockService.updateStock(cartItem.getProduct().getId());
+        for (CartItem cartItem : cartItems) {
+            Product product = (Product) Hibernate.unproxy(cartItem.getProduct());
+            if (product.getClass().getSimpleName().equals("ProjectWithTutor")){
+                stockService.updateStock(product.getId());
             }
         }
-
         // 주문 항목 저장
         orderItemService.saveOrderItem(orderRequestId);
     }
