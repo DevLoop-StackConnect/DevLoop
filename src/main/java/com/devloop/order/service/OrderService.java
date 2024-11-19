@@ -18,6 +18,7 @@ import com.devloop.stock.service.StockService;
 import com.devloop.user.entity.User;
 import com.devloop.user.service.UserService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.hibernate.Hibernate;
 import org.hibernate.proxy.HibernateProxy;
 import org.springframework.stereotype.Service;
@@ -29,6 +30,7 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
+@Slf4j
 public class OrderService {
 
     private final OrderRepository orderRepository;
@@ -49,9 +51,19 @@ public class OrderService {
         // 장바구니 객체 가져오기
         Cart cart = cartService.findByUserId(authUser.getId());
 
+        // product 리스트 만들기
+        List<Product> products = cart.getItems().stream()
+                .map(CartItem::getProduct)
+                .toList();
+
+        //  Stock 리스트 만들기
+        List<Stock> stocks = stockService.findByProductIdsWithLock(products.stream()
+                .map(Product::getId)
+                .toList());
+
         //주문 전 재고 확인 & 재구매 확인
-        for (CartItem cartItem : cart.getItems()) {
-            Product product = (Product) ((HibernateProxy)cartItem.getProduct()).getHibernateLazyInitializer().getImplementation();
+        for (Product product : products) {
+            product = (Product) ((HibernateProxy)product).getHibernateLazyInitializer().getImplementation();
             boolean isRepurchase = purchaseRepository.existsByUserIdAndProductId(user.getId(), product.getId());
             // 재구매인 경우
             if (isRepurchase) {
@@ -65,7 +77,12 @@ public class OrderService {
                     throw new ApiException(ErrorStatus._ALREADY_FULL);
                 }
                 // Stock 찾기
-                Stock stock = stockService.findByProductId(product.getId());
+                Product finalProduct = product;
+                Stock stock = stocks.stream()
+                        .filter(s -> s.getProduct().getId().equals(finalProduct.getId()))
+                        .findFirst()
+                        .orElseThrow(() -> new ApiException(ErrorStatus._STOCK_EMPTY));
+                System.out.println(stock.getQuantity());
 
                 // 재고 확인
                 if (stock.getQuantity() <= 0) {
