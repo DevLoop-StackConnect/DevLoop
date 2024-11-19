@@ -140,13 +140,12 @@ class SearchServiceTest {
                 .content("test content")
                 .username("testMan")
                 .category(Category.WEB_DEV.name())
-                .lecture(null)
                 .build();
 
-        partyResults = List.of(IntegrationSearchResponse.of(party, BoardType.PARTY.name()));
-        communityResults = List.of(IntegrationSearchResponse.of(community, BoardType.COMMUNITY.name()));
-        pwtResults = List.of(IntegrationSearchResponse.of(pwt, BoardType.PWT.name()));
-        lectureResults = List.of(IntegrationSearchResponse.of(lecture, "LECTURE"));
+        partyResults = List.of(IntegrationSearchResponse.of(party, 1.0f));
+        communityResults = List.of(IntegrationSearchResponse.of(community, 1.0f));
+        pwtResults = List.of(IntegrationSearchResponse.of(pwt, 1.0f));
+        lectureResults = List.of(IntegrationSearchResponse.of(lecture, 1.0f));
 
         when(rankingRedisTemplate.opsForZSet()).thenReturn(zSetOperations);
     }

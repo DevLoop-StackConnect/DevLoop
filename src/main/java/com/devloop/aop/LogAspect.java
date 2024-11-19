@@ -1,8 +1,6 @@
 package com.devloop.aop;
 
-import com.devloop.common.apipayload.status.ErrorStatus;
 import com.devloop.common.enums.Category;
-import com.devloop.common.exception.ApiException;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -20,20 +18,28 @@ import java.util.Arrays;
 @Slf4j(topic = "서비스 레이어 AOP")
 public class LogAspect {
 
-    @Pointcut("execution(* com.devloop..service..*.*(..))")
+    @Pointcut("execution(* com.devloop..service..*.*(..)) " +
+            "&& !@annotation(org.springframework.context.event.EventListener) " +
+            "&& !@annotation(jakarta.annotation.PostConstruct) " +
+            "&& !execution(* *.initializeElasticsearchData(..))")
     private void serviceLayer(){}
 
     @Pointcut("execution(* com.devloop..service..*(com.devloop.common.enums.Category, ..))")
     private void categoryPointcut(){}
-
 
     @Around("serviceLayer()")
     public Object serviceLogExecution(ProceedingJoinPoint joinPoint) throws Throwable {
         MethodSignature signature = (MethodSignature) joinPoint.getSignature();
         Method method = signature.getMethod();
         String className = joinPoint.getTarget().getClass().getSimpleName();
+        String methodName = method.getName();
 
-        log.info("{}.{} 메서드 실행 시작", className, method.getName());
+        // 초기화 관련 메서드 제외
+        if (methodName.contains("initialize") || methodName.contains("sync")) {
+            return joinPoint.proceed();
+        }
+
+        log.info("{}.{} 메서드 실행 시작", className, methodName);
         log.info("메서드 파라미터 : {}", Arrays.toString(joinPoint.getArgs()));
 
         StopWatch stopWatch = new StopWatch();
@@ -44,22 +50,26 @@ public class LogAspect {
             result = joinPoint.proceed();
             stopWatch.stop();
 
-            log.info("{}.{} 메소드 실행 완료", className, method.getName());
+            log.info("{}.{} 메소드 실행 완료", className, methodName);
             log.info("실행 시간: {}ms", stopWatch.getTotalTimeMillis());
-            log.info("반환 값: {}", result != null ? result.toString() : "없음");
+            if (result != null) {
+                log.info("반환 값: {}", result);
+            }
 
             return result;
         } catch (Exception e) {
-            log.error("{}.{} 메서드 실행 중 오류 발생 : {} - {}", className, method.getName(), e.getClass().getSimpleName(), e.getMessage());
-            throw new ApiException(ErrorStatus._METHOD_RUN_ERROR);
+            log.error("{}.{} 메서드 실행 중 오류 발생 : {} - {}",
+                    className, methodName,
+                    e.getClass().getSimpleName(), e.getMessage());
+            throw e; // 원래 예외를 그대로 throw
         }
     }
 
     @Around("categoryPointcut()")
     public Object categoryLogExecution(ProceedingJoinPoint joinPoint) throws Throwable {
         Object[] args = joinPoint.getArgs();
-
         Category category = null;
+
         for (Object arg : args) {
             if (arg instanceof Category) {
                 category = (Category) arg;

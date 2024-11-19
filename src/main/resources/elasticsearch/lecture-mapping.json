@@ -1,0 +1,41 @@
+{
+  "properties": {
+    "board_type": {
+      "type": "keyword",
+      "normalizer": "lowercase_normalizer"
+    },
+    "title": {
+      "type": "text",
+      "analyzer": "korean_and_english",
+      "fields": {
+        "keyword": {
+          "type": "keyword",
+          "ignore_above": 256
+        }
+      }
+    },
+    "description": {
+      "type": "text",
+      "analyzer": "korean_and_english"
+    },
+    "user.username": {
+      "type": "text",
+      "analyzer": "korean_and_english",
+      "fields": {
+        "keyword": {
+          "type": "keyword",
+          "normalizer": "lowercase"
+        }
+      }
+    },
+    "category": {
+      "type": "keyword"
+    },
+    "created_at": {
+      "type": "long"
+    },
+    "modified_at": {
+      "type": "long"
+    }
+  }
+}

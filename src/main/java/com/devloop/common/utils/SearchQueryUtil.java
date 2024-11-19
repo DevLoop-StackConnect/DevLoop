@@ -1,20 +1,19 @@
 package com.devloop.common.utils;
 
 import com.devloop.common.apipayload.status.ErrorStatus;
-import com.devloop.common.enums.Approval;
 import com.devloop.common.enums.Category;
 import com.devloop.common.exception.ApiException;
 import com.devloop.community.entity.Community;
+import com.devloop.community.entity.QCommunity;
 import com.devloop.lecture.entity.Lecture;
+import com.devloop.lecture.entity.QLecture;
 import com.devloop.party.entity.Party;
+import com.devloop.party.entity.QParty;
 import com.devloop.pwt.entity.ProjectWithTutor;
+import com.devloop.pwt.entity.QProjectWithTutor;
 import com.devloop.search.request.IntegrationSearchRequest;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.dsl.BooleanExpression;
-import com.devloop.community.entity.QCommunity;
-import com.devloop.lecture.entity.QLecture;
-import com.devloop.party.entity.QParty;
-import com.devloop.pwt.entity.QProjectWithTutor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.StringUtils;
 
@@ -76,58 +75,13 @@ public class SearchQueryUtil {
             }
         }
 
-        // Lecture 조건 처리
-        if (StringUtils.hasText(request.getLecture())) {
-            BooleanExpression lectureCondition = buildLectureCondition(request.getLecture(), entityClass);
-            if (lectureCondition != null) {
-                builder.and(lectureCondition);
-                log.debug("lecture condition for {}: {}", entityClass.getSimpleName(), lectureCondition);
-            }
-        }
-
         // 검색 조건 추가 확인
         if (searchBuilder.hasValue()) {
             builder.and(searchBuilder);
             log.debug("Search conditions combined for {}: {}", entityClass.getSimpleName(), builder);
         }
-
         log.debug("Final generated conditions for {}: {}", entityClass.getSimpleName(), builder);
         return builder;
-    }
-    private static BooleanExpression buildBaseCondition(Class<?> entityClass) {
-        if (entityClass.equals(Party.class)) {
-            return QParty.party.id.isNotNull();
-        } else if (entityClass.equals(Community.class)) {
-            return QCommunity.community.id.isNotNull();
-        } else if (entityClass.equals(Lecture.class)) {
-            // Lecture의 경우 승인된 것만 검색되도록 추가 조건
-            return QLecture.lecture.id.isNotNull()
-                    .and(QLecture.lecture.approval.eq(Approval.APPROVED));
-        } else if (entityClass.equals(ProjectWithTutor.class)) {
-            return QProjectWithTutor.projectWithTutor.id.isNotNull();
-        }
-        return null;
-    }
-
-    private static BooleanExpression buildLectureCondition(String lecture, Class<?> entityClass) {
-        log.debug("Building title condition for entity: {} with lecture: {}", entityClass.getSimpleName(), lecture);
-
-        if (entityClass.equals(Community.class)) {
-            log.debug("Applying lecture condition for Community");
-            return QCommunity.community.title.containsIgnoreCase(lecture);
-        } else if (entityClass.equals(Party.class)) {
-            log.debug("Applying lecture condition for Party");
-            return QParty.party.title.containsIgnoreCase(lecture);
-        } else if (entityClass.equals(Lecture.class)) {
-            log.debug("Applying lecture condition for Lecture");
-            return QLecture.lecture.title.containsIgnoreCase(lecture);
-        } else if (entityClass.equals(ProjectWithTutor.class)) {
-            log.debug("Applying lecture condition for ProjectWithTutor");
-            return QProjectWithTutor.projectWithTutor.title.containsIgnoreCase(lecture);
-        }
-
-        log.debug("No matching entity class found for lecture condition, returning null");
-        return null;
     }
 
     private static BooleanExpression buildTitleCondition(String title, Class<?> entityClass) {
@@ -146,7 +100,6 @@ public class SearchQueryUtil {
             log.debug("Applying title condition for ProjectWithTutor");
             return QProjectWithTutor.projectWithTutor.title.containsIgnoreCase(title);
         }
-
         log.debug("No matching entity class found for title condition, returning null");
         return null;
     }

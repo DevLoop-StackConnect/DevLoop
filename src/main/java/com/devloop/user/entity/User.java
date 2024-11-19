@@ -8,11 +8,13 @@ import com.devloop.user.enums.UserRole;
 import com.devloop.user.enums.UserStatus;
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.data.elasticsearch.annotations.*;
 
 @Entity
 @Getter
 @Table
 @Builder
+@Document(indexName = "user")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 public class User extends Timestamped {
@@ -28,6 +30,7 @@ public class User extends Timestamped {
     private Long attachmentId;
 
     @Column(nullable = false)
+    @Field(type = FieldType.Text, name = "username")
     private String username;
 
     @Column(nullable = false)

@@ -5,8 +5,12 @@ import com.devloop.common.apipayload.status.ErrorStatus;
 import com.devloop.common.enums.Approval;
 import com.devloop.common.enums.Category;
 import com.devloop.common.exception.ApiException;
+import com.devloop.community.event.CommunityDeletedEvent;
 import com.devloop.lecture.entity.Lecture;
-import com.devloop.lecture.repository.LectureRepository;
+import com.devloop.lecture.event.LectureCreatedEvent;
+import com.devloop.lecture.event.LectureDeletedEvent;
+import com.devloop.lecture.event.LectureUpdatedEvent;
+import com.devloop.lecture.repository.jpa.LectureRepository;
 import com.devloop.lecture.request.SaveLectureRequest;
 import com.devloop.lecture.request.UpdateLectureRequest;
 import com.devloop.lecture.response.GetLectureDetailResponse;
@@ -23,7 +27,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -51,6 +57,9 @@ class LectureServiceTest {
 
     @Mock
     private UserService userService;
+
+    @Mock
+    private ApplicationEventPublisher eventPublisher;
 
     private AuthUser authUser;
     private User user;
@@ -103,6 +112,7 @@ class LectureServiceTest {
         Assertions.assertNotNull(saveLectureResponse);
         Assertions.assertEquals(saveLectureResponse.getLectureId(), lecture.getId());
         Assertions.assertEquals(lecture.getApproval(), Approval.APPROVED);
+        Mockito.verify(eventPublisher, Mockito.times(1)).publishEvent(any(LectureCreatedEvent.class));
     }
 
     @Test
@@ -136,6 +146,7 @@ class LectureServiceTest {
         Assertions.assertEquals(lecture.getPrice(), new BigDecimal(200000));
         Assertions.assertEquals(lecture.getCategory(), Category.APP_DEV);
         Assertions.assertEquals(lecture.getApproval(), Approval.WAITE);
+        Mockito.verify(eventPublisher, Mockito.times(1)).publishEvent(any(LectureUpdatedEvent.class));
     }
 
     @Test
@@ -209,6 +220,7 @@ class LectureServiceTest {
 
         //then
         verify(lectureRepository, times(1)).delete(lecture);
+        Mockito.verify(eventPublisher, Mockito.times(1)).publishEvent(any(LectureDeletedEvent.class));
     }
 
     @Test

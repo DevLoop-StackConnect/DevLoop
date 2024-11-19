@@ -8,9 +8,13 @@ import com.devloop.common.AuthUser;
 import com.devloop.common.apipayload.status.ErrorStatus;
 import com.devloop.common.enums.Category;
 import com.devloop.common.exception.ApiException;
+import com.devloop.community.event.CommunityCreatedEvent;
 import com.devloop.party.entity.Party;
 import com.devloop.party.enums.PartyStatus;
-import com.devloop.party.repository.PartyRepository;
+import com.devloop.party.event.PartyCreatedEvent;
+import com.devloop.party.event.PartyDeletedEvent;
+import com.devloop.party.event.PartyUpdatedEvent;
+import com.devloop.party.repository.jpa.PartyRepository;
 import com.devloop.party.request.SavePartyRequest;
 import com.devloop.party.request.UpdatePartyRequest;
 import com.devloop.party.response.GetPartyDetailResponse;
@@ -26,7 +30,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -62,6 +68,9 @@ class PartyServiceTest {
 
     @Mock
     private PartyAttachmentService partyAttachmentService;
+
+    @Mock
+    private ApplicationEventPublisher eventPublisher;
 
     private AuthUser authUser;
     private User user;
@@ -113,6 +122,7 @@ class PartyServiceTest {
         Assertions.assertEquals(party.getTitle(),savePartyResponse.getTitle());
         Assertions.assertEquals(party.getContents(),savePartyResponse.getContents());
         verify(s3Service, times(1)).uploadFile(eq(file), eq(user), any(Party.class));
+        Mockito.verify(eventPublisher, Mockito.times(1)).publishEvent(any(PartyCreatedEvent.class));
     }
 
     @Test
@@ -142,6 +152,7 @@ class PartyServiceTest {
         Assertions.assertNotNull(updatePartyResponse);
         Assertions.assertEquals("수정된 제목", updatePartyResponse.getTitle());
         Assertions.assertEquals("수정된 내용",updatePartyResponse.getContents());
+        Mockito.verify(eventPublisher, Mockito.times(1)).publishEvent(any(PartyUpdatedEvent.class));
     }
 
     @Test
@@ -195,6 +206,7 @@ class PartyServiceTest {
         verify(s3Service, times(1)).delete(partyAttachment);
         verify(partyAttachmentService, times(1)).deletePartyAttachment(partyAttachment);
         verify(partyRepository, times(1)).delete(party);
+        Mockito.verify(eventPublisher, Mockito.times(1)).publishEvent(any(PartyDeletedEvent.class));
     }
 
     @Test

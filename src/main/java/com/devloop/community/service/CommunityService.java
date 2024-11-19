@@ -13,7 +13,10 @@ import com.devloop.common.utils.SearchResponseUtil;
 import com.devloop.community.entity.Community;
 import com.devloop.community.entity.QCommunity;
 import com.devloop.community.entity.ResolveStatus;
-import com.devloop.community.repository.CommunityRepository;
+import com.devloop.community.event.CommunityCreatedEvent;
+import com.devloop.community.event.CommunityDeletedEvent;
+import com.devloop.community.event.CommunityUpdatedEvent;
+import com.devloop.community.repository.jpa.CommunityRepository;
 import com.devloop.community.request.CommunitySaveRequest;
 import com.devloop.community.request.CommunityUpdateRequest;
 import com.devloop.community.response.CommunityDetailResponse;
@@ -26,11 +29,11 @@ import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -47,6 +50,7 @@ public class CommunityService {
     private final UserService userService;
     private final S3Service s3Service;
     private final JPAQueryFactory queryFactory;
+    private final ApplicationEventPublisher eventPublisher;
     private final CommunityAttachmentService communityAttachmentService;
 
     //게시글 작성
@@ -67,6 +71,9 @@ public class CommunityService {
         if (file != null && !file.isEmpty()) {
             s3Service.uploadFile(file, user, community); //s3에 파일 올리고 communityattachment에 저장하는 것
         }
+
+        eventPublisher.publishEvent(new CommunityCreatedEvent(community));
+
         //응답반환
         return CommunitySaveResponse.of(
                 savedCommunity.getId(),
@@ -151,8 +158,11 @@ public class CommunityService {
         } else {
             log.info("게시글이 상태 미해결 상태로 변경되엇습니다..");
         }
-        //변경된 상태 확인 로그
+
         communityRepository.save(community);
+
+        eventPublisher.publishEvent(new CommunityUpdatedEvent(community));
+
         //첨부파일 수정
         if (file != null && !file.isEmpty()) {
             // 기존 파일이 있는지 확인
@@ -196,6 +206,8 @@ public class CommunityService {
         });
         //삭제
         communityRepository.delete(community);
+
+        eventPublisher.publishEvent(new CommunityDeletedEvent(community));
     }
 
     //Util
@@ -204,9 +216,11 @@ public class CommunityService {
                 .orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_COMMUNITY));
     }
 
-    /**
-     * Search에서 사용
-     */
+    public Page<Community> findAllWithPagination(PageRequest pageRequest){
+        return communityRepository.findAll(pageRequest);
+    }
+
+    //Search에서 사용
     public Page<IntegrationSearchResponse> getCommunityWithPage(BooleanBuilder condition, PageRequest pageable) {
         QCommunity qCommunity = QCommunity.community;
 

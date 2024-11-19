@@ -8,7 +8,7 @@ import com.devloop.common.apipayload.status.ErrorStatus;
 import com.devloop.common.enums.Approval;
 import com.devloop.common.exception.ApiException;
 import com.devloop.pwt.entity.ProjectWithTutor;
-import com.devloop.pwt.repository.ProjectWithTutorRepository;
+import com.devloop.pwt.repository.jpa.ProjectWithTutorRepository;
 import com.devloop.pwt.response.ProjectWithTutorDetailAdminResponse;
 import com.devloop.pwt.response.ProjectWithTutorListAdminResponse;
 import com.devloop.scheduleboard.service.ScheduleBoardService;
