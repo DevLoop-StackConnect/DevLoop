@@ -10,9 +10,10 @@ import com.devloop.pwt.service.ProjectWithTutorService;
 import com.devloop.stock.entity.Stock;
 import com.devloop.stock.repository.StockRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -58,9 +59,13 @@ public class StockService {
         }
     }
 
-    // Utile Method
+    // Util Method
     public Stock findByProductId(Long productId) {
         return stockRepository.findByProductId(productId)
                 .orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_STOCK));
+    }
+
+    public List<Stock> findByProductIdsWithLock(List<Long> list) {
+        return stockRepository.findByProductIdsWithLock(list);
     }
 }
