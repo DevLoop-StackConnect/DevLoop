@@ -117,11 +117,7 @@ dependencies {
 	implementation 'co.elastic.clients:elasticsearch-java:8.10.4'
 	implementation 'org.elasticsearch.client:elasticsearch-rest-client:8.10.4'
 }
-tasks.named('bootRun') {
-	jvmArgs += '--add-opens=java.base/java.math=ALL-UNNAMED'
-}
 
 tasks.named('test') {
 	useJUnitPlatform()
-	jvmArgs += '--add-opens=java.base/java.math=ALL-UNNAMED'
 }
