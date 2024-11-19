@@ -49,8 +49,11 @@ public class StockService {
         }
 
         // Stock 찾기
-        Stock stock = stockRepository.findByProductId(productId)
+        Stock stock = stockRepository.findByProductIdWithLock(productId)
                 .orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_STOCK));
+        if(stock.getQuantity() <= 0){
+            throw new ApiException(ErrorStatus._STOCK_EMPTY);
+        }
         stock.updateQuantity(stock.getQuantity());
 
         // Stock 0 일 때 PWT 상태 변경
@@ -63,9 +66,5 @@ public class StockService {
     public Stock findByProductId(Long productId) {
         return stockRepository.findByProductId(productId)
                 .orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_STOCK));
-    }
-
-    public List<Stock> findByProductIdsWithLock(List<Long> list) {
-        return stockRepository.findByProductIdsWithLock(list);
     }
 }
