@@ -2,6 +2,7 @@ package com.devloop.common.utils;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -13,8 +14,9 @@ import java.io.Serializable;
 import java.util.List;
 
 @Getter
-
+@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS)
 public class CacheablePage<T> implements Serializable {
+    private static final long serialVersionUID = 1L;
     private final List<T> content;
     private final Long totalElements;
     private final int pageNumber;
