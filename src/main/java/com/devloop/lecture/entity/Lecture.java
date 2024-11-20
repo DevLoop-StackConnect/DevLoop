@@ -30,6 +30,7 @@ public class Lecture extends Product {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Builder.Default
     @Enumerated(EnumType.STRING)
     @Field(type = FieldType.Keyword, name = "board_type")
     private BoardType boardType = BoardType.LECTURE;
@@ -40,14 +41,16 @@ public class Lecture extends Product {
     @Column(length = 20, nullable = false)
     private String recommend;
 
+    @Builder.Default
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    private Category category;
+    private Category category = Category.ETC;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private Level level;
 
+    @Builder.Default
     @Enumerated(EnumType.STRING)
     private Approval approval = Approval.WAITE;
 

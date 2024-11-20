@@ -100,17 +100,17 @@ dependencies {
 	implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
 
 	//CloudFront
-    implementation 'software.amazon.awssdk:cloudfront:2.20.32'
-    implementation 'software.amazon.awssdk:sts:2.20.32'
+	implementation 'software.amazon.awssdk:cloudfront:2.20.32'
+	implementation 'software.amazon.awssdk:sts:2.20.32'
 
-    // json-simple : toss payment 에서 사용
-    implementation 'com.googlecode.json-simple:json-simple:1.1.1'
+	// json-simple : toss payment 에서 사용
+	implementation 'com.googlecode.json-simple:json-simple:1.1.1'
 
-    // Thymeleaf
-    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+	// Thymeleaf
+	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 
-    //테스트코드 mockito
-    testImplementation 'org.mockito:mockito-junit-jupiter:5.2.0'
+	//테스트코드 mockito
+	testImplementation 'org.mockito:mockito-junit-jupiter:5.2.0'
 
 	// ElasticSearch
 	implementation 'org.springframework.boot:spring-boot-starter-data-elasticsearch'
@@ -118,10 +118,6 @@ dependencies {
 	implementation 'org.elasticsearch.client:elasticsearch-rest-client:8.10.4'
 }
 
-tasks.named('bootRun') {
-	jvmArgs += '--add-opens=java.base/java.math=ALL-UNNAMED'
-}
-
 tasks.named('test') {
-	jvmArgs += '--add-opens=java.base/java.math=ALL-UNNAMED'
+	useJUnitPlatform()
 }
