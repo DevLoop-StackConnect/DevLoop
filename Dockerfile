@@ -1,5 +1,7 @@
 FROM openjdk:17-jdk-alpine
-RUN apk add --no-cache busybox-extras
+RUN apt-get update || (apt-get install -y apt && apt-get update) \
+    && apt-get install -y telnet \
+    && rm -rf /var/lib/apt/lists/*
 
 COPY build/libs/*.jar app.jar
 EXPOSE 8080
