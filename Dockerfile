@@ -1,5 +1,5 @@
-FROM openjdk:17-jdk-alpine
-RUN apk update && apk add --no-cache inetutils
+FROM openjdk:17-jdk-slim
+RUN apt-get update && apt-get install -y telnet
 
 COPY build/libs/*.jar app.jar
 EXPOSE 8080
