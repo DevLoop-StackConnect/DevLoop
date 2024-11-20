@@ -28,6 +28,7 @@ public class Community extends Timestamped {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Builder.Default
     @Enumerated(EnumType.STRING)
     @Field(type = FieldType.Keyword, name = "board_type")
     private BoardType boardType = BoardType.COMMUNITY;
@@ -38,13 +39,16 @@ public class Community extends Timestamped {
     @Column(columnDefinition = "TEXT", nullable = false)
     private String content;
 
+    @Builder.Default
     @Enumerated(EnumType.STRING)
     private Category category = Category.ETC;
 
+    @Builder.Default
     @Column(name = "status")
     @Enumerated(EnumType.STRING)
     private ResolveStatus resolveStatus = ResolveStatus.UNSOLVED; //기본값 필드로 설정
 
+    @Builder.Default
     @OneToMany(mappedBy = "community", fetch = FetchType.LAZY)
     private List<CommunityComment> communityComments = new ArrayList<>();
 
