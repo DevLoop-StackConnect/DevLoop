@@ -25,6 +25,8 @@ logging:
   config: classpath:logback-spring.xml
   level:
     root: INFO
+    org.springframework.data.redis: DEBUG
+    io.lettuce: DEBUG
 
 management:
   endpoints:
