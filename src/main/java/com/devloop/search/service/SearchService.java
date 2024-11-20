@@ -6,6 +6,7 @@ import com.devloop.common.apipayload.status.ErrorStatus;
 import com.devloop.common.enums.BoardType;
 import com.devloop.common.exception.ApiException;
 import com.devloop.common.utils.CacheKeyGenerator;
+import com.devloop.common.utils.CacheablePage;
 import com.devloop.common.utils.SearchQueryUtil;
 import com.devloop.community.entity.Community;
 import com.devloop.community.event.CommunityCreatedEvent;
@@ -108,6 +109,27 @@ public class SearchService {
         }
     }
 
+    @Cacheable(
+            value = "searchDetail",
+            key = "T(com.devloop.common.utils.CacheKeyGenerator).generateCategoryKey(#boardType, #page, #request)",
+            condition = "#request != null && #page > 0",
+            unless = "#result == null"
+    )
+    public Page<IntegrationSearchResponse> searchByBoardType(IntegrationSearchRequest request, String boardType, int page, int size) {
+        try {
+            updateSearchRanking(request);
+            Page<IntegrationSearchResponse> searchResult = elasticsearchEnabled ?
+                    searchByBoardTypeWithElasticSearch(request, boardType, page, size) :
+                    searchByBoardTypeWithDatabase(request, boardType, page, size);
+            return new CacheablePage<>(searchResult).toPage();
+        } catch (Exception e) {
+            log.error("Error during elasticsearch search, falling back to database", e);
+            Page<IntegrationSearchResponse> dbResult =
+                    searchByBoardTypeWithDatabase(request, boardType, page, size);
+            return new CacheablePage<>(dbResult).toPage();
+        }
+    }
+
     private IntegratedSearchPreview searchWithElasticsearch(IntegrationSearchRequest request) {
         log.info("Executing elasticsearch search with request: {}", request);
 
@@ -189,23 +211,7 @@ public class SearchService {
                 .build();
     }
 
-    @Cacheable(
-            value = "searchDetail",
-            key = "T(com.devloop.common.utils.CacheKeyGenerator).generateCategoryKey(#boardType, #page, #request)",
-            condition = "#request != null && #page > 0",
-            unless = "#result == null"
-    )
-    public Page<IntegrationSearchResponse> searchByBoardType(IntegrationSearchRequest request, String boardType, int page, int size) {
-        try {
-            updateSearchRanking(request);
-            return elasticsearchEnabled ?
-                    searchByBoardTypeWithElasticSearch(request, boardType, page, size) :
-                    searchByBoardTypeWithDatabase(request, boardType, page, size);
-        } catch (Exception e) {
-            log.error("Error during elasticsearch search, falling back to database", e);
-            return searchByBoardTypeWithDatabase(request, boardType, page, size);
-        }
-    }
+
 
     // Elasticsearch를 사용한 특정 게시판 타입 검색
     private Page<IntegrationSearchResponse> searchByBoardTypeWithElasticSearch(IntegrationSearchRequest request, String boardType, int page, int size) {
@@ -403,7 +409,7 @@ public class SearchService {
     }
 
 
-    public IntegratedSearchPreview searchWithDatabase(IntegrationSearchRequest request) {
+    private IntegratedSearchPreview searchWithDatabase(IntegrationSearchRequest request) {
         log.info("Cache miss - executing search for key: {}",
                 CacheKeyGenerator.generateKey(request));
 
@@ -450,7 +456,7 @@ public class SearchService {
     }
 
 
-    public Page<IntegrationSearchResponse> searchByBoardTypeWithDatabase(
+    private Page<IntegrationSearchResponse> searchByBoardTypeWithDatabase(
             IntegrationSearchRequest request, String boardType, int page, int size) {
         try {
             // 검색 랭킹 업데이트
@@ -472,15 +478,16 @@ public class SearchService {
         }
     }
 
-    //랭킹
-    public void incrementSearchCount(String keyword) {
-        ZSetOperations<String, String> zSetOps = rankingRedisTemplate.opsForZSet();
-        zSetOps.incrementScore(SEARCH_RANKING_KEY, keyword, 1);
-    }
+
     //랭킹
     public Set<ZSetOperations.TypedTuple<String>> getTopSearchKeywords() {
         ZSetOperations<String, String> zSetOps = rankingRedisTemplate.opsForZSet();
         return zSetOps.reverseRangeWithScores(SEARCH_RANKING_KEY, 0, rankingSize - 1);
+    }
+    //랭킹
+    public void incrementSearchCount(String keyword) {
+        ZSetOperations<String, String> zSetOps = rankingRedisTemplate.opsForZSet();
+        zSetOps.incrementScore(SEARCH_RANKING_KEY, keyword, 1);
     }
     // 각 게시판별 검색 메서드
     private Page<IntegrationSearchResponse> searchParty(IntegrationSearchRequest request, PageRequest pageable) {
