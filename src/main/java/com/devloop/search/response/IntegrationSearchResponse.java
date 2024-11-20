@@ -6,25 +6,76 @@ import com.devloop.community.entity.Community;
 import com.devloop.lecture.entity.Lecture;
 import com.devloop.party.entity.Party;
 import com.devloop.pwt.entity.ProjectWithTutor;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.JsonDeserializer;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import lombok.*;
 
+import java.io.IOException;
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Getter
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor(access = AccessLevel.PROTECTED)
-public class IntegrationSearchResponse {
-    private Long id;
-    private String boardType;
-    private String title;
-    private String content;
-    private String category;
-    private String username;
-    private LocalDateTime createdAt;
-    private float score;  // score 필드 추가
+@AllArgsConstructor
+@JsonTypeInfo(
+        use = JsonTypeInfo.Id.CLASS,
+        include = JsonTypeInfo.As.PROPERTY,
+        property = "@class",
+        visible = true
+)
+@JsonDeserialize(using = IntegrationSearchResponse.IntegrationSearchResponseDeserializer.class)
 
-    public static IntegrationSearchResponse of(Object data, float score) {  // score 파라미터 추가
+public class IntegrationSearchResponse implements Serializable {
+    private static final long serialVersionUID = 1L;
+
+    @JsonProperty
+    private Long id;
+    @JsonProperty
+    private String boardType;
+    @JsonProperty
+    private String title;
+    @JsonProperty
+    private String content;
+    @JsonProperty
+    private String category;
+    @JsonProperty
+    private String username;
+
+    @JsonProperty
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
+    private LocalDateTime createdAt;
+
+    @JsonProperty
+    @JsonDeserialize(using = CustomFloatDeserializer.class)
+    private float score;
+
+    public static class CustomFloatDeserializer extends JsonDeserializer<Float> {
+        @Override
+        public Float deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
+            String value = p.getText();
+            if ("NaN".equalsIgnoreCase(value) || value == null || value.isEmpty()) {
+                return 0.0f;
+            }
+            try {
+                return Float.parseFloat(value);
+            } catch (NumberFormatException e) {
+                return 0.0f;
+            }
+        }
+    }
+
+    public static IntegrationSearchResponse of(Object data, float score) {
         String boardType;
         IntegrationSearchResponse response;
 
@@ -38,7 +89,7 @@ public class IntegrationSearchResponse {
                     .category(String.valueOf(community.getCategory()))
                     .username(community.getUser().getUsername())
                     .createdAt(community.getCreatedAt())
-                    .score(score)  // score 설정
+                    .score(score)
                     .build();
         } else if (data instanceof Party party) {
             boardType = "party";
@@ -50,7 +101,7 @@ public class IntegrationSearchResponse {
                     .category(String.valueOf(party.getCategory()))
                     .username(party.getUser().getUsername())
                     .createdAt(party.getCreatedAt())
-                    .score(score)  // score 설정
+                    .score(score)
                     .build();
         } else if (data instanceof ProjectWithTutor pwt) {
             boardType = "pwt";
@@ -62,7 +113,7 @@ public class IntegrationSearchResponse {
                     .category(String.valueOf(pwt.getCategory()))
                     .username(pwt.getUser().getUsername())
                     .createdAt(pwt.getCreatedAt())
-                    .score(score)  // score 설정
+                    .score(score)
                     .build();
         } else if (data instanceof Lecture lecture) {
             boardType = "lecture";
@@ -74,12 +125,59 @@ public class IntegrationSearchResponse {
                     .category(String.valueOf(lecture.getCategory()))
                     .username(lecture.getUser().getUsername())
                     .createdAt(lecture.getCreatedAt())
-                    .score(score)  // score 설정
+                    .score(score)
                     .build();
         } else {
             throw new ApiException(ErrorStatus._UNSUPPORTED_DATA_TYPE);
         }
         return response;
     }
-}
 
+    public static class IntegrationSearchResponseDeserializer extends JsonDeserializer<IntegrationSearchResponse> {
+        @Override
+        public IntegrationSearchResponse deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
+            ObjectMapper mapper = (ObjectMapper) p.getCodec();
+            JsonNode node = mapper.readTree(p);
+
+            Long id = null;
+            JsonNode idNode = node.get("id");
+            if (idNode != null && idNode.isArray() && idNode.size() > 1) {
+                id = idNode.get(1).asLong();
+            }
+
+            LocalDateTime createdAt = null;
+            JsonNode createdAtNode = node.get("createdAt");
+            if (createdAtNode != null && createdAtNode.isArray() && createdAtNode.size() > 1) {
+                createdAt = LocalDateTime.parse(createdAtNode.get(1).asText());
+            }
+
+            return IntegrationSearchResponse.builder()
+                    .id(id)
+                    .boardType(getTextSafely(node, "boardType"))
+                    .title(getTextSafely(node, "title"))
+                    .content(getTextSafely(node, "content"))
+                    .category(getTextSafely(node, "category"))
+                    .username(getTextSafely(node, "username"))
+                    .createdAt(createdAt)
+                    .score(parseScore(node.get("score")))
+                    .build();
+        }
+
+        private String getTextSafely(JsonNode node, String fieldName) {
+            JsonNode fieldNode = node.get(fieldName);
+            return fieldNode != null ? fieldNode.asText() : null;
+        }
+
+        private float parseScore(JsonNode scoreNode) {
+            if (scoreNode == null || scoreNode.isNull() ||
+                    "NaN".equalsIgnoreCase(scoreNode.asText())) {
+                return 0.0f;
+            }
+            try {
+                return Float.parseFloat(scoreNode.asText());
+            } catch (NumberFormatException e) {
+                return 0.0f;
+            }
+        }
+    }
+}
