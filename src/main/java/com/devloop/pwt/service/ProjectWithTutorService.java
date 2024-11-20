@@ -56,6 +56,7 @@ public class ProjectWithTutorService {
     private final JPAQueryFactory queryFactory;
 
     // 튜터랑 함께하는 협업 프로젝트 게시글 생성
+    @Transactional
     public String saveProjectWithTutor(
             AuthUser authUser,
             MultipartFile file,
