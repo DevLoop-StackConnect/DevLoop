@@ -10,9 +10,10 @@ import com.devloop.pwt.service.ProjectWithTutorService;
 import com.devloop.stock.entity.Stock;
 import com.devloop.stock.repository.StockRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -48,8 +49,11 @@ public class StockService {
         }
 
         // Stock 찾기
-        Stock stock = stockRepository.findByProductId(productId)
+        Stock stock = stockRepository.findByProductIdWithLock(productId)
                 .orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_STOCK));
+        if(stock.getQuantity() <= 0){
+            throw new ApiException(ErrorStatus._STOCK_EMPTY);
+        }
         stock.updateQuantity(stock.getQuantity());
 
         // Stock 0 일 때 PWT 상태 변경
@@ -58,7 +62,7 @@ public class StockService {
         }
     }
 
-    // Utile Method
+    // Util Method
     public Stock findByProductId(Long productId) {
         return stockRepository.findByProductId(productId)
                 .orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_STOCK));

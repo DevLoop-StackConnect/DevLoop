@@ -18,6 +18,7 @@ import com.devloop.stock.service.StockService;
 import com.devloop.user.entity.User;
 import com.devloop.user.service.UserService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.hibernate.Hibernate;
 import org.hibernate.proxy.HibernateProxy;
 import org.springframework.stereotype.Service;
@@ -29,6 +30,7 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
+@Slf4j
 public class OrderService {
 
     private final OrderRepository orderRepository;
@@ -118,14 +120,12 @@ public class OrderService {
         order.updateStatus(OrderStatus.APPROVED);
 
         List<CartItem> cartItems = order.getCart().getItems();
-        Product product = (Product) Hibernate.unproxy(cartItems.get(0).getProduct());
-        if (product.getClass().getSimpleName().equals("ProjectWithTutor")) {
-            // 각 PWT의 Stock 업데이트
-            for (CartItem cartItem : cartItems) {
-                stockService.updateStock(cartItem.getProduct().getId());
+        for (CartItem cartItem : cartItems) {
+            Product product = (Product) Hibernate.unproxy(cartItem.getProduct());
+            if (product.getClass().getSimpleName().equals("ProjectWithTutor")){
+                stockService.updateStock(product.getId());
             }
         }
-
         // 주문 항목 저장
         orderItemService.saveOrderItem(orderRequestId);
     }
