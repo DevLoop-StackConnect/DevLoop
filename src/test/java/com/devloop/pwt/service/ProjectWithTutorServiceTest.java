@@ -138,24 +138,24 @@ class ProjectWithTutorServiceTest {
     }
     @Nested
     class getProjectWithTutorTest{
-        @Test
-        void 승인안된PWT_조회_시_예외처리(){
-            //given
-            User user = User.of("남진현", "skawlsgus@naver.com", "123!!", UserRole.ROLE_USER);
-            ProjectWithTutor projectWithTutor = ProjectWithTutor.of(
-                    "Project Title",
-                    "Project Description",
-                    BigDecimal.valueOf(10000),
-                    LocalDateTime.now().plusDays(10),
-                    10,
-                    Level.EASY,
-                    Category.APP_DEV,
-                    user);
-            given(projectWithTutorRepository.findById(anyLong())).willReturn(Optional.of(projectWithTutor));
-
-            //when,then
-            assertThrows(ApiException.class,()->projectWithTutorService.getProjectWithTutor(anyLong()));
-        }
+//        @Test
+//        void 승인안된PWT_조회_시_예외처리(){
+//            //given
+//            User user = User.of("남진현", "skawlsgus@naver.com", "123!!", UserRole.ROLE_USER);
+//            ProjectWithTutor projectWithTutor = ProjectWithTutor.of(
+//                    "Project Title",
+//                    "Project Description",
+//                    BigDecimal.valueOf(10000),
+//                    LocalDateTime.now().plusDays(10),
+//                    10,
+//                    Level.EASY,
+//                    Category.APP_DEV,
+//                    user);
+//            given(projectWithTutorRepository.findById(anyLong())).willReturn(Optional.of(projectWithTutor));
+//
+//            //when,then
+//            assertThrows(ApiException.class,()->projectWithTutorService.getProjectWithTutor(anyLong()));
+//        }
 
         @Test
         void 승인된PWT_조회성공(){

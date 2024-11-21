@@ -37,6 +37,7 @@ public class ProjectWithTutor extends Product {
     @Column(columnDefinition = "TEXT", nullable = false)
     private String description;
 
+    @Builder.Default
     @Enumerated(EnumType.STRING)
     private ProjectWithTutorStatus status = ProjectWithTutorStatus.IN_PROGRESS;
 
