@@ -1,4 +1,42 @@
 # ♾️DevLoop | StackConnect
+
+<tbody>
+    <tr>
+      <td style="text-align:center; vertical-align:middle;">
+        <a href="https://youtu.be/MhNaepmEHxw" style="display:inline-block; text-align:center;">
+          <img src="https://github.com/user-attachments/assets/370d25ed-9a61-4886-97e5-4fc9ff51712a" height="500px" width="1500px" alt=""/><br />
+          <span style="font-size:36px; font-weight:bold; color:#000; display:block; margin-top:10px; text-align:center;">
+              <b><img src="https://img.shields.io/badge/YouTube-FF0000?style=for-the-badge&logo=YouTube&logoColor=white" /></b>
+              <b><img src="https://img.shields.io/badge/YouTube-FF0000?style=for-the-badge&logo=YouTube&logoColor=white" /></b>
+              <b><img src="https://img.shields.io/badge/YouTube-FF0000?style=for-the-badge&logo=YouTube&logoColor=white" /></b>
+              <b><img src="https://img.shields.io/badge/YouTube-FF0000?style=for-the-badge&logo=YouTube&logoColor=white" /></b>
+              <b><img src="https://img.shields.io/badge/YouTube-FF0000?style=for-the-badge&logo=YouTube&logoColor=white" /></b>
+              <b><img src="https://img.shields.io/badge/YouTube-FF0000?style=for-the-badge&logo=YouTube&logoColor=white" /></b>
+              <b><img src="https://img.shields.io/badge/YouTube-FF0000?style=for-the-badge&logo=YouTube&logoColor=white" /></b>
+              <b><img src="https://img.shields.io/badge/YouTube-FF0000?style=for-the-badge&logo=YouTube&logoColor=white" /></b>
+              <b><img src="https://img.shields.io/badge/YouTube-FF0000?style=for-the-badge&logo=YouTube&logoColor=white" /></b>
+          </span>
+        </a>
+      </td>
+        <br />
+        <td style="text-align:center; vertical-align:middle;">
+        <a href="https://candied-coil-34f.notion.site/DevLoop-StackConnect-1456913e3042802ca19ecd25f1b017e8?pvs=4" style="display:inline-block; text-align:center;">
+              <b><img src="https://img.shields.io/badge/notion-000000?style=for-the-badge&logo=notion&logoColor=20232a" /></b>
+              <b><img src="https://img.shields.io/badge/notion-000000?style=for-the-badge&logo=notion&logoColor=20232a" /></b>
+              <b><img src="https://img.shields.io/badge/notion-000000?style=for-the-badge&logo=notion&logoColor=20232a" /></b>
+              <b><img src="https://img.shields.io/badge/notion-000000?style=for-the-badge&logo=notion&logoColor=20232a" /></b>
+              <b><img src="https://img.shields.io/badge/notion-000000?style=for-the-badge&logo=notion&logoColor=20232a" /></b>
+              <b><img src="https://img.shields.io/badge/notion-000000?style=for-the-badge&logo=notion&logoColor=20232a" /></b>
+              <b><img src="https://img.shields.io/badge/notion-000000?style=for-the-badge&logo=notion&logoColor=20232a" /></b>
+              <b><img src="https://img.shields.io/badge/notion-000000?style=for-the-badge&logo=notion&logoColor=20232a" /></b>
+              <b><img src="https://img.shields.io/badge/notion-000000?style=for-the-badge&logo=notion&logoColor=20232a" /></b>
+          </span>
+        </a>
+      </td>
+    </tr>
+</tbody>
+
+
 ------
 ## 📚스터디형 개발자 통합 서비스
 
@@ -33,7 +71,8 @@
 
    > Elasticsearch 도입으로 기존 검색 속도 대비 **99%의 성능 향상** 및 Fallback 매커니즘 도입으로 **서비스 중단 발생X**
    
-    ![이미지 첨부해야]
+    ![스크린샷 2024-11-18 오전 11 40 45](https://github.com/user-attachments/assets/97cffc8b-a0aa-4f2e-8bee-1749f2810003)
+
 
 1.  **문제상황**
    - **JPA, QueryDSL**
@@ -57,7 +96,12 @@
 
    > AWS CDN 도입으로 첨부파일 로드 속도가 약 16.7% 향상 및 트래픽 밀집되는 상황에서도 안정적인 서비스 유지
 
-   ![성능 개선 이미지]
+   1차 측정
+   ![image (3)](https://github.com/user-attachments/assets/fdce17d4-5af8-466b-a820-3a9e5b622701)
+-----
+   2차 측정
+   ![image (4)](https://github.com/user-attachments/assets/6cf039df-07c8-475b-b24f-ec8083c0b124)
+
 
 1. **도입 배경**  
    - PWT 게시글은 이미지 첨부 파일을 업로드 할 수 있는데, 유저 입장에서는 이미지를 포함 해당 페이지내용이 빠르게 로드 되어야 결제까지 고려해 볼 수 있다.  
@@ -78,11 +122,46 @@
 ## 인프라 아키텍쳐 & 적용 기술
 
 ### 아키텍쳐 다이어그램
-![이미지첨부]
 
-위 아키텍처는 ~~~~소개글 작성
+![DevLoop 아키텍처 drawio (1)](https://github.com/user-attachments/assets/0a30f800-8eb7-4aaa-bd94-90f5b08fca73)
+
+--------
+
+<h3 align="center">✨ Tech Stack ✨</h3>
+<div align="center">
+  <img src="https://img.shields.io/badge/Java-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white" />&nbsp
+  <img src="https://img.shields.io/badge/springboot-6DB33F?style=for-the-badge&logo=springboot&logoColor=20232a" />&nbsp
+  <img src="https://img.shields.io/badge/mysql-4479A1?style=for-the-badge&logo=mysql&logoColor=ffd35b" />&nbsp
+    <img src="https://img.shields.io/badge/elasticsearch-005571?style=for-the-badge&logo=elasticsearch&logoColor=white" />
+</div>
 
 
+<div align="center">
+  <img src="https://img.shields.io/badge/Kibana-005571?style=for-the-badge&logo=Kibana&logoColor=white" />&nbsp
+  <img src="https://img.shields.io/badge/redis-FF4438.svg?style=for-the-badge&logo=redis&logoColor=white" />&nbsp
+  <img src="https://img.shields.io/badge/docker-2496ED.svg?style=for-the-badge&logo=docker&logoColor=white" />&nbsp
+    <img src="https://img.shields.io/badge/grafana-F46800.svg?style=for-the-badge&logo=grafana&logoColor=white" />&nbsp
+</div>
+<div align="center">
+  <img src="https://img.shields.io/badge/Prometheus-E6522C?style=for-the-badge&logo=Prometheus&logoColor=white" />&nbsp
+  <img src="https://img.shields.io/badge/Jenkins-D24939?style=for-the-badge&logo=Jenkins&logoColor=white" />&nbsp
+  <img src="https://img.shields.io/badge/LOGSTASH-D6D251?style=flat-square&logo=LOGSTASH&logoColor=white" />&nbsp
+    <img src="https://img.shields.io/badge/elasticsearch-005571?style=for-the-badge&logo=elasticsearch&logoColor=white" />
+</div>
+
+<h3 align="center">✨ Dev Tool ✨</h3>
+<div align="center">
+  <img src="https://img.shields.io/badge/git-F05032?style=for-the-badge&logo=git&logoColor=white" />&nbsp
+  <img src="https://img.shields.io/badge/github-181717?style=for-the-badge&logo=github&logoColor=20232a" />&nbsp
+ <img src="https://img.shields.io/badge/intellijidea-000000?style=for-the-badge&logo=intellijidea&logoColor=20232a" />&nbsp
+</div>
+
+<h3 align="center">✨ Communication ✨</h3>
+<div align="center">
+  <img src="https://img.shields.io/badge/discord-5865F2?style=for-the-badge&logo=discord&logoColor=white" />&nbsp
+  <img src="https://img.shields.io/badge/notion-000000?style=for-the-badge&logo=notion&logoColor=20232a" />&nbsp
+ <img src="https://img.shields.io/badge/slack-4A154B?style=for-the-badge&logo=slack&logoColor=20232a" />&nbsp
+</div>
 
 
 <details>
@@ -402,13 +481,113 @@ PWT(Project With Tutor) 에서 해당 부트캠프 진행자(튜터)와 멘티(�
 
 ### **Detail Role**
 
-| 이름   | 포지션   | 담당(개인별 기여점)                                                                                                            | Github 링크                       |
-|--------|----------|-----------------------------------------------------------------------------------------------------------------------------|-----------------------------------|
-| 김현수 | 리더     | ▶ **Auth**: LOCAL 회원가입 / 로그인 / 회원탈퇴 ,SOCIAL KakaoLogin 기능 구현<br>▶ **Search**: 통합 검색 기능 ( Redis cache 적용하여 검색 성능 향상, 기존 Specification에서 QueryDSL로 전환,Elasticsearch를 사용하여 검색 엔진 구현)<br>▶ **Slack notification**: Slack 워크스페이스 및 채널 입장 알림, 제 및 게시글 댓글 생성 시 개인DM 알림 전송, 문의 → 관리자 채널로 알림 전송, 오류 → 오류 관리 채널로 알림 전송 <br> ▶ **AOP및 GlobalExceptionHandler/ApiResponse**<br> ▶ **ELK Stack**: 성능 및 로그 모니터링 적용<br> ▶ **Prometheus, Grafana적용**: 시스템 모니터링 적용<br>| [🍁 깃헙링크 https://github.com/ks12467] |
-| 남진현 | 부리더   | ▶ **유저**: 유저 프로필 조회, 유저 프로필 이미지 생성 및 변경<br>▶ **첨부파일**: 첨부파일 업로드, 첨부파일 관련 API응답속도 및 페이지 로드 속도 측정, CDN & 캐싱 무효화 적용, Signed URL 발급 기능 <br>▶ **결제**: PWT 결제 동시성 제어 | [🍁 깃헙링크]  https://github.com/ackrilll  |
-| 정지윤 | 팀원     | ▶ **스터디파티**: 스터디파티 CRUD 기능 구현, 스터디 파티 댓글 CRUD <br>▶ **인터넷 강의**: 인터넷 강의 CRUD 기능 구현, 강의 영상 AWS Multipart Upload적용, CDN&Signed URL적용, 인터넷 강의 댓글 CRUD 기능 구현 <br>▶ **AWS**: VPC 서브넷 EC2 라우팅 테이블 ELB RDS구성, EC2인스턴스에 SpringBoot 배포, Route53 도메인과 ELB연결  | [🍁 깃헙링크]  https://github.com/jiyumi00   |
-| 강수민 | 팀원     | ▶ **튜터 신청 서비스**: 튜터 신청 CRUD기능 구현<br>▶ **PWT**:PWT CRUD 구현, 권한별 접근 서비스 지정<br>▶ **주문 시스템**: 장바구니 CRUD기능 구현, 강의, PWT 테이블과 상품 테이블 계층 테이블 구조화, 재고 관리 테이블화 <br>▶ **결제 시스템**:PG연동, 결제 로직 구현, 결제 트랜잭션 및 전파 수준 적용, 구매 내역, 결제 내역 저장 로직 구현 <br>▶ **CI/CD**: Jenkins pipeline 구축, AWS EC2 인스턴스 Jenkins server 구축, ALB 적용  | [🍁 깃헙링크]  https://github.com/kang-sumin  |
-| 조은솔 | 팀원     | ▶ **개발자 커뮤니티**:개발자 커뮤니티 CRUD 구현, 개발자 커뮤니티 댓글 CRUD 구현, JPQL로 다건 조회시 필요한 데이터만 선택적으로 조회하도록 최적화<br>▶ **캘린더 대시보드**: PWT 게시글 승인 시점에 대시보드가 생성되는 로직 구현, PWT 게시글에서 스케줄보드 조회 기능 구현<br>▶ **스케줄 보드 지급**: PWT 결제 완료 시, 결제 완료한 유저 id를 확인하여 스케줄 보드 내에 접근 권한 지급 <br>▶ **캘린더 Todo**: Todo CRUD, 낙관적 락 적용, 테스트코드로 락 적용 전후 비교 <br>▶ **JMeter를 사용한 부하 테스트** : Jmeter를 사용하여 주문 요청에 부하를 주고 성능 테스트 진행  | [🍁 깃헙링크]  https://github.com/goodsoundisme  |
+<table>
+  <thead>
+    <tr>
+      <th style="text-align:center">이름</th>
+      <th style="text-align:center">포지션</th>
+      <th style="text-align:center">담당(개인별 기여점)</th>
+      <th style="text-align:center">Github 링크</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align:center">
+        <a href="https://github.com/ks12467">
+          <img src="https://avatars.githubusercontent.com/u/137591102?v=4" height="150px" width="150px" alt=""/><br />
+          <span style="font-size:240px; font-weight:bold; display:block; margin-top:10px;"><b>🐼팀장 : 김현수</b></span>
+        </a>
+      </td>
+<td style="text-align:center">
+      리더</td>
+      <td style="text-align:left">
+        ▶ <b>Auth</b>: LOCAL 회원가입 / 로그인 / 회원탈퇴 ,SOCIAL KakaoLogin 기능 구현<br>
+        ▶ <b>Search</b>: 통합 검색 기능 (Redis cache 적용, QueryDSL 전환, Elasticsearch 검색 엔진 구현)<br>
+        ▶ <b>Slack notification</b>: 워크스페이스 및 채널 입장 알림, 개인 DM 알림 전송<br>
+        ▶ <b>AOP 및 GlobalExceptionHandler</b>, <b>ELK Stack</b> 적용<br>
+        ▶ <b>Prometheus, Grafana 적용</b>: 시스템 모니터링 구축
+      </td>
+      <td style="text-align:center">
+        <a href="https://github.com/ks12467">🍁 깃헙링크</a>
+      </td>
+    </tr>
+    <tr>
+      <td style="text-align:center">
+        <a href="https://github.com/ackrilll">
+          <img src="https://avatars.githubusercontent.com/u/112237701?v=4" height="150px" width="150px" alt=""/><br />
+          <span style="font-size:240px; font-weight:bold; display:block; margin-top:10px;"><b>🦊부팀장 : 남진현</b></span>
+        </a>
+      </td>
+      <td style="text-align:center">부리더</td>
+      <td style="text-align:left">
+        ▶ <b>유저</b>: 프로필 조회, 이미지 생성 및 변경<br>
+        ▶ <b>첨부파일</b>: 업로드, 응답 속도 개선, CDN 캐싱 무효화 적용<br>
+        ▶ <b>결제</b>: PWT 결제 동시성 제어
+      </td>
+      <td style="text-align:center">
+        <a href="https://github.com/ackrilll">🍁 깃헙링크</a>
+      </td>
+    </tr>
+    <tr>
+      <td style="text-align:center">
+        <a href="https://github.com/kang-sumin">
+          <img src="https://avatars.githubusercontent.com/u/54437758?v=4" height="150px" width="150px" alt=""/><br />
+          <span style="font-size:240px; font-weight:bold; display:block; margin-top:10px;"><b>🐶팀원 : 강수민</b></span>
+        </a>
+      </td>
+      <td style="text-align:center">팀원</td>
+      <td style="text-align:left">
+        ▶ <b>스터디파티</b>: 스터디파티 CRUD 기능 구현, 스터디 파티 댓글 CRUD<br>
+        ▶ <b>인터넷 강의</b>: CRUD 기능 구현, AWS Multipart Upload 적용, CDN & Signed URL 적용<br>
+        ▶ <b>AWS</b>: VPC 서브넷 EC2 라우팅 테이블 ELB RDS 구성, EC2 인스턴스 SpringBoot 배포
+      </td>
+      <td style="text-align:center">
+        <a href="https://github.com/kang-sumin">🍁 깃헙링크</a>
+      </td>
+    </tr>
+    <tr>
+      <td style="text-align:center">
+        <a href="https://github.com/jiyumi00">
+          <img src="https://avatars.githubusercontent.com/u/101707266?v=4" height="150px" width="150px" alt=""/><br />
+          <span style="font-size:240px; font-weight:bold; display:block; margin-top:10px;"><b>🐹팀원 : 정지윤</b></span>
+        </a>
+      </td>
+      <td style="text-align:center">팀원</td>
+      <td style="text-align:left">
+        ▶ <b>개발자 커뮤니티</b>: 커뮤니티 CRUD 구현, JPQL 최적화<br>
+        ▶ <b>캘린더 대시보드</b>: PWT 게시글 승인 후 대시보드 생성 로직<br>
+        ▶ <b>스케줄 보드 지급</b>: PWT 결제 완료 시 권한 지급<br>
+        ▶ <b>캘린더 Todo</b>: CRUD, 낙관적 락 적용<br>
+        ▶ <b>부하 테스트</b>: JMeter로 성능 테스트 진행
+      </td>
+      <td style="text-align:center">
+        <a href="https://github.com/jiyumi00">🍁 깃헙링크</a>
+      </td>
+    </tr>
+    <tr>
+      <td style="text-align:center">
+        <a href="https://github.com/goodsoundisme">
+          <img src="https://avatars.githubusercontent.com/u/117337891?v=4" height="150px" width="150px" alt=""/><br />
+          <span style="font-size:240px; font-weight:bold; display:block; margin-top:10px;">
+        🐰팀원 : 조은솔
+      </span>
+        </a>
+      </td>
+      <td style="text-align:center">팀원</td>
+      <td style="text-align:left">
+        ▶ <b>튜터 신청 서비스</b>: CRUD 기능 구현<br>
+        ▶ <b>PWT</b>: CRUD 구현, 권한별 서비스 지정<br>
+        ▶ <b>주문 시스템</b>: 장바구니 CRUD, 재고 관리 테이블화<br>
+        ▶ <b>결제 시스템</b>: PG 연동, 결제 트랜잭션 구현<br>
+        ▶ <b>CI/CD</b>: Jenkins pipeline 구축, ALB 적용
+      </td>
+      <td style="text-align:center">
+        <a href="https://github.com/goodsoundisme">🍁 깃헙링크</a>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
 ---
 
 ### **Ground Rule**
