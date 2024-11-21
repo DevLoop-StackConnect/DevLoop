@@ -71,7 +71,8 @@
 
    > Elasticsearch 도입으로 기존 검색 속도 대비 **99%의 성능 향상** 및 Fallback 매커니즘 도입으로 **서비스 중단 발생X**
    
-    ![스크린샷 2024-11-18 오전 11 40 45](https://github.com/user-attachments/assets/97cffc8b-a0aa-4f2e-8bee-1749f2810003)
+![스크린샷 2024-11-18 오전 11 40 45](https://github.com/user-attachments/assets/7ea9ee6f-b90b-42ba-b505-73798526ff65)
+
 
 
 1.  **문제상황**
