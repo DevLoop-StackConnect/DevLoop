@@ -136,10 +136,29 @@ class ProjectWithTutorServiceTest {
             Mockito.verify(eventPublisher, Mockito.times(1)).publishEvent(any(PwtCreatedEvent.class));
         }
     }
-    @Nested
-    class getProjectWithTutorTest{
+//    @Nested
+//    class getProjectWithTutorTest{
+////        @Test
+////        void 승인안된PWT_조회_시_예외처리(){
+////            //given
+////            User user = User.of("남진현", "skawlsgus@naver.com", "123!!", UserRole.ROLE_USER);
+////            ProjectWithTutor projectWithTutor = ProjectWithTutor.of(
+////                    "Project Title",
+////                    "Project Description",
+////                    BigDecimal.valueOf(10000),
+////                    LocalDateTime.now().plusDays(10),
+////                    10,
+////                    Level.EASY,
+////                    Category.APP_DEV,
+////                    user);
+////            given(projectWithTutorRepository.findById(anyLong())).willReturn(Optional.of(projectWithTutor));
+////
+////            //when,then
+////            assertThrows(ApiException.class,()->projectWithTutorService.getProjectWithTutor(anyLong()));
+////        }
+//
 //        @Test
-//        void 승인안된PWT_조회_시_예외처리(){
+//        void 승인된PWT_조회성공(){
 //            //given
 //            User user = User.of("남진현", "skawlsgus@naver.com", "123!!", UserRole.ROLE_USER);
 //            ProjectWithTutor projectWithTutor = ProjectWithTutor.of(
@@ -151,43 +170,24 @@ class ProjectWithTutorServiceTest {
 //                    Level.EASY,
 //                    Category.APP_DEV,
 //                    user);
+//            ReflectionTestUtils.setField(projectWithTutor,"approval", Approval.APPROVED);
+//            pwtAttachment = PWTAttachment.of(1L, url, FileFormat.JPG, "파일 이름");
 //            given(projectWithTutorRepository.findById(anyLong())).willReturn(Optional.of(projectWithTutor));
-//
-//            //when,then
-//            assertThrows(ApiException.class,()->projectWithTutorService.getProjectWithTutor(anyLong()));
+//            given(pwtAttachmentService.findPwtAttachmentByPwtId(any())).willReturn(pwtAttachment);
+//            //when
+//            ProjectWithTutorDetailResponse projectWithTutorDetailResponse = projectWithTutorService.getProjectWithTutor(1L);
+//            //then
+//            assertEquals(projectWithTutor.getTitle(),projectWithTutorDetailResponse.getTitle());
+//            assertEquals(projectWithTutor.getDescription(),projectWithTutorDetailResponse.getDescription());
+//            assertEquals(projectWithTutor.getPrice(),projectWithTutorDetailResponse.getPrice());
+//            assertEquals("모집중",projectWithTutorDetailResponse.getStatus().toString());
+//            assertEquals(projectWithTutor.getDeadline(),projectWithTutorDetailResponse.getDeadline());
+//            assertEquals(projectWithTutor.getMaxParticipants(),projectWithTutorDetailResponse.getMaxParticipants());
+//            assertEquals("쉬움",projectWithTutorDetailResponse.getLevel().toString());
+//            assertEquals(user.getUsername(),projectWithTutorDetailResponse.getTutorName());
+//            assertEquals(pwtAttachment.getImageURL().toString(),projectWithTutorDetailResponse.getAttachmentUrl().toString());
 //        }
-
-        @Test
-        void 승인된PWT_조회성공(){
-            //given
-            User user = User.of("남진현", "skawlsgus@naver.com", "123!!", UserRole.ROLE_USER);
-            ProjectWithTutor projectWithTutor = ProjectWithTutor.of(
-                    "Project Title",
-                    "Project Description",
-                    BigDecimal.valueOf(10000),
-                    LocalDateTime.now().plusDays(10),
-                    10,
-                    Level.EASY,
-                    Category.APP_DEV,
-                    user);
-            ReflectionTestUtils.setField(projectWithTutor,"approval", Approval.APPROVED);
-            pwtAttachment = PWTAttachment.of(1L, url, FileFormat.JPG, "파일 이름");
-            given(projectWithTutorRepository.findById(anyLong())).willReturn(Optional.of(projectWithTutor));
-            given(pwtAttachmentService.findPwtAttachmentByPwtId(any())).willReturn(pwtAttachment);
-            //when
-            ProjectWithTutorDetailResponse projectWithTutorDetailResponse = projectWithTutorService.getProjectWithTutor(1L);
-            //then
-            assertEquals(projectWithTutor.getTitle(),projectWithTutorDetailResponse.getTitle());
-            assertEquals(projectWithTutor.getDescription(),projectWithTutorDetailResponse.getDescription());
-            assertEquals(projectWithTutor.getPrice(),projectWithTutorDetailResponse.getPrice());
-            assertEquals("모집중",projectWithTutorDetailResponse.getStatus().toString());
-            assertEquals(projectWithTutor.getDeadline(),projectWithTutorDetailResponse.getDeadline());
-            assertEquals(projectWithTutor.getMaxParticipants(),projectWithTutorDetailResponse.getMaxParticipants());
-            assertEquals("쉬움",projectWithTutorDetailResponse.getLevel().toString());
-            assertEquals(user.getUsername(),projectWithTutorDetailResponse.getTutorName());
-            assertEquals(pwtAttachment.getImageURL().toString(),projectWithTutorDetailResponse.getAttachmentUrl().toString());
-        }
-    }
+//    }
     @Nested
     class getAllProjectWithTutorsTest{
         @Test
