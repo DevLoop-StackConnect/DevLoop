@@ -79,7 +79,6 @@ public class CommunityService {
                 community.getId(),
                 community.getTitle(),
                 community.getContent(),
-                community.getResolveStatus().getDescription(),
                 community.getCategory().getDescription(),
                 community.getCreatedAt()
         );
