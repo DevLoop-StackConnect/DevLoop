@@ -36,14 +36,12 @@
     </tr>
 </tbody>
 
-
-------
+<br></br>
 ## 📚스터디형 개발자 통합 서비스
 
 ![devloop이미지](https://github.com/DevLoop-StackConnect/DevLoop/blob/main/dev.png)
 
 >**DevLoop**는 통합형 개발자 커뮤니티로 **대규모 트래픽**에서도 이미지 및 강의영상을 **안정적이고 빠르게** 제공하며, 사용자 경험을 충족시키기 위해 **카테고리 및 클래스별로 세분화된 검색 옵션을 제공**합니다.
-
 ## 🎯프로젝트 핵심 목표
 
 1. **성능 최적화**
@@ -64,7 +62,7 @@
    - ELK Stack으로 커뮤니티 서비스에서 데이터 관리 및 모니터링을 통해 실시간 로그 분석
    - Prometheus & Grafana 를 통해 시스템 성능 메트릭 수집 및 서버 성능 상태 모니터링으로 안정성 확보
 
------
+<br></br>
    ## 🔑KEY SUMMARY
 
    ### **🔫 트러블 슈팅 : Elasticsearch - Full-Text Search 성능 및 안정성 개선**
@@ -92,14 +90,14 @@
   실제 장애 상황 테스트 결과, Fallback매커니즘으로 평균 2~3초 이내 대체 검색 수행
   Redis & Elasticsearc 캐싱 활용으로 JPA 대비 99%의 성능 향상 기록
 
------
+<br></br>
    ### **👍 성능 개선 : 첨부파일 로드, AWS CDN 적용으로 응답속도 약 16.7% 향상**
 
    > AWS CDN 도입으로 첨부파일 로드 속도가 약 16.7% 향상 및 트래픽 밀집되는 상황에서도 안정적인 서비스 유지
 
    1차 측정
    ![image (3)](https://github.com/user-attachments/assets/fdce17d4-5af8-466b-a820-3a9e5b622701)
------
+<br></br>
    2차 측정
    ![image (4)](https://github.com/user-attachments/assets/6cf039df-07c8-475b-b24f-ec8083c0b124)
 
@@ -118,16 +116,17 @@
    **결론:**  AWS Cloudfront 도입으로 Python을 활용해 각 url로 Get요청을 1000회 보내 응답시간 측정한 결과
    S3 url은 평균 0.12초, CloudFront url은 0.1초로 측정되어 **약 16.7%의 응답속도 개선을 이루었음**
 
---------
+<br></br>
 
 ## 인프라 아키텍쳐 & 적용 기술
 
 ### 아키텍쳐 다이어그램
 
 ![DevLoop 아키텍처 drawio (1)](https://github.com/user-attachments/assets/0a30f800-8eb7-4aaa-bd94-90f5b08fca73)
-
---------
-
+이 아키텍처는 ALB를 통해 사용자 요청을 처리하며, VPC 내 Public/Private 서브넷을 구성하였고, Jenkins를 통해 CI/CD 파이프라인을 구현함
+Redis 및 SpringBoot 애플리케이션와 같은 서비스는 Private 서브넷에서 Docker 컨테이너로 구동되고, NAT Gateway와 Bastion Host를 통해 보안과 접근성을 유지하며 안정성이 높은 배포 환경을 제공함
+<br></br>
+<br></br>
 <h3 align="center">✨ Tech Stack ✨</h3>
 <div align="center">
   <img src="https://img.shields.io/badge/Java-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white" />&nbsp
@@ -164,7 +163,7 @@
  <img src="https://img.shields.io/badge/slack-4A154B?style=for-the-badge&logo=slack&logoColor=20232a" />&nbsp
 </div>
 
-
+<br></br>
 <details>
 <summary><b>📦 적용 기술 상세보기</b></summary>
 
@@ -175,14 +174,12 @@
    - **적용위치**: 회원가입 및 로그인 기능
    - **사용목적**: 인증 및 권한 관리로 보안 강화 및 토큰 기반의 인증 사용
 
----
 
 ### 💾 **데이터베이스 및 캐싱**
 1. **Redis**
    - **적용위치**: 캐시 서버
    - **사용목적**: 검색에 cache기능 도입으로 검색 성능 향상
 2. **MySQL**     
-----
 
 ### 📉로그 및 모니터링
 1. **ELK**
@@ -194,14 +191,13 @@
 3. **Logstash**
 4. **Kibana**
 
----
 
 ### 🔍검색 기능
 1. **QueryDSL***
 2. **Redis & Elasticsearch**
    - **적용위치**: 검색 기능
    - **사용목적**: 캐싱을 통한 검색 성능과 응답속도 향상을 이루고, 대량 데이터의 실시간 검색 및 분석을 통한 향상된 검색 결과 제공
----
+
 ### 🖼️첨부파일
 1. **AWS CloudFront**
    - **적용위치**: 게시글 기능
@@ -214,7 +210,7 @@
    - **적용위치**:
    - **사용목적**: 병렬 업로드로 속도 향상 및 안정성 강화
    
----
+
 
 ### 🌐 **인프라 및 배포**
 1. **Jenkins**
@@ -234,7 +230,7 @@
    - **적용위치**: 
    - **사용목적**: 환경 독립성 확보와 개발 및 배포 자동화로 속도 향상
      
----
+
 
 ### 💸외부 API
 1. OAuth 2.0(Kakao)
@@ -244,7 +240,7 @@
    - **적용위치**: 강의 및 PWT결제
    - **사용목적**: 강의 및 상품 판매과정에서 사용자 친화적이며 다양한 결제 수단을 지원하기 위함
 
----
+
 ### 📜테스트
 1. Junit5
 2. Mockito
@@ -258,63 +254,54 @@
 
 </details>
 
------
+<br></br>
 ## 주요 기능
 
 ### 🍁 **통합 검색 기능 : Elasticsearch 및 Redis를 활용**
 - 카테고리 및 클래스별로 세분화된 검색 옵션 제공
 - Elasticsearch를 통해 대량 데이터의 실시간 검색 및 분석을 통한 향상된 검색결과 제공
 - Redis 캐싱을 통한 성능과 응답속도 향상
----
 
 ### 🍁 **슬랙 알림 기능**
 - 슬랙/ 채널 입장 알림  
 - DM 알림, Error메시지, 문의 메시지 등을 전송
-
----
 
 ### 🍁 **Project With Tutor 게시판**
 - 실시간 예매 시스템과 결제 시스템을 통한 서비스 최적화.
 - PWT 승인 시, 캘린더 기능 제공
 - 낙관적 락 통해 Todo 동시성을 제어 하여 데이터 일관성 유지
 
----
-
 ### 🍁 **스터디 파티 모집 게시판**
 - 자유롭게 스터디 파티를 모집하고, 최신 수능로 정렬된 게시글을 제공
 - 스터디 파티의 진행 상태와 카테고리에 따른 검색 기능
 - 게시글 수정 및 삭제를 통해 자유로운 관리 지원
 
----
 ### 🍁 **개발 커뮤니티 게시판**
 - 통합 검색과 카테고리별 검색을 통해 원하는 정보를 쉽게 탐색 가능
-
----
+  
 ### 🍁 **결제 기능**
 - 장바구니 및 주문 시스템
 - PG(토스페이먼츠)를 사용한 결제 시스템
 - 비관적락을 적용하여 안정성 유지
 
----
 
 ### 🍁 **강의 제공을 통한 온라인 학습 지원**
 - 강의 등록 기능
 - 강의 후기 작성 기능으로 사용자 경험 공유
 - SignedUrl, AWS Multipart Upload 사용으로 서버 메모리 사용량을 줄이고, 파일 업로드 시간 감소
 
----
 
 ### 🍁 **프로젝트 신청자 재고 관리 시스템**
 
 
----
+<br></br>
 
 ## 🔥기술적 고도화
 
 <details>
 <summary><b>✅ AWS Multipart Upload로 대용량 강의 영상의 속도 문제 개선</b></summary>
 
----
+
 
 #### 기술 선택지
 
@@ -322,7 +309,7 @@
   
 - **AWS Multipart Upload**
  
----
+
 
 #### AWS Multipart Upload 방식 채택
 
@@ -334,7 +321,7 @@
   - 파일을 병렬로 업로드 하여 속도를 향상
   - 네트워크 중단 시 실패한 부분만 재업로드 가능
   - 파일 크기에 따라 동적으로 분할 크기 조정 가능
----
+
 
 ### 적용 후
 
@@ -343,7 +330,7 @@
 
 </details>
 
----
+
 
 <details>
 <summary><b>✅ CDN으로 강의 컨텐츠 조회 속도 향상</b></summary>
@@ -353,7 +340,7 @@
 - 대용량 영상 파일에 접근할 때, 사용자에게 빠른 접근성을 보장해야한다.
 - 특히 여러 지역에서 강의를 시청하는 사용자가 많을 경우, 파일 전송 속도와 안정성에 문제 발생 가능성이 있다.
 
----
+
 
 ### CDN 적용
 
@@ -361,7 +348,6 @@
   CDN을 적용하기로 하였음
 - 또한 HTTPS르 적용 시킬 수 있어 보안을 한층 강화할 수 있다는 장점이 있음
 
----
 
 ### 해결
 
@@ -369,7 +355,7 @@
   - 더티체킹 문제를 제거하며 추가적인 쿼리 발생을 방지했습니다.  
   - 결과적으로 데이터 처리 시간이 기존 4분 46초에서 **60초로 4.6배 개선**되었습니다.  
 
----
+
 
 ### 적용 후
 
@@ -378,14 +364,12 @@
 
 </details>
 
----
-
 <details>
 <summary><b>✅ 스케쥴 Todo 수정 기능의 낙관적 락을 사용한 동시성 제어</b></summary>
 
 ### 동시성 제어 시 여러 선택지 중, 낙관적 락을 선택한 이유
 
----
+
 
 #### 낙관적 락과 비관적 락의 선택지
 
@@ -398,7 +382,7 @@
   낙관적 락은 충돌 발생 시 롤백 처리를 요구하며, 충돌 비용이 높음  
   - 단점: CPU 점유율이 상승하고, 예상치 못한 오류 발생 가능.  
 
----
+
 
 #### 낙관적 락을 사용한 이유
 
@@ -415,7 +399,7 @@ PWT(Project With Tutor) 에서 해당 부트캠프 진행자(튜터)와 멘티(�
 **결론** : 충돌 가능성이 상대적으로 높은 상황에서는 비관적 락을 사용하되, **아닌 경우**에는 **낙관적 락을 유지하는 방식**이 고려하는 것이 좋을 것이라고 판단
 
 
----
+
 
 ### 적용 후
 
@@ -436,12 +420,12 @@ PWT(Project With Tutor) 에서 해당 부트캠프 진행자(튜터)와 멘티(�
 
 </details>
 
----
+
 
 <details>
 <summary><b>✅ 캐싱 무효화 </b></summary>
 
----
+
 
 #### 기술 선택지
 
@@ -457,7 +441,7 @@ PWT(Project With Tutor) 에서 해당 부트캠프 진행자(튜터)와 멘티(�
   1. 장점 : lamda사용하는 것보다 빠르며 람다 함수 실행 비용 X
   2. 단점 : 서버 로드 부담 증
  
----
+
 
 #### Java용 AWS SDK 로 캐시 무효화 방식 채택
 
@@ -468,7 +452,7 @@ PWT(Project With Tutor) 에서 해당 부트캠프 진행자(튜터)와 멘티(�
   - CloudFront 캐시 무효화 비용만 발생
   - 현재 프로젝트 로직에 유연하게 통합 가능
   - 정 조건에서 CloudFront 캐시 무효화 요청을 프로그래밍적으로 수행하여 운영 효율성을 개선가능
----
+
 
 ### 적용 후
 
@@ -477,7 +461,7 @@ PWT(Project With Tutor) 에서 해당 부트캠프 진행자(튜터)와 멘티(�
 
 </details>
 
----
+<br></br>
 ## 역할 분담 및 협업 방식
 
 ### **Detail Role**
@@ -538,9 +522,11 @@ PWT(Project With Tutor) 에서 해당 부트캠프 진행자(튜터)와 멘티(�
       </td>
       <td style="text-align:center">팀원</td>
       <td style="text-align:left">
-        ▶ <b>스터디파티</b>: 스터디파티 CRUD 기능 구현, 스터디 파티 댓글 CRUD<br>
-        ▶ <b>인터넷 강의</b>: CRUD 기능 구현, AWS Multipart Upload 적용, CDN & Signed URL 적용<br>
-        ▶ <b>AWS</b>: VPC 서브넷 EC2 라우팅 테이블 ELB RDS 구성, EC2 인스턴스 SpringBoot 배포
+            ▶ <b>튜터 신청 서비스</b>: CRUD 기능 구현<br>
+            ▶ <b>PWT</b>: CRUD 구현, 권한별 서비스 지정<br>
+            ▶ <b>주문 시스템</b>: 장바구니 CRUD, 재고 관리 테이블화<br>
+            ▶ <b>결제 시스템</b>: PG 연동, 결제 트랜잭션 구현<br>
+            ▶ <b>CI/CD</b>: Jenkins pipeline 구축, ALB 적용
       </td>
       <td style="text-align:center">
         <a href="https://github.com/kang-sumin">🍁 깃헙링크</a>
@@ -555,11 +541,9 @@ PWT(Project With Tutor) 에서 해당 부트캠프 진행자(튜터)와 멘티(�
       </td>
       <td style="text-align:center">팀원</td>
       <td style="text-align:left">
-        ▶ <b>개발자 커뮤니티</b>: 커뮤니티 CRUD 구현, JPQL 최적화<br>
-        ▶ <b>캘린더 대시보드</b>: PWT 게시글 승인 후 대시보드 생성 로직<br>
-        ▶ <b>스케줄 보드 지급</b>: PWT 결제 완료 시 권한 지급<br>
-        ▶ <b>캘린더 Todo</b>: CRUD, 낙관적 락 적용<br>
-        ▶ <b>부하 테스트</b>: JMeter로 성능 테스트 진행
+           ▶ <b>스터디파티</b>: 스터디파티 CRUD 기능 구현, 스터디 파티 댓글 CRUD<br>
+            ▶ <b>인터넷 강의</b>: CRUD 기능 구현, AWS Multipart Upload 적용, CDN & Signed URL 적용<br>
+            ▶ <b>AWS</b>: VPC 서브넷 EC2 라우팅 테이블 ELB RDS 구성, EC2 인스턴스 SpringBoot 배포
       </td>
       <td style="text-align:center">
         <a href="https://github.com/jiyumi00">🍁 깃헙링크</a>
@@ -576,11 +560,11 @@ PWT(Project With Tutor) 에서 해당 부트캠프 진행자(튜터)와 멘티(�
       </td>
       <td style="text-align:center">팀원</td>
       <td style="text-align:left">
-        ▶ <b>튜터 신청 서비스</b>: CRUD 기능 구현<br>
-        ▶ <b>PWT</b>: CRUD 구현, 권한별 서비스 지정<br>
-        ▶ <b>주문 시스템</b>: 장바구니 CRUD, 재고 관리 테이블화<br>
-        ▶ <b>결제 시스템</b>: PG 연동, 결제 트랜잭션 구현<br>
-        ▶ <b>CI/CD</b>: Jenkins pipeline 구축, ALB 적용
+        ▶ <b>개발자 커뮤니티</b>: 커뮤니티 CRUD 구현, JPQL 최적화<br>
+        ▶ <b>캘린더 대시보드</b>: PWT 게시글 승인 후 대시보드 생성 로직<br>
+        ▶ <b>스케줄 보드 지급</b>: PWT 결제 완료 시 권한 지급<br>
+        ▶ <b>캘린더 Todo</b>: CRUD, 낙관적 락 적용<br>
+        ▶ <b>부하 테스트</b>: JMeter로 성능 테스트 진행
       </td>
       <td style="text-align:center">
         <a href="https://github.com/goodsoundisme">🍁 깃헙링크</a>
@@ -589,8 +573,7 @@ PWT(Project With Tutor) 에서 해당 부트캠프 진행자(튜터)와 멘티(�
   </tbody>
 </table>
 
----
-
+<br></br>
 ### **Ground Rule**
 
 🍁 **하루 2번 데일리 스크럼 10:00 ~ 11:00)(17:00 ~ 18:00)**  
@@ -611,8 +594,62 @@ PWT(Project With Tutor) 에서 해당 부트캠프 진행자(튜터)와 멘티(�
 
 🍁 **무조건 캠 켜고 진행하기** 
 
----
+<br></br>
+## 시스템 구조도
+![image](https://github.com/user-attachments/assets/11be2eda-ce2e-461c-a9b2-de2494cb29d5)
 
+## 시스템 WorkFlow
+<details>
+    <summary><b>⚙️ 회원 API </b></summary>
+    <div>
+        <img src="https://github.com/user-attachments/assets/990c07c2-65d4-49da-95ea-841f2fc90b11">
+    </div>
+</details>
+
+<details>
+    <summary><b>⚙️ PWT 게시판 API </b></summary>
+    <div>
+        <img src="https://github.com/user-attachments/assets/bdd73c08-ca3c-4659-8381-5cc9162ab234">
+    </div>
+</details>
+<details>
+    <summary><b>⚙️ 인터넷 강의 API </b></summary>
+    <div>
+        <img src="https://github.com/user-attachments/assets/7ad05850-a73e-46ef-bf7a-c1c3010ded00">
+    </div>
+</details>
+<details>
+    <summary><b>⚙️ 개발자 커뮤니티 API </b></summary>
+    <div>
+        <img src="https://github.com/user-attachments/assets/044e1b18-7b49-4fda-8fdc-3e74f1a2dc72">
+    </div>
+</details>
+ <details>
+    <summary><b>⚙️ 스터디 파티 API </b></summary>
+    <div>
+        <img src="https://github.com/user-attachments/assets/341d743a-5489-4e45-9506-b31adfb5edce">
+    </div>
+</details>
+ <details>
+    <summary><b>⚙️ 주문 API </b></summary>
+    <div>
+        <img src="https://github.com/user-attachments/assets/10022868-237d-4097-baa9-3dfcf28c204d">
+    </div>
+</details>
+ <details>
+    <summary><b>⚙️ 캘린더 API </b></summary>
+    <div>
+        <img src="https://github.com/user-attachments/assets/92c60ab4-3f65-4b9e-b30e-156e8689c112">
+    </div>
+</details>
+ <details>
+    <summary><b>⚙️ 검색 API </b></summary>
+    <div>
+        <img src="https://github.com/user-attachments/assets/4c6c3c00-bfbf-4ae2-94e2-0eacfbff9f90">
+    </div>
+</details>
+
+<br></br>
 ## ✨성과 및 회고
 
 ### 🤗잘 진행 된 점
@@ -623,7 +660,7 @@ PWT(Project With Tutor) 에서 해당 부트캠프 진행자(튜터)와 멘티(�
 
 <aside>
 
-### 🥲아쉬운 점
+### 🤔아쉬운 점
 
 - 시간 부족으로 일부 기능의 성능향상을 이루지 못한 점
 - 결제 시스템에 분산 락을 사용하여 성능 개선 시키지 못한 점
@@ -633,7 +670,7 @@ PWT(Project With Tutor) 에서 해당 부트캠프 진행자(튜터)와 멘티(�
 <aside>
 
 
-### ✅향후 계획
+### 🚀향후 계획
 
 - 기술적 고도화
     - 주문 시스템 비동기 처리
