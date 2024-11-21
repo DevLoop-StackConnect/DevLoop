@@ -4,6 +4,7 @@ import com.devloop.common.enums.Approval;
 import com.devloop.common.enums.BoardType;
 import com.devloop.common.enums.Category;
 import com.devloop.common.exception.ApiException;
+import com.devloop.common.utils.CacheablePage;
 import com.devloop.common.utils.SearchQueryUtil;
 import com.devloop.community.entity.Community;
 import com.devloop.community.entity.ResolveStatus;
@@ -189,7 +190,7 @@ class SearchServiceTest {
                 .thenReturn(new PageImpl<>(partyResults, pageable, partyResults.size()));
 
         // when
-        Page<IntegrationSearchResponse> result = searchService.searchByBoardType(request, "party", 1, 10);
+        CacheablePage<IntegrationSearchResponse> result = searchService.searchByBoardType(request, "party", 1, 10);
 
         // then
         assertNotNull(result);
@@ -207,7 +208,7 @@ class SearchServiceTest {
                 .thenReturn(new PageImpl<>(communityResults, pageable, communityResults.size()));
 
         // when
-        Page<IntegrationSearchResponse> result = searchService.searchByBoardType(request, "community", 1, 10);
+        CacheablePage<IntegrationSearchResponse> result = searchService.searchByBoardType(request, "community", 1, 10);
 
         // then
         assertNotNull(result);
