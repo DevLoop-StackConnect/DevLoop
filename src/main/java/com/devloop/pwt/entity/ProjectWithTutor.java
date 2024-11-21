@@ -82,8 +82,11 @@ public class ProjectWithTutor extends Product {
         this.deadline = deadline;
         this.maxParticipants = maxParticipants;
         this.level = level;
-        this.category = category;
+        this.category = category != null ? category : Category.ETC;
         this.user = user;
+        this.boardType = BoardType.PWT;
+        this.status = ProjectWithTutorStatus.IN_PROGRESS;
+        this.approval = Approval.WAITE;
     }
 
     public static ProjectWithTutor of(
