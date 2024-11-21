@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 //Slack 연동 기능 (Slack 사용자 매핑, 알림 전송)
-public class SlackUserMapping extends Timestamped {
+public class SlackUserMapping {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

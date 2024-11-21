@@ -1,6 +1,7 @@
 package com.devloop.search.controller;
 
 import com.devloop.common.apipayload.ApiResponse;
+import com.devloop.common.utils.CacheablePage;
 import com.devloop.search.request.IntegrationSearchRequest;
 import com.devloop.search.response.IntegratedSearchPreview;
 import com.devloop.search.response.IntegrationSearchResponse;
@@ -36,12 +37,13 @@ public class SearchController {
             @RequestBody IntegrationSearchRequest request,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size) {
-        return ApiResponse.ok(searchService.searchByBoardType(request, boardType, page, size));
+        CacheablePage<IntegrationSearchResponse> result = searchService.searchByBoardType(request, boardType, page, size);
+        return ApiResponse.ok(result.toPage());
     }
 
     @GetMapping("/v1/main/search/ranking")
     @PreAuthorize("permitAll()")
-    public ApiResponse<Set<ZSetOperations.TypedTuple<String>>> getRankingKeyword(){
+    public ApiResponse<Set<ZSetOperations.TypedTuple<String>>> getRankingKeyword() {
         return ApiResponse.ok(searchService.getTopSearchKeywords());
     }
 }

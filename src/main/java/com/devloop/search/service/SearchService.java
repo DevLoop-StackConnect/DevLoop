@@ -115,18 +115,23 @@ public class SearchService {
             condition = "#request != null && #page > 0",
             unless = "#result == null"
     )
-    public Page<IntegrationSearchResponse> searchByBoardType(IntegrationSearchRequest request, String boardType, int page, int size) {
+    public CacheablePage<IntegrationSearchResponse> searchByBoardType(
+            IntegrationSearchRequest request,
+            String boardType,
+            int page,
+            int size
+    ) {
         try {
             updateSearchRanking(request);
             Page<IntegrationSearchResponse> searchResult = elasticsearchEnabled ?
                     searchByBoardTypeWithElasticSearch(request, boardType, page, size) :
                     searchByBoardTypeWithDatabase(request, boardType, page, size);
-            return new CacheablePage<>(searchResult).toPage();
+            return new CacheablePage<>(searchResult);
         } catch (Exception e) {
             log.error("Error during elasticsearch search, falling back to database", e);
             Page<IntegrationSearchResponse> dbResult =
                     searchByBoardTypeWithDatabase(request, boardType, page, size);
-            return new CacheablePage<>(dbResult).toPage();
+            return new CacheablePage<>(dbResult);
         }
     }
 
@@ -212,50 +217,99 @@ public class SearchService {
     }
 
 
-
-    // Elasticsearch를 사용한 특정 게시판 타입 검색
-    private Page<IntegrationSearchResponse> searchByBoardTypeWithElasticSearch(IntegrationSearchRequest request, String boardType, int page, int size) {
+    private Page<IntegrationSearchResponse> searchByBoardTypeWithElasticSearch(
+            IntegrationSearchRequest request,
+            String boardType,
+            int page,
+            int size) {
         try {
-            NativeQuery searchQuery = buildSearchQuery(request, boardType.toLowerCase(), page - 1, size); // 검색 쿼리 생성
-            //게시판 타입에 따라 검색 수행 및 결과 반환
+            NativeQuery searchQuery = buildSearchQuery(request, boardType.toLowerCase(), page - 1, size);
+
             return switch (boardType.toLowerCase()) {
-                case "party" -> {
-                    SearchHits<Party> searchHits = elasticsearchOperations.search(searchQuery, Party.class); //party 검색
-                    //yield = switch 표현식에서 값을 반환하기 위해 사용되는 키워드입니다.
-                    yield new PageImpl<>(
-                            convertToSearchResponse(searchHits), //Elasticsearch 검색 결과
-                            PageRequest.of(page - 1, size), //페이지 요청
-                            searchHits.getTotalHits() //전체 검색 결과
-                    );
-                }
-                case "community" -> {
-                    SearchHits<Community> searchHits = elasticsearchOperations.search(searchQuery, Community.class);
-                    yield new PageImpl<>(
-                            convertToSearchResponse(searchHits),
-                            PageRequest.of(page - 1, size),
-                            searchHits.getTotalHits()
-                    );
-                }
                 case "pwt" -> {
                     SearchHits<ProjectWithTutor> searchHits = elasticsearchOperations.search(searchQuery, ProjectWithTutor.class);
-                    yield new PageImpl<>(
-                            convertToSearchResponse(searchHits),
-                            PageRequest.of(page - 1, size),
-                            searchHits.getTotalHits()
-                    );
+                    List<IntegrationSearchResponse> responses = searchHits.stream()
+                            .map(hit -> {
+                                ProjectWithTutor pwt = hit.getContent();
+                                return IntegrationSearchResponse.builder()
+                                        .id(pwt.getId())
+                                        .boardType("pwt")
+                                        .title(pwt.getTitle())
+                                        .content(pwt.getDescription())
+                                        .category(pwt.getCategory().toString())
+                                        .username(pwt.getUser().getUsername())
+                                        .createdAt(pwt.getCreatedAt())
+                                        .score(hit.getScore())
+                                        .build();
+                            })
+                            .collect(Collectors.toList());
+
+                    yield new PageImpl<>(responses, PageRequest.of(page - 1, size), searchHits.getTotalHits());
                 }
                 case "lecture" -> {
                     SearchHits<Lecture> searchHits = elasticsearchOperations.search(searchQuery, Lecture.class);
-                    yield new PageImpl<>(
-                            convertToSearchResponse(searchHits),
-                            PageRequest.of(page - 1, size),
-                            searchHits.getTotalHits()
-                    );
+                    List<IntegrationSearchResponse> responses = searchHits.stream()
+                            .map(hit -> {
+                                Lecture lecture = hit.getContent();
+                                return IntegrationSearchResponse.builder()
+                                        .id(lecture.getId())
+                                        .boardType("lecture")
+                                        .title(lecture.getTitle())
+                                        .content(lecture.getDescription())
+                                        .category(lecture.getCategory().toString())
+                                        .username(lecture.getUser().getUsername())
+                                        .createdAt(lecture.getCreatedAt())
+                                        .score(hit.getScore())
+                                        .build();
+                            })
+                            .collect(Collectors.toList());
+
+                    yield new PageImpl<>(responses, PageRequest.of(page - 1, size), searchHits.getTotalHits());
+                }
+                case "community" -> {
+                    SearchHits<Community> searchHits = elasticsearchOperations.search(searchQuery, Community.class);
+                    List<IntegrationSearchResponse> responses = searchHits.stream()
+                            .map(hit -> {
+                                Community community = hit.getContent();
+                                return IntegrationSearchResponse.builder()
+                                        .id(community.getId())
+                                        .boardType("community")
+                                        .title(community.getTitle())
+                                        .content(community.getContent())
+                                        .category(community.getCategory().toString())
+                                        .username(community.getUser().getUsername())
+                                        .createdAt(community.getCreatedAt())
+                                        .score(hit.getScore())
+                                        .build();
+                            })
+                            .collect(Collectors.toList());
+
+                    yield new PageImpl<>(responses, PageRequest.of(page - 1, size), searchHits.getTotalHits());
+                }
+                case "party" -> {
+                    SearchHits<Party> searchHits = elasticsearchOperations.search(searchQuery, Party.class);
+                    List<IntegrationSearchResponse> responses = searchHits.stream()
+                            .map(hit -> {
+                                Party party = hit.getContent();
+                                return IntegrationSearchResponse.builder()
+                                        .id(party.getId())
+                                        .boardType("party")
+                                        .title(party.getTitle())
+                                        .content(party.getContents())
+                                        .category(party.getCategory().toString())
+                                        .username(party.getUser().getUsername())
+                                        .createdAt(party.getCreatedAt())
+                                        .score(hit.getScore())
+                                        .build();
+                            })
+                            .collect(Collectors.toList());
+
+                    yield new PageImpl<>(responses, PageRequest.of(page - 1, size), searchHits.getTotalHits());
                 }
                 default -> throw new ApiException(ErrorStatus._BAD_SEARCH_KEYWORD);
             };
         } catch (Exception e) {
-            log.error("엘라스틱서치 보드타입 검색 중 오류가 발생하였습니다.: {}", e);
+            log.error("Elasticsearch search error: ", e);
             throw new ApiException(ErrorStatus._BAD_SEARCH_KEYWORD);
         }
     }
@@ -400,11 +454,36 @@ public class SearchService {
                 .build();
     }
 
-    // 검색 결과를 통합 응답 객체로 변환
     private <T> List<IntegrationSearchResponse> convertToSearchResponse(SearchHits<T> searchHits) {
         return searchHits.stream()
-                .map(hit -> IntegrationSearchResponse.of(hit.getContent(), hit.getScore()))
-                .peek(response -> log.debug("Converted search response: {}", response))
+                .map(hit -> {
+                    String idValue = hit.getId(); // Elasticsearch document ID
+                    Long id = null;
+                    try {
+                        id = Long.parseLong(idValue);
+                    } catch (NumberFormatException e) {
+                        log.warn("Failed to parse ID: {}", idValue);
+                    }
+
+                    T content = hit.getContent();
+                    IntegrationSearchResponse response = IntegrationSearchResponse.of(content, hit.getScore());
+
+                    // ID 설정
+                    if (id != null) {
+                        response = IntegrationSearchResponse.builder()
+                                .id(id)
+                                .boardType(response.getBoardType())
+                                .title(response.getTitle())
+                                .content(response.getContent())
+                                .category(response.getCategory())
+                                .username(response.getUsername())
+                                .createdAt(response.getCreatedAt())
+                                .score(response.getScore())
+                                .build();
+                    }
+
+                    return response;
+                })
                 .collect(Collectors.toList());
     }
 
@@ -484,11 +563,13 @@ public class SearchService {
         ZSetOperations<String, String> zSetOps = rankingRedisTemplate.opsForZSet();
         return zSetOps.reverseRangeWithScores(SEARCH_RANKING_KEY, 0, rankingSize - 1);
     }
+
     //랭킹
     public void incrementSearchCount(String keyword) {
         ZSetOperations<String, String> zSetOps = rankingRedisTemplate.opsForZSet();
         zSetOps.incrementScore(SEARCH_RANKING_KEY, keyword, 1);
     }
+
     // 각 게시판별 검색 메서드
     private Page<IntegrationSearchResponse> searchParty(IntegrationSearchRequest request, PageRequest pageable) {
         BooleanBuilder condition = SearchQueryUtil.buildSearchCondition(request, Party.class);
