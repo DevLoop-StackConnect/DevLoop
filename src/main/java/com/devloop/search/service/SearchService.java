@@ -706,31 +706,35 @@ public class SearchService {
     public void initializeElasticsearchData() {
         log.info("Starting Elasticsearch data synchronization");
 
-        syncDataWithPagination(
-                pageRequest -> lectureService.findAllWithPagination(pageRequest),
-                lectureSearchRepository,
-                "LECTURE"
-        );
+        try {
+            syncDataWithPagination(
+                    pageRequest -> lectureService.findAllWithPagination(pageRequest),
+                    lectureSearchRepository,
+                    "LECTURE"
+            );
 
-        syncDataWithPagination(
-                pageRequest -> partyService.findAllWithPagination(pageRequest),
-                partySearchRepository,
-                "PARTY"
-        );
+            syncDataWithPagination(
+                    pageRequest -> partyService.findAllWithPagination(pageRequest),
+                    partySearchRepository,
+                    "PARTY"
+            );
 
-        syncDataWithPagination(
-                pageRequest -> communityService.findAllWithPagination(pageRequest),
-                communitySearchRepository,
-                "COMMUNITY"
-        );
+            syncDataWithPagination(
+                    pageRequest -> communityService.findAllWithPagination(pageRequest),
+                    communitySearchRepository,
+                    "COMMUNITY"
+            );
 
-        syncDataWithPagination(
-                pageRequest -> projectWithTutorService.findAllWithPagination(pageRequest),
-                pwtSearchRepository,
-                "PWT"
-        );
+            syncDataWithPagination(
+                    pageRequest -> projectWithTutorService.findAllWithPagination(pageRequest),
+                    pwtSearchRepository,
+                    "PWT"
+            );
 
-        log.info("Elasticsearch data synchronization completed");
+            log.info("Elasticsearch data synchronization completed successfully");
+        } catch (Exception e) {
+            log.error("Failed to initialize Elasticsearch data", e);
+        }
     }
 
     private <T, S extends ElasticsearchRepository<T, Long>> void syncDataWithPagination(
@@ -740,73 +744,118 @@ public class SearchService {
     ) {
         try {
             int page = 0;
-            int pageSize = 100;
+            int pageSize = 50; // 배치 사이즈 축소
             Page<T> dataPage;
 
             do {
                 dataPage = fetchPageFunction.apply(PageRequest.of(page, pageSize));
                 if (!dataPage.isEmpty()) {
-                    log.debug("Fetched page {} with {} items for {}", page, dataPage.getContent().size(), repository.getClass().getSimpleName());
-
-                    List<T> updatedItems = dataPage.getContent().stream()
-                            .map(item -> ensureBoardType(item, boardType))
-                            .filter(Objects::nonNull)
-                            .collect(Collectors.toList());
-
-                    repository.saveAll(updatedItems);
-                    log.debug("Saved {} items to Elasticsearch for {}", updatedItems.size(), repository.getClass().getSimpleName());
+                    processBatch(dataPage.getContent(), repository, boardType);
                 }
                 page++;
             } while (dataPage.hasNext());
         } catch (Exception e) {
-            log.error("Error during data synchronization for {}: ", repository.getClass().getSimpleName(), e);
-            throw e;
+            log.error("Error during data synchronization for {}: ",
+                    repository.getClass().getSimpleName(), e);
+            throw new RuntimeException("Data synchronization failed", e);
         }
     }
 
-    private <T> T ensureBoardType(T entity, String boardType) {
-        if (entity instanceof Lecture lecture && lecture.getBoardType() == null) {
-            return (T) Lecture.builder()
-                    .id(lecture.getId())
-                    .description(lecture.getDescription())
-                    .recommend(lecture.getRecommend())
-                    .category(lecture.getCategory())
-                    .level(lecture.getLevel())
-                    .user(lecture.getUser())
-                    .boardType(BoardType.valueOf(boardType))
-                    .build();
-        } else if (entity instanceof Party party && party.getBoardType() == null) {
-            return (T) Party.builder()
-                    .id(party.getId())
-                    .title(party.getTitle())
-                    .contents(party.getContents())
-                    .status(party.getStatus())
-                    .category(party.getCategory())
-                    .user(party.getUser())
-                    .boardType(BoardType.valueOf(boardType))
-                    .build();
-        } else if (entity instanceof Community community && community.getBoardType() == null) {
-            return (T) Community.builder()
-                    .id(community.getId())
-                    .title(community.getTitle())
-                    .content(community.getContent())
-                    .category(community.getCategory())
-                    .user(community.getUser())
-                    .boardType(BoardType.valueOf(boardType))
-                    .resolveStatus(community.getResolveStatus())
-                    .build();
-        } else if (entity instanceof ProjectWithTutor pwt && pwt.getBoardType() == null) {
-            return (T) ProjectWithTutor.of(
-                    pwt.getTitle(),
-                    pwt.getDescription(),
-                    pwt.getPrice(),
-                    pwt.getDeadline(),
-                    pwt.getMaxParticipants(),
-                    pwt.getLevel(),
-                    pwt.getCategory(),
-                    pwt.getUser()
-            );
+    private <T> void processBatch(List<T> items,
+                                  ElasticsearchRepository<T, Long> repository,
+                                  String boardType) {
+        int batchSize = 10;
+        List<List<T>> batches = new ArrayList<>();
+
+        for (int i = 0; i < items.size(); i += batchSize) {
+            batches.add(new ArrayList<>(
+                    items.subList(i, Math.min(items.size(), i + batchSize))
+            ));
         }
-        return entity; // 이미 boardType이 존재하는 경우 그대로 반환
+
+        for (List<T> batch : batches) {
+            try {
+                List<T> convertedItems = batch.stream()
+                        .map(item -> convertToElasticsearchEntity(item, boardType))
+                        .filter(Objects::nonNull)
+                        .collect(Collectors.toList());
+
+                repository.saveAll(convertedItems);
+                log.debug("Successfully saved batch of {} items", batch.size());
+            } catch (Exception e) {
+                log.error("Error saving batch to Elasticsearch", e);
+                recordFailedBatch(batch, e);
+            }
+        }
+    }
+
+    private <T> T convertToElasticsearchEntity(T entity, String boardType) {
+        try {
+            if (entity instanceof Lecture lecture) {
+                return (T) convertLectureToEsDocument(lecture, boardType);
+            } else if (entity instanceof Party party) {
+                return (T) convertPartyToEsDocument(party, boardType);
+            } else if (entity instanceof Community community) {
+                return (T) convertCommunityToEsDocument(community, boardType);
+            } else if (entity instanceof ProjectWithTutor pwt) {
+                return (T) convertPwtToEsDocument(pwt, boardType);
+            }
+            return entity;
+        } catch (Exception e) {
+            log.error("Error converting entity to ES format", e);
+            return null;
+        }
+    }
+
+    private Lecture convertLectureToEsDocument(Lecture lecture, String boardType) {
+        return Lecture.builder()
+                .id(lecture.getId())
+                .description(lecture.getDescription())
+                .recommend(lecture.getRecommend())
+                .category(lecture.getCategory())
+                .level(lecture.getLevel())
+                .user(lecture.getUser())
+                .boardType(BoardType.valueOf(boardType))
+                .build();
+    }
+
+    private Party convertPartyToEsDocument(Party party, String boardType) {
+        return Party.builder()
+                .id(party.getId())
+                .title(party.getTitle())
+                .contents(party.getContents())
+                .status(party.getStatus())
+                .category(party.getCategory())
+                .user(party.getUser())
+                .boardType(BoardType.valueOf(boardType))
+                .build();
+    }
+
+    private Community convertCommunityToEsDocument(Community community, String boardType) {
+        return Community.builder()
+                .id(community.getId())
+                .title(community.getTitle())
+                .content(community.getContent())
+                .category(community.getCategory())
+                .user(community.getUser())
+                .boardType(BoardType.valueOf(boardType))
+                .resolveStatus(community.getResolveStatus())
+                .build();
+    }
+
+    private ProjectWithTutor convertPwtToEsDocument(ProjectWithTutor pwt, String boardType) {
+        return ProjectWithTutor.builder()
+                .id(pwt.getId())
+                .description(pwt.getDescription())
+                .category(pwt.getCategory())
+                .level(pwt.getLevel())
+                .user(pwt.getUser())
+                .boardType(BoardType.valueOf(boardType))
+                .build();
+    }
+
+    private <T> void recordFailedBatch(List<T> batch, Exception e) {
+        log.error("Failed to save batch: {}", batch);
+        log.error("Error details: ", e);
     }
 }

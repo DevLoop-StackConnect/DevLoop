@@ -9,9 +9,7 @@ import com.devloop.pwt.enums.ProjectWithTutorStatus;
 import com.devloop.scheduleboard.entity.ScheduleBoard;
 import com.devloop.user.entity.User;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.data.elasticsearch.annotations.*;
 
 import java.math.BigDecimal;
@@ -19,10 +17,12 @@ import java.time.LocalDateTime;
 
 @Getter
 @Entity
+@Builder
 @Document(indexName = "pwt")
 @Setting(settingPath = "/elasticsearch/setting.json")
 @Mapping(mappingPath = "/elasticsearch/pwt-mapping.json")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PROTECTED)
 public class ProjectWithTutor extends Product {
 
     @Id
