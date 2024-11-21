@@ -29,6 +29,7 @@ public class ProjectWithTutor extends Product {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Builder.Default
     @Enumerated(EnumType.STRING)
     @Field(type = FieldType.Keyword, name = "board_type")
     private BoardType boardType = BoardType.PWT;
@@ -49,9 +50,11 @@ public class ProjectWithTutor extends Product {
     @Enumerated(EnumType.STRING)
     private Level level;
 
+    @Builder.Default
     @Enumerated(EnumType.STRING)
     private Approval approval = Approval.WAITE;
 
+    @Builder.Default
     @Enumerated(EnumType.STRING)
     private Category category = Category.ETC;
 
