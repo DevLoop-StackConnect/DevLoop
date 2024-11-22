@@ -1,10 +1,11 @@
 # ♾️DevLoop | StackConnect
 
+
 <tbody>
     <tr>
       <td style="text-align:center; vertical-align:middle;">
         <a href="https://youtu.be/MhNaepmEHxw" style="display:inline-block; text-align:center;">
-          <img src="https://github.com/user-attachments/assets/370d25ed-9a61-4886-97e5-4fc9ff51712a" height="500px" width="1500px" alt=""/><br />
+          <img src="https://github.com/user-attachments/assets/9216d8da-fd67-4a7a-a58d-25e0cc540432" alt=""/><br />
           <span style="font-size:36px; font-weight:bold; color:#000; display:block; margin-top:10px; text-align:center;">
               <b><img src="https://img.shields.io/badge/YouTube-FF0000?style=for-the-badge&logo=YouTube&logoColor=white" /></b>
               <b><img src="https://img.shields.io/badge/YouTube-FF0000?style=for-the-badge&logo=YouTube&logoColor=white" /></b>
@@ -38,7 +39,8 @@
 
 <br></br>
 ## 🔗도메인
-http://devloopapp.com:8080
+[![제목을 입력해주세요_-001](https://github.com/user-attachments/assets/d45613fc-64f5-42dc-9d7e-b3fcd400056f)](http://devloopapp.com:8080)
+
 <br></br>
 ## 📚스터디형 개발자 통합 서비스
 
