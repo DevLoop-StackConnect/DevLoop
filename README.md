@@ -1,10 +1,11 @@
 # ♾️DevLoop | StackConnect
 
+
 <tbody>
     <tr>
       <td style="text-align:center; vertical-align:middle;">
         <a href="https://youtu.be/MhNaepmEHxw" style="display:inline-block; text-align:center;">
-          <img src="https://github.com/user-attachments/assets/370d25ed-9a61-4886-97e5-4fc9ff51712a" height="500px" width="1500px" alt=""/><br />
+          <img src="https://github.com/user-attachments/assets/9216d8da-fd67-4a7a-a58d-25e0cc540432" alt=""/><br />
           <span style="font-size:36px; font-weight:bold; color:#000; display:block; margin-top:10px; text-align:center;">
               <b><img src="https://img.shields.io/badge/YouTube-FF0000?style=for-the-badge&logo=YouTube&logoColor=white" /></b>
               <b><img src="https://img.shields.io/badge/YouTube-FF0000?style=for-the-badge&logo=YouTube&logoColor=white" /></b>
@@ -37,6 +38,10 @@
 </tbody>
 
 <br></br>
+## 🔗도메인
+[![제목을 입력해주세요_-001](https://github.com/user-attachments/assets/d45613fc-64f5-42dc-9d7e-b3fcd400056f)](http://devloopapp.com:8080)
+
+<br></br>
 ## 📚스터디형 개발자 통합 서비스
 
 ![devloop이미지](https://github.com/DevLoop-StackConnect/DevLoop/blob/main/dev.png)
@@ -61,6 +66,13 @@
 4. **로그 및 모니터링**
    - ELK Stack으로 커뮤니티 서비스에서 데이터 관리 및 모니터링을 통해 실시간 로그 분석
    - Prometheus & Grafana 를 통해 시스템 성능 메트릭 수집 및 서버 성능 상태 모니터링으로 안정성 확보
+## 📋Entity Relationship Diagram
+
+![devloop_ERD](https://github.com/user-attachments/assets/669e84f4-f8a9-4f5e-9c2d-57fdf4d795d3)
+https://www.erdcloud.com/d/8iiyzW4Gwg5uexmxe
+## 📄wireframe
+
+![devloop_wireframe](https://github.com/user-attachments/assets/4519a079-bb04-49c9-b7e0-3e6b07ba4c26)
 
 <br></br>
    ## 🔑KEY SUMMARY
@@ -165,7 +177,7 @@ Redis 및 SpringBoot 애플리케이션와 같은 서비스는 Private 서브넷
 
 <br></br>
 <details>
-<summary><b>📦 적용 기술 상세보기</b></summary>
+<summary><b>📦적용 기술 상세보기</b></summary>
 
 ### ⚙️애플리케이션 개발 및 프레임워크
 1. **JDK 17**
@@ -292,6 +304,9 @@ Redis 및 SpringBoot 애플리케이션와 같은 서비스는 Private 서브넷
 
 
 ### 🍁 **프로젝트 신청자 재고 관리 시스템**
+
+### 📖Postman API Document
+[![Postman_(software)](https://github.com/user-attachments/assets/94ab0aac-732e-4879-965a-83adf668ad88)](https://documenter.getpostman.com/view/25332133/2sAY55bycR#bc2914c2-2390-4bae-a7d6-9195ed8e5c3f)
 
 
 <br></br>

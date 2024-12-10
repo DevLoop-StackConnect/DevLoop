@@ -61,9 +61,10 @@ public class Community extends Timestamped {
     private Community(String title, String content, Category category, User user) {
         this.title = title;
         this.content = content;
-        this.category = category;
+        this.category = category != null ? category : Category.ETC;
         this.user = user;
         this.resolveStatus = ResolveStatus.UNSOLVED;
+        this.boardType = BoardType.COMMUNITY;
     }
 
     public static Community of(String title, String content, Category category, User user) {

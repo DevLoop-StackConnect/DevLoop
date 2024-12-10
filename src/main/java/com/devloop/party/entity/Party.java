@@ -58,9 +58,10 @@ public class Party extends Timestamped {
     private Party(String title, String contents, PartyStatus status, Category category, User user) {
         this.title = title;
         this.contents = contents;
-        this.status = status;
-        this.category = category;
+        this.status = status != null? status : PartyStatus.IN_PROGRESS;
+        this.category = category != null ? category : Category.ETC;
         this.user = user;
+        this.boardType = BoardType.PARTY;
     }
 
     public static Party from(SavePartyRequest request, User user) {
