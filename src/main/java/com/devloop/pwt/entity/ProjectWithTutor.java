@@ -9,9 +9,7 @@ import com.devloop.pwt.enums.ProjectWithTutorStatus;
 import com.devloop.scheduleboard.entity.ScheduleBoard;
 import com.devloop.user.entity.User;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.data.elasticsearch.annotations.*;
 
 import java.math.BigDecimal;
@@ -19,16 +17,19 @@ import java.time.LocalDateTime;
 
 @Getter
 @Entity
+@Builder
 @Document(indexName = "pwt")
 @Setting(settingPath = "/elasticsearch/setting.json")
 @Mapping(mappingPath = "/elasticsearch/pwt-mapping.json")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PROTECTED)
 public class ProjectWithTutor extends Product {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Builder.Default
     @Enumerated(EnumType.STRING)
     @Field(type = FieldType.Keyword, name = "board_type")
     private BoardType boardType = BoardType.PWT;
@@ -36,6 +37,7 @@ public class ProjectWithTutor extends Product {
     @Column(columnDefinition = "TEXT", nullable = false)
     private String description;
 
+    @Builder.Default
     @Enumerated(EnumType.STRING)
     private ProjectWithTutorStatus status = ProjectWithTutorStatus.IN_PROGRESS;
 
@@ -49,9 +51,11 @@ public class ProjectWithTutor extends Product {
     @Enumerated(EnumType.STRING)
     private Level level;
 
+    @Builder.Default
     @Enumerated(EnumType.STRING)
     private Approval approval = Approval.WAITE;
 
+    @Builder.Default
     @Enumerated(EnumType.STRING)
     private Category category = Category.ETC;
 

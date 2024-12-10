@@ -6,6 +6,7 @@ import com.devloop.common.apipayload.status.ErrorStatus;
 import com.devloop.common.enums.BoardType;
 import com.devloop.common.exception.ApiException;
 import com.devloop.common.utils.CacheKeyGenerator;
+import com.devloop.common.utils.CacheablePage;
 import com.devloop.common.utils.SearchQueryUtil;
 import com.devloop.community.entity.Community;
 import com.devloop.community.event.CommunityCreatedEvent;
@@ -108,6 +109,32 @@ public class SearchService {
         }
     }
 
+    @Cacheable(
+            value = "searchDetail",
+            key = "T(com.devloop.common.utils.CacheKeyGenerator).generateCategoryKey(#boardType, #page, #request)",
+            condition = "#request != null && #page > 0",
+            unless = "#result == null"
+    )
+    public CacheablePage<IntegrationSearchResponse> searchByBoardType(
+            IntegrationSearchRequest request,
+            String boardType,
+            int page,
+            int size
+    ) {
+        try {
+            updateSearchRanking(request);
+            Page<IntegrationSearchResponse> searchResult = elasticsearchEnabled ?
+                    searchByBoardTypeWithElasticSearch(request, boardType, page, size) :
+                    searchByBoardTypeWithDatabase(request, boardType, page, size);
+            return new CacheablePage<>(searchResult);
+        } catch (Exception e) {
+            log.error("Error during elasticsearch search, falling back to database", e);
+            Page<IntegrationSearchResponse> dbResult =
+                    searchByBoardTypeWithDatabase(request, boardType, page, size);
+            return new CacheablePage<>(dbResult);
+        }
+    }
+
     private IntegratedSearchPreview searchWithElasticsearch(IntegrationSearchRequest request) {
         log.info("Executing elasticsearch search with request: {}", request);
 
@@ -189,67 +216,100 @@ public class SearchService {
                 .build();
     }
 
-    @Cacheable(
-            value = "searchDetail",
-            key = "T(com.devloop.common.utils.CacheKeyGenerator).generateCategoryKey(#boardType, #page, #request)",
-            condition = "#request != null && #page > 0",
-            unless = "#result == null"
-    )
-    public Page<IntegrationSearchResponse> searchByBoardType(IntegrationSearchRequest request, String boardType, int page, int size) {
-        try {
-            updateSearchRanking(request);
-            return elasticsearchEnabled ?
-                    searchByBoardTypeWithElasticSearch(request, boardType, page, size) :
-                    searchByBoardTypeWithDatabase(request, boardType, page, size);
-        } catch (Exception e) {
-            log.error("Error during elasticsearch search, falling back to database", e);
-            return searchByBoardTypeWithDatabase(request, boardType, page, size);
-        }
-    }
 
-    // Elasticsearch를 사용한 특정 게시판 타입 검색
-    private Page<IntegrationSearchResponse> searchByBoardTypeWithElasticSearch(IntegrationSearchRequest request, String boardType, int page, int size) {
+    private Page<IntegrationSearchResponse> searchByBoardTypeWithElasticSearch(
+            IntegrationSearchRequest request,
+            String boardType,
+            int page,
+            int size) {
         try {
-            NativeQuery searchQuery = buildSearchQuery(request, boardType.toLowerCase(), page - 1, size); // 검색 쿼리 생성
-            //게시판 타입에 따라 검색 수행 및 결과 반환
+            NativeQuery searchQuery = buildSearchQuery(request, boardType.toLowerCase(), page - 1, size);
+
             return switch (boardType.toLowerCase()) {
-                case "party" -> {
-                    SearchHits<Party> searchHits = elasticsearchOperations.search(searchQuery, Party.class); //party 검색
-                    //yield = switch 표현식에서 값을 반환하기 위해 사용되는 키워드입니다.
-                    yield new PageImpl<>(
-                            convertToSearchResponse(searchHits), //Elasticsearch 검색 결과
-                            PageRequest.of(page - 1, size), //페이지 요청
-                            searchHits.getTotalHits() //전체 검색 결과
-                    );
-                }
-                case "community" -> {
-                    SearchHits<Community> searchHits = elasticsearchOperations.search(searchQuery, Community.class);
-                    yield new PageImpl<>(
-                            convertToSearchResponse(searchHits),
-                            PageRequest.of(page - 1, size),
-                            searchHits.getTotalHits()
-                    );
-                }
                 case "pwt" -> {
                     SearchHits<ProjectWithTutor> searchHits = elasticsearchOperations.search(searchQuery, ProjectWithTutor.class);
-                    yield new PageImpl<>(
-                            convertToSearchResponse(searchHits),
-                            PageRequest.of(page - 1, size),
-                            searchHits.getTotalHits()
-                    );
+                    List<IntegrationSearchResponse> responses = searchHits.stream()
+                            .map(hit -> {
+                                ProjectWithTutor pwt = hit.getContent();
+                                return IntegrationSearchResponse.builder()
+                                        .id(pwt.getId())
+                                        .boardType("pwt")
+                                        .title(pwt.getTitle())
+                                        .content(pwt.getDescription())
+                                        .category(pwt.getCategory().toString())
+                                        .username(pwt.getUser().getUsername())
+                                        .createdAt(pwt.getCreatedAt())
+                                        .score(hit.getScore())
+                                        .build();
+                            })
+                            .collect(Collectors.toList());
+
+                    yield new PageImpl<>(responses, PageRequest.of(page - 1, size), searchHits.getTotalHits());
                 }
                 case "lecture" -> {
                     SearchHits<Lecture> searchHits = elasticsearchOperations.search(searchQuery, Lecture.class);
-                    yield new PageImpl<>(
-                            convertToSearchResponse(searchHits),
-                            PageRequest.of(page - 1, size),
-                            searchHits.getTotalHits()
-                    );
+                    List<IntegrationSearchResponse> responses = searchHits.stream()
+                            .map(hit -> {
+                                Lecture lecture = hit.getContent();
+                                return IntegrationSearchResponse.builder()
+                                        .id(lecture.getId())
+                                        .boardType("lecture")
+                                        .title(lecture.getTitle())
+                                        .content(lecture.getDescription())
+                                        .category(lecture.getCategory().toString())
+                                        .username(lecture.getUser().getUsername())
+                                        .createdAt(lecture.getCreatedAt())
+                                        .score(hit.getScore())
+                                        .build();
+                            })
+                            .collect(Collectors.toList());
+
+                    yield new PageImpl<>(responses, PageRequest.of(page - 1, size), searchHits.getTotalHits());
+                }
+                case "community" -> {
+                    SearchHits<Community> searchHits = elasticsearchOperations.search(searchQuery, Community.class);
+                    List<IntegrationSearchResponse> responses = searchHits.stream()
+                            .map(hit -> {
+                                Community community = hit.getContent();
+                                return IntegrationSearchResponse.builder()
+                                        .id(community.getId())
+                                        .boardType("community")
+                                        .title(community.getTitle())
+                                        .content(community.getContent())
+                                        .category(community.getCategory().toString())
+                                        .username(community.getUser().getUsername())
+                                        .createdAt(community.getCreatedAt())
+                                        .score(hit.getScore())
+                                        .build();
+                            })
+                            .collect(Collectors.toList());
+
+                    yield new PageImpl<>(responses, PageRequest.of(page - 1, size), searchHits.getTotalHits());
+                }
+                case "party" -> {
+                    SearchHits<Party> searchHits = elasticsearchOperations.search(searchQuery, Party.class);
+                    List<IntegrationSearchResponse> responses = searchHits.stream()
+                            .map(hit -> {
+                                Party party = hit.getContent();
+                                return IntegrationSearchResponse.builder()
+                                        .id(party.getId())
+                                        .boardType("party")
+                                        .title(party.getTitle())
+                                        .content(party.getContents())
+                                        .category(party.getCategory().toString())
+                                        .username(party.getUser().getUsername())
+                                        .createdAt(party.getCreatedAt())
+                                        .score(hit.getScore())
+                                        .build();
+                            })
+                            .collect(Collectors.toList());
+
+                    yield new PageImpl<>(responses, PageRequest.of(page - 1, size), searchHits.getTotalHits());
                 }
                 default -> throw new ApiException(ErrorStatus._BAD_SEARCH_KEYWORD);
             };
         } catch (Exception e) {
-            log.error("엘라스틱서치 보드타입 검색 중 오류가 발생하였습니다.: {}", e);
+            log.error("Elasticsearch search error: ", e);
             throw new ApiException(ErrorStatus._BAD_SEARCH_KEYWORD);
         }
     }
@@ -394,16 +454,41 @@ public class SearchService {
                 .build();
     }
 
-    // 검색 결과를 통합 응답 객체로 변환
     private <T> List<IntegrationSearchResponse> convertToSearchResponse(SearchHits<T> searchHits) {
         return searchHits.stream()
-                .map(hit -> IntegrationSearchResponse.of(hit.getContent(), hit.getScore()))
-                .peek(response -> log.debug("Converted search response: {}", response))
+                .map(hit -> {
+                    String idValue = hit.getId(); // Elasticsearch document ID
+                    Long id = null;
+                    try {
+                        id = Long.parseLong(idValue);
+                    } catch (NumberFormatException e) {
+                        log.warn("Failed to parse ID: {}", idValue);
+                    }
+
+                    T content = hit.getContent();
+                    IntegrationSearchResponse response = IntegrationSearchResponse.of(content, hit.getScore());
+
+                    // ID 설정
+                    if (id != null) {
+                        response = IntegrationSearchResponse.builder()
+                                .id(id)
+                                .boardType(response.getBoardType())
+                                .title(response.getTitle())
+                                .content(response.getContent())
+                                .category(response.getCategory())
+                                .username(response.getUsername())
+                                .createdAt(response.getCreatedAt())
+                                .score(response.getScore())
+                                .build();
+                    }
+
+                    return response;
+                })
                 .collect(Collectors.toList());
     }
 
 
-    public IntegratedSearchPreview searchWithDatabase(IntegrationSearchRequest request) {
+    private IntegratedSearchPreview searchWithDatabase(IntegrationSearchRequest request) {
         log.info("Cache miss - executing search for key: {}",
                 CacheKeyGenerator.generateKey(request));
 
@@ -450,7 +535,7 @@ public class SearchService {
     }
 
 
-    public Page<IntegrationSearchResponse> searchByBoardTypeWithDatabase(
+    private Page<IntegrationSearchResponse> searchByBoardTypeWithDatabase(
             IntegrationSearchRequest request, String boardType, int page, int size) {
         try {
             // 검색 랭킹 업데이트
@@ -472,16 +557,19 @@ public class SearchService {
         }
     }
 
-    //랭킹
-    public void incrementSearchCount(String keyword) {
-        ZSetOperations<String, String> zSetOps = rankingRedisTemplate.opsForZSet();
-        zSetOps.incrementScore(SEARCH_RANKING_KEY, keyword, 1);
-    }
+
     //랭킹
     public Set<ZSetOperations.TypedTuple<String>> getTopSearchKeywords() {
         ZSetOperations<String, String> zSetOps = rankingRedisTemplate.opsForZSet();
         return zSetOps.reverseRangeWithScores(SEARCH_RANKING_KEY, 0, rankingSize - 1);
     }
+
+    //랭킹
+    public void incrementSearchCount(String keyword) {
+        ZSetOperations<String, String> zSetOps = rankingRedisTemplate.opsForZSet();
+        zSetOps.incrementScore(SEARCH_RANKING_KEY, keyword, 1);
+    }
+
     // 각 게시판별 검색 메서드
     private Page<IntegrationSearchResponse> searchParty(IntegrationSearchRequest request, PageRequest pageable) {
         BooleanBuilder condition = SearchQueryUtil.buildSearchCondition(request, Party.class);
@@ -618,31 +706,35 @@ public class SearchService {
     public void initializeElasticsearchData() {
         log.info("Starting Elasticsearch data synchronization");
 
-        syncDataWithPagination(
-                pageRequest -> lectureService.findAllWithPagination(pageRequest),
-                lectureSearchRepository,
-                "LECTURE"
-        );
+        try {
+            syncDataWithPagination(
+                    pageRequest -> lectureService.findAllWithPagination(pageRequest),
+                    lectureSearchRepository,
+                    "LECTURE"
+            );
 
-        syncDataWithPagination(
-                pageRequest -> partyService.findAllWithPagination(pageRequest),
-                partySearchRepository,
-                "PARTY"
-        );
+            syncDataWithPagination(
+                    pageRequest -> partyService.findAllWithPagination(pageRequest),
+                    partySearchRepository,
+                    "PARTY"
+            );
 
-        syncDataWithPagination(
-                pageRequest -> communityService.findAllWithPagination(pageRequest),
-                communitySearchRepository,
-                "COMMUNITY"
-        );
+            syncDataWithPagination(
+                    pageRequest -> communityService.findAllWithPagination(pageRequest),
+                    communitySearchRepository,
+                    "COMMUNITY"
+            );
 
-        syncDataWithPagination(
-                pageRequest -> projectWithTutorService.findAllWithPagination(pageRequest),
-                pwtSearchRepository,
-                "PWT"
-        );
+            syncDataWithPagination(
+                    pageRequest -> projectWithTutorService.findAllWithPagination(pageRequest),
+                    pwtSearchRepository,
+                    "PWT"
+            );
 
-        log.info("Elasticsearch data synchronization completed");
+            log.info("Elasticsearch data synchronization completed successfully");
+        } catch (Exception e) {
+            log.error("Failed to initialize Elasticsearch data", e);
+        }
     }
 
     private <T, S extends ElasticsearchRepository<T, Long>> void syncDataWithPagination(
@@ -652,73 +744,118 @@ public class SearchService {
     ) {
         try {
             int page = 0;
-            int pageSize = 100;
+            int pageSize = 50; // 배치 사이즈 축소
             Page<T> dataPage;
 
             do {
                 dataPage = fetchPageFunction.apply(PageRequest.of(page, pageSize));
                 if (!dataPage.isEmpty()) {
-                    log.debug("Fetched page {} with {} items for {}", page, dataPage.getContent().size(), repository.getClass().getSimpleName());
-
-                    List<T> updatedItems = dataPage.getContent().stream()
-                            .map(item -> ensureBoardType(item, boardType))
-                            .filter(Objects::nonNull)
-                            .collect(Collectors.toList());
-
-                    repository.saveAll(updatedItems);
-                    log.debug("Saved {} items to Elasticsearch for {}", updatedItems.size(), repository.getClass().getSimpleName());
+                    processBatch(dataPage.getContent(), repository, boardType);
                 }
                 page++;
             } while (dataPage.hasNext());
         } catch (Exception e) {
-            log.error("Error during data synchronization for {}: ", repository.getClass().getSimpleName(), e);
-            throw e;
+            log.error("Error during data synchronization for {}: ",
+                    repository.getClass().getSimpleName(), e);
+            throw new RuntimeException("Data synchronization failed", e);
         }
     }
 
-    private <T> T ensureBoardType(T entity, String boardType) {
-        if (entity instanceof Lecture lecture && lecture.getBoardType() == null) {
-            return (T) Lecture.builder()
-                    .id(lecture.getId())
-                    .description(lecture.getDescription())
-                    .recommend(lecture.getRecommend())
-                    .category(lecture.getCategory())
-                    .level(lecture.getLevel())
-                    .user(lecture.getUser())
-                    .boardType(BoardType.valueOf(boardType))
-                    .build();
-        } else if (entity instanceof Party party && party.getBoardType() == null) {
-            return (T) Party.builder()
-                    .id(party.getId())
-                    .title(party.getTitle())
-                    .contents(party.getContents())
-                    .status(party.getStatus())
-                    .category(party.getCategory())
-                    .user(party.getUser())
-                    .boardType(BoardType.valueOf(boardType))
-                    .build();
-        } else if (entity instanceof Community community && community.getBoardType() == null) {
-            return (T) Community.builder()
-                    .id(community.getId())
-                    .title(community.getTitle())
-                    .content(community.getContent())
-                    .category(community.getCategory())
-                    .user(community.getUser())
-                    .boardType(BoardType.valueOf(boardType))
-                    .resolveStatus(community.getResolveStatus())
-                    .build();
-        } else if (entity instanceof ProjectWithTutor pwt && pwt.getBoardType() == null) {
-            return (T) ProjectWithTutor.of(
-                    pwt.getTitle(),
-                    pwt.getDescription(),
-                    pwt.getPrice(),
-                    pwt.getDeadline(),
-                    pwt.getMaxParticipants(),
-                    pwt.getLevel(),
-                    pwt.getCategory(),
-                    pwt.getUser()
-            );
+    private <T> void processBatch(List<T> items,
+                                  ElasticsearchRepository<T, Long> repository,
+                                  String boardType) {
+        int batchSize = 10;
+        List<List<T>> batches = new ArrayList<>();
+
+        for (int i = 0; i < items.size(); i += batchSize) {
+            batches.add(new ArrayList<>(
+                    items.subList(i, Math.min(items.size(), i + batchSize))
+            ));
         }
-        return entity; // 이미 boardType이 존재하는 경우 그대로 반환
+
+        for (List<T> batch : batches) {
+            try {
+                List<T> convertedItems = batch.stream()
+                        .map(item -> convertToElasticsearchEntity(item, boardType))
+                        .filter(Objects::nonNull)
+                        .collect(Collectors.toList());
+
+                repository.saveAll(convertedItems);
+                log.debug("Successfully saved batch of {} items", batch.size());
+            } catch (Exception e) {
+                log.error("Error saving batch to Elasticsearch", e);
+                recordFailedBatch(batch, e);
+            }
+        }
+    }
+
+    private <T> T convertToElasticsearchEntity(T entity, String boardType) {
+        try {
+            if (entity instanceof Lecture lecture) {
+                return (T) convertLectureToEsDocument(lecture, boardType);
+            } else if (entity instanceof Party party) {
+                return (T) convertPartyToEsDocument(party, boardType);
+            } else if (entity instanceof Community community) {
+                return (T) convertCommunityToEsDocument(community, boardType);
+            } else if (entity instanceof ProjectWithTutor pwt) {
+                return (T) convertPwtToEsDocument(pwt, boardType);
+            }
+            return entity;
+        } catch (Exception e) {
+            log.error("Error converting entity to ES format", e);
+            return null;
+        }
+    }
+
+    private Lecture convertLectureToEsDocument(Lecture lecture, String boardType) {
+        return Lecture.builder()
+                .id(lecture.getId())
+                .description(lecture.getDescription())
+                .recommend(lecture.getRecommend())
+                .category(lecture.getCategory())
+                .level(lecture.getLevel())
+                .user(lecture.getUser())
+                .boardType(BoardType.valueOf(boardType))
+                .build();
+    }
+
+    private Party convertPartyToEsDocument(Party party, String boardType) {
+        return Party.builder()
+                .id(party.getId())
+                .title(party.getTitle())
+                .contents(party.getContents())
+                .status(party.getStatus())
+                .category(party.getCategory())
+                .user(party.getUser())
+                .boardType(BoardType.valueOf(boardType))
+                .build();
+    }
+
+    private Community convertCommunityToEsDocument(Community community, String boardType) {
+        return Community.builder()
+                .id(community.getId())
+                .title(community.getTitle())
+                .content(community.getContent())
+                .category(community.getCategory())
+                .user(community.getUser())
+                .boardType(BoardType.valueOf(boardType))
+                .resolveStatus(community.getResolveStatus())
+                .build();
+    }
+
+    private ProjectWithTutor convertPwtToEsDocument(ProjectWithTutor pwt, String boardType) {
+        return ProjectWithTutor.builder()
+                .id(pwt.getId())
+                .description(pwt.getDescription())
+                .category(pwt.getCategory())
+                .level(pwt.getLevel())
+                .user(pwt.getUser())
+                .boardType(BoardType.valueOf(boardType))
+                .build();
+    }
+
+    private <T> void recordFailedBatch(List<T> batch, Exception e) {
+        log.error("Failed to save batch: {}", batch);
+        log.error("Error details: ", e);
     }
 }

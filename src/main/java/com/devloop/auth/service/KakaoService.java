@@ -66,7 +66,7 @@ public class KakaoService {
         MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
         body.add("grant_type", "authorization_code");
         body.add("client_id", "3d49a145e53a056301badcfd23ac5373");
-        body.add("redirect_uri", "http://localhost:8080/api/v1/auth/kakao/login");
+        body.add("redirect_uri", "http://devloopapp.com:8080/api/v1/auth/kakao/login");
         body.add("code", code);
         log.info("Request body parameters: grant_type={}, client_id={}, redirect_uri={}, code={}",
                 body.getFirst("grant_type"),

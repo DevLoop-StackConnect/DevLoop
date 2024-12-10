@@ -44,7 +44,7 @@ public class Community extends Timestamped {
     private Category category = Category.ETC;
 
     @Builder.Default
-    @Column(name = "status")
+    @Column(name = "status", nullable = false)
     @Enumerated(EnumType.STRING)
     private ResolveStatus resolveStatus = ResolveStatus.UNSOLVED; //기본값 필드로 설정
 
@@ -63,6 +63,7 @@ public class Community extends Timestamped {
         this.content = content;
         this.category = category;
         this.user = user;
+        this.resolveStatus = ResolveStatus.UNSOLVED;
     }
 
     public static Community of(String title, String content, Category category, User user) {

@@ -66,7 +66,7 @@ public class CommunityService {
                 category,
                 user);
         //게시글 저장
-        Community savedCommunity = communityRepository.save(community);
+        communityRepository.save(community);
         //첨부파일 있으면 저장
         if (file != null && !file.isEmpty()) {
             s3Service.uploadFile(file, user, community); //s3에 파일 올리고 communityattachment에 저장하는 것
@@ -76,12 +76,11 @@ public class CommunityService {
 
         //응답반환
         return CommunitySaveResponse.of(
-                savedCommunity.getId(),
-                savedCommunity.getTitle(),
-                savedCommunity.getContent(),
-                savedCommunity.getResolveStatus().getDescription(),
-                category.getDescription(),
-                savedCommunity.getCreatedAt()
+                community.getId(),
+                community.getTitle(),
+                community.getContent(),
+                community.getCategory().getDescription(),
+                community.getCreatedAt()
         );
     }
 

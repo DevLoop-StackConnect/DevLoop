@@ -86,18 +86,19 @@ public class LectureVideoService {
         String uploadId = null;
         List<CompletedPart> completedParts = new ArrayList<>();
 
-        //멀티파트 업로드 시작 요청 및 UploadId 반환
+        //1. 멀티파트 업로드 시작 요청 및 UploadId 반환
         uploadId = getUploadId(fileName);
 
         //파일을 partSize만큼 파트로 나누어 업로드
         long filePosition = 0;
 
+        //17MB 이미지 요청 - 5MB 단위로   3번 (5MB) + 1번 (2MB)
         try (InputStream inputStream = multipartFile.getInputStream()) {
-            for (int i = 1; filePosition < fileSize; i++) {
+            for (int i = 1; filePosition < fileSize; i++) { //0 5 10 15 17
                 //마지막 파트 크기가 partSize 미만일 경우 조정
-                long currentPartSize = Math.min(partSize, (fileSize - filePosition));
+                long currentPartSize = Math.min(partSize, (fileSize - filePosition)); //5MB, 17-15= 2MB
 
-                //각 파트에 대한 객체 생성
+                //2. 각 파트에 대한 객체 생성
                 UploadPartRequest uploadPartRequest = UploadPartRequest.builder()
                         .bucket(bucketName)
                         .key(fileName)
@@ -121,7 +122,7 @@ public class LectureVideoService {
                 filePosition += currentPartSize;
             }
 
-            //멀티 파트 업로드 완료 요청
+            //3. 멀티 파트 업로드 완료 요청
             CompleteMultipartUploadRequest completeMultipartUploadRequest = CompleteMultipartUploadRequest.builder()
                     .bucket(bucketName)
                     .key(fileName)
@@ -176,7 +177,7 @@ public class LectureVideoService {
 
         return response.uploadId();
     }
-
+    
     //강의 영상 다건 조회
     public List<GetLectureVideoListResponse> getLectureVideoList(Long lectureId) {
         //강의가 존재하는 지 확인
