@@ -82,7 +82,9 @@ public class LectureVideoService {
 
         String folderPath = "lectures/" + lectureId + "/";
         String fileName = makeFileName(folderPath, multipartFile);
-        long partSize = 5 * 1024 * 1024; //5MB 단위로 파트 분할
+
+        //영상 파일 크기에 따라 파트 분할
+        long partSize = getPartSizeByFileSize(fileSize); //5MB 단위로 파트 분할
         String uploadId = null;
         List<CompletedPart> completedParts = new ArrayList<>();
 
@@ -92,11 +94,10 @@ public class LectureVideoService {
         //파일을 partSize만큼 파트로 나누어 업로드
         long filePosition = 0;
 
-        //17MB 이미지 요청 - 5MB 단위로   3번 (5MB) + 1번 (2MB)
         try (InputStream inputStream = multipartFile.getInputStream()) {
-            for (int i = 1; filePosition < fileSize; i++) { //0 5 10 15 17
+            for (int i = 1; filePosition < fileSize; i++) {
                 //마지막 파트 크기가 partSize 미만일 경우 조정
-                long currentPartSize = Math.min(partSize, (fileSize - filePosition)); //5MB, 17-15= 2MB
+                long currentPartSize = Math.min(partSize, (fileSize - filePosition));
 
                 //2. 각 파트에 대한 객체 생성
                 UploadPartRequest uploadPartRequest = UploadPartRequest.builder()
@@ -164,6 +165,7 @@ public class LectureVideoService {
         return folderPath + UUID.randomUUID() + "_" + multipartFile.getOriginalFilename();
     }
 
+
     //Upload Id 반환
     public String getUploadId(String fileName) {
         //어떤 bucket에 어떤 object를 업로드할 것인지에 대한 Request 정보 생성하기 위해 MultipartUploadRequest 빌드하여 객체 생성
@@ -176,6 +178,21 @@ public class LectureVideoService {
         CreateMultipartUploadResponse response = s3Client.createMultipartUpload(request);
 
         return response.uploadId();
+    }
+
+    //영상 크기에 따라 파트 크기 설정
+    public long getPartSizeByFileSize(long fileSize){
+        //100MB 이하
+        long partSize=5 * 1024 * 1024; //5MB
+        //100MB ~ 1GB
+        if(fileSize>=100*1024*1024 && fileSize<1000*1024*1024){
+            partSize=10*1024*1024; //10MB
+        }
+        //1GB이상
+        else if(fileSize>=1000*1024*1024){
+            partSize=50*1024*1024; //50MB
+        }
+        return partSize;
     }
     
     //강의 영상 다건 조회
