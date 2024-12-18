@@ -12,6 +12,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -20,6 +21,16 @@ import java.util.List;
 public class LectureVideoController {
     private final LectureVideoService lectureVideoService;
 
+    //일반 업로드
+    @PostMapping("/v2/lectures/{lectureId}/videos/upload")
+    public ApiResponse<String> uploadVideo(
+            @AuthenticationPrincipal AuthUser authUser,
+            @PathVariable("lectureId") Long lectureId,
+            @RequestParam(value = "file") MultipartFile multipartFile,
+            @RequestParam(value = "title") String title
+    ) throws IOException {
+        return ApiResponse.ok(lectureVideoService.uploadVideo(authUser,lectureId,multipartFile, title));
+    }
     //강의 영상파일 등록
     @PreAuthorize("hasRole('ROLE_TUTOR')")
     @PostMapping("/v2/lectures/{lectureId}/videos/multipart-upload")

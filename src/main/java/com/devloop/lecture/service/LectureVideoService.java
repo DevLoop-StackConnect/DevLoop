@@ -1,5 +1,7 @@
 package com.devloop.lecture.service;
 
+import com.amazonaws.services.s3.AmazonS3Client;
+import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.devloop.attachment.cloudfront.CloudFrontService;
 import com.devloop.attachment.enums.FileFormat;
 import com.devloop.attachment.s3.S3Service;
@@ -29,10 +31,11 @@ import software.amazon.awssdk.services.s3.model.*;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 @Slf4j
 @Service
@@ -49,6 +52,54 @@ public class LectureVideoService {
 
     @Value("${cloud.aws.s3.bucketName}")
     private String bucketName;
+
+    private final AmazonS3Client amazonS3Client;
+
+    /**
+     * 일반 업로드
+     *
+     * @param authUser
+     * @param lectureId
+     * @param multipartFile
+     * @param title
+     * @return
+     * @throws IOException
+     */
+    public String uploadVideo(AuthUser authUser, Long lectureId, MultipartFile multipartFile, String title) throws IOException {
+        //유저가 존재하는 지 확인
+        User user = userService.findByUserId(authUser.getId());
+        //강의가 존재하는 지 확인
+        Lecture lecture = lectureService.findById(lectureId);
+        //유저가 강의 등록한 유저인지 확인
+        if (!user.getId().equals(lecture.getUser().getId())) {
+            throw new ApiException(ErrorStatus._HAS_NOT_ACCESS_PERMISSION);
+        }
+        FileFormat fileType = fileValidator.mapStringToFileFormat(Objects.requireNonNull(multipartFile.getContentType()));
+        //파일 사이즈 확인 (5GB까지 가능)
+        fileValidator.fileSizeValidator(multipartFile, 5L * 1024 * 1024 * 1024);
+        String folderPath = "lectures/" + lectureId + "/";
+        String fileName = makeFileName(folderPath, multipartFile);
+        ObjectMetadata metadata = new ObjectMetadata();
+        metadata.setContentType(multipartFile.getContentType());
+        metadata.setContentLength(multipartFile.getSize());
+
+        long startTime = System.currentTimeMillis(); //시작 시간 기록
+        //S3에 업로드
+        amazonS3Client.putObject(bucketName, fileName, multipartFile.getInputStream(), metadata);
+        long endTime = System.currentTimeMillis(); // 종료 시간 기록
+        System.out.println("기본 업로드 소요 시간: " + (endTime - startTime) + " ms");
+        //새로운 강의 영상 객체 생성
+        LectureVideo lectureVideo = LectureVideo.of(
+                fileName,
+                title,
+                VideoStatus.COMPLETED,
+                fileType,
+                lecture
+        );
+        lectureVideoRepository.save(lectureVideo);
+        return fileName;
+    }
+
 
     /**
      * 멀티파트 파일 업로드
@@ -75,7 +126,6 @@ public class LectureVideoService {
         //파일 타입 확인(사진으로 테스트하기 위해 임시로 주석 처리)
         //fileValidator.fileTypeValidator(multipartFile,lecture);
         FileFormat fileType = fileValidator.mapStringToFileFormat(Objects.requireNonNull(multipartFile.getContentType()));
-
         //파일 사이즈 확인 (5GB까지 가능)
         fileValidator.fileSizeValidator(multipartFile, 5L * 1024 * 1024 * 1024);
         long fileSize = multipartFile.getSize();
@@ -85,80 +135,101 @@ public class LectureVideoService {
 
         //영상 파일 크기에 따라 파트 분할
         long partSize = getPartSizeByFileSize(fileSize); //5MB 단위로 파트 분할
-        String uploadId = null;
         List<CompletedPart> completedParts = new ArrayList<>();
 
-        //1. 멀티파트 업로드 시작 요청 및 UploadId 반환
-        uploadId = getUploadId(fileName);
+
+        final String uploadId = getUploadId(fileName);
+
+        //비동기 작업 수행
+        ExecutorService executor = Executors.newFixedThreadPool(5);
+        List<CompletableFuture<Void>> futures = new ArrayList<>();
 
         //파일을 partSize만큼 파트로 나누어 업로드
         long filePosition = 0;
-
-        try (InputStream inputStream = multipartFile.getInputStream()) {
+        //1. 멀티파트 업로드 시작 요청 및 UploadId 반환
+        long startTime = System.currentTimeMillis();
+        try{
             for (int i = 1; filePosition < fileSize; i++) {
                 //마지막 파트 크기가 partSize 미만일 경우 조정
                 long currentPartSize = Math.min(partSize, (fileSize - filePosition));
+                int partNumber = i;
+                CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
+                    try (InputStream inputStream = multipartFile.getInputStream()) {
+                        //2. 각 파트에 대한 객체 생성
+                        UploadPartRequest uploadPartRequest = UploadPartRequest.builder()
+                                .bucket(bucketName)
+                                .key(fileName)
+                                .uploadId(uploadId)
+                                .partNumber(partNumber)
+                                .build();
 
-                //2. 각 파트에 대한 객체 생성
-                UploadPartRequest uploadPartRequest = UploadPartRequest.builder()
-                        .bucket(bucketName)
-                        .key(fileName)
-                        .uploadId(uploadId)
-                        .partNumber(i)
-                        .build();
+                        //각 파트를 업로드하고 ETag를 partETags에 추가
+                        UploadPartResponse uploadPartResponse = s3Client.uploadPart(
+                                uploadPartRequest,
+                                RequestBody.fromInputStream(inputStream, currentPartSize)
+                        );
 
-                //각 파트를 업로드하고 ETag를 partETags에 추가
-                UploadPartResponse uploadPartResponse = s3Client.uploadPart(
-                        uploadPartRequest,
-                        RequestBody.fromInputStream(inputStream, currentPartSize)
-                );
+                        CompletedPart part = CompletedPart.builder()
+                                .partNumber(partNumber)
+                                .eTag(uploadPartResponse.eTag())
+                                .build();
 
-                CompletedPart part = CompletedPart.builder()
-                        .partNumber(i)
-                        .eTag(uploadPartResponse.eTag())
-                        .build();
+                        System.out.println("part=" + part);
+                        completedParts.add(part);
 
-                completedParts.add(part);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                }, executor);
 
+                futures.add(future);
                 filePosition += currentPartSize;
             }
 
-            //3. 멀티 파트 업로드 완료 요청
-            CompleteMultipartUploadRequest completeMultipartUploadRequest = CompleteMultipartUploadRequest.builder()
-                    .bucket(bucketName)
-                    .key(fileName)
-                    .uploadId(uploadId)
-                    .multipartUpload(CompletedMultipartUpload.builder().parts(completedParts).build())
-                    .build();
-
-            s3Client.completeMultipartUpload(completeMultipartUploadRequest);
-
-            //새로운 강의 영상 객체 생성
-            LectureVideo lectureVideo = LectureVideo.of(
-                    fileName,
-                    title,
-                    VideoStatus.COMPLETED,
-                    fileType,
-                    lecture
-            );
-            lectureVideoRepository.save(lectureVideo);
-
-            return fileName;
-
-        } catch (S3Exception e) {
+        }catch (S3Exception e) {
             //예외 발생 시, 업로드 취소
             s3Client.abortMultipartUpload(AbortMultipartUploadRequest.builder()
                     .bucket(bucketName)
                     .key(fileName)
                     .uploadId(uploadId)
                     .build());
-
             throw new ApiException(ErrorStatus._S3_UPLOAD_ERROR);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+
         }
 
+        //모든 파트 업로드가 완료될 때까지 기다림
+        CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
+
+        // 파트 리스트를 partNumber 기준으로 정렬
+        completedParts.sort(Comparator.comparingInt(CompletedPart::partNumber));
+
+        //3. 멀티 파트 업로드 완료 요청
+        CompleteMultipartUploadRequest completeMultipartUploadRequest = CompleteMultipartUploadRequest.builder()
+                .bucket(bucketName)
+                .key(fileName)
+                .uploadId(uploadId)
+                .multipartUpload(CompletedMultipartUpload.builder().parts(completedParts).build())
+                .build();
+
+        s3Client.completeMultipartUpload(completeMultipartUploadRequest);
+        long endTime = System.currentTimeMillis();
+        System.out.println("비동기 작업 소요 시간: " + (endTime - startTime) + " ms");
+
+
+        //새로운 강의 영상 객체 생성
+        LectureVideo lectureVideo = LectureVideo.of(
+                fileName,
+                title,
+                VideoStatus.COMPLETED,
+                fileType,
+                lecture
+        );
+        lectureVideoRepository.save(lectureVideo);
+
+        return fileName;
+
     }
+
 
     //파일 이름 생성
     public String makeFileName(String folderPath, MultipartFile multipartFile) {
@@ -181,20 +252,20 @@ public class LectureVideoService {
     }
 
     //영상 크기에 따라 파트 크기 설정
-    public long getPartSizeByFileSize(long fileSize){
+    public long getPartSizeByFileSize(long fileSize) {
         //100MB 이하
-        long partSize=5 * 1024 * 1024; //5MB
+        long partSize = 5 * 1024 * 1024; //5MB
         //100MB ~ 1GB
-        if(fileSize>=100*1024*1024 && fileSize<1000*1024*1024){
-            partSize=10*1024*1024; //10MB
+        if (fileSize >= 100 * 1024 * 1024 && fileSize < 1000 * 1024 * 1024) {
+            partSize = 10 * 1024 * 1024; //10MB
         }
         //1GB이상
-        else if(fileSize>=1000*1024*1024){
-            partSize=50*1024*1024; //50MB
+        else if (fileSize >= 1000 * 1024 * 1024) {
+            partSize = 50 * 1024 * 1024; //50MB
         }
         return partSize;
     }
-    
+
     //강의 영상 다건 조회
     public List<GetLectureVideoListResponse> getLectureVideoList(Long lectureId) {
         //강의가 존재하는 지 확인
