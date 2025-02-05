@@ -8,28 +8,6 @@
           <img src="https://github.com/user-attachments/assets/9216d8da-fd67-4a7a-a58d-25e0cc540432" alt=""/><br />
           <span style="font-size:36px; font-weight:bold; color:#000; display:block; margin-top:10px; text-align:center;">
               <b><img src="https://img.shields.io/badge/YouTube-FF0000?style=for-the-badge&logo=YouTube&logoColor=white" /></b>
-              <b><img src="https://img.shields.io/badge/YouTube-FF0000?style=for-the-badge&logo=YouTube&logoColor=white" /></b>
-              <b><img src="https://img.shields.io/badge/YouTube-FF0000?style=for-the-badge&logo=YouTube&logoColor=white" /></b>
-              <b><img src="https://img.shields.io/badge/YouTube-FF0000?style=for-the-badge&logo=YouTube&logoColor=white" /></b>
-              <b><img src="https://img.shields.io/badge/YouTube-FF0000?style=for-the-badge&logo=YouTube&logoColor=white" /></b>
-              <b><img src="https://img.shields.io/badge/YouTube-FF0000?style=for-the-badge&logo=YouTube&logoColor=white" /></b>
-              <b><img src="https://img.shields.io/badge/YouTube-FF0000?style=for-the-badge&logo=YouTube&logoColor=white" /></b>
-              <b><img src="https://img.shields.io/badge/YouTube-FF0000?style=for-the-badge&logo=YouTube&logoColor=white" /></b>
-              <b><img src="https://img.shields.io/badge/YouTube-FF0000?style=for-the-badge&logo=YouTube&logoColor=white" /></b>
-          </span>
-        </a>
-      </td>
-        <br />
-        <td style="text-align:center; vertical-align:middle;">
-        <a href="https://candied-coil-34f.notion.site/DevLoop-StackConnect-1456913e3042802ca19ecd25f1b017e8?pvs=4" style="display:inline-block; text-align:center;">
-              <b><img src="https://img.shields.io/badge/notion-000000?style=for-the-badge&logo=notion&logoColor=20232a" /></b>
-              <b><img src="https://img.shields.io/badge/notion-000000?style=for-the-badge&logo=notion&logoColor=20232a" /></b>
-              <b><img src="https://img.shields.io/badge/notion-000000?style=for-the-badge&logo=notion&logoColor=20232a" /></b>
-              <b><img src="https://img.shields.io/badge/notion-000000?style=for-the-badge&logo=notion&logoColor=20232a" /></b>
-              <b><img src="https://img.shields.io/badge/notion-000000?style=for-the-badge&logo=notion&logoColor=20232a" /></b>
-              <b><img src="https://img.shields.io/badge/notion-000000?style=for-the-badge&logo=notion&logoColor=20232a" /></b>
-              <b><img src="https://img.shields.io/badge/notion-000000?style=for-the-badge&logo=notion&logoColor=20232a" /></b>
-              <b><img src="https://img.shields.io/badge/notion-000000?style=for-the-badge&logo=notion&logoColor=20232a" /></b>
               <b><img src="https://img.shields.io/badge/notion-000000?style=for-the-badge&logo=notion&logoColor=20232a" /></b>
           </span>
         </a>
